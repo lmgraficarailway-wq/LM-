@@ -1,0 +1,14 @@
+{
+  "name": "lm-passo",
+  "version": "1.0.0",
+  "description": "LM PASSO - Arte Generator",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
