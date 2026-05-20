@@ -1,0 +1,6 @@
+warning: in the working copy of 'ATUALIZAR_REDE.bat', LF will be replaced by CRLF the next time Git touches it
+[main 0eb8310] Atualizacao do Sistema - 30/03/2026 15:50:10,39
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+ create mode 100644 git_log.txt
+To https://github.com/lmgraficagrupolm-netizen/lm-passo.git
+   5e8b36f..0eb8310  main -> main

@@ -1,0 +1,1 @@
+const sqlite3 = require('sqlite3').verbose(); const db = new sqlite3.Database('database.sqlite'); db.all('SELECT id, client_id, total_value, discount_value, payment_method, is_priority FROM orders ORDER BY id DESC LIMIT 5', (err, rows) => { console.log(JSON.stringify(rows, null, 2)); db.close(); });

@@ -1,0 +1,1 @@
+const sqlite3 = require('sqlite3').verbose(); const db = new sqlite3.Database('server/database/database.sqlite'); db.all('PRAGMA table_info(orders)', (err, rows) => { console.log(JSON.stringify(rows)); db.close(); });

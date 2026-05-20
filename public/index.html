@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR" translate="no">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7c3aed">
+    <title>LM | PASSO - Gestão de Pedidos</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="css/main.css?v=2026-05-18-SIDEBAR-FIX">
+    <!-- Ionicons (local) -->
+    <script type="module" src="/libs/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="/libs/ionicons/ionicons.js"></script>
+</head>
+
+<body>
+    <div id="app">Carregando aplicação... (Se esta mensagem não sumir, o Javascript não carregou)</div>
+
+    <!-- Date parser universal: SQLite CURRENT_TIMESTAMP is UTC -->
+    <script>
+        window.parseDBDate = function(str) {
+            if (!str) return new Date();
+            if (typeof str !== 'string') return new Date(str);
+            // Example: 2026-04-10 14:02:12 (from SQLite) -> force UTC
+            if (str.length === 19 && str[10] === ' ') {
+                return new Date(str.replace(' ', 'T') + 'Z');
+            }
+            // If it has T but no Z, force UTC
+            if (!str.includes('Z') && str.includes('T')) {
+                return new Date(str + 'Z');
+            }
+            return new Date(str);
+        };
+    </script>
+    
+    <!-- Remove QUALQUER Service Worker existente antes de carregar o app -->
+    <script>
+        (async function limparSW() {
+            if (!('serviceWorker' in navigator)) return;
+            try {
+                // 1. Remove todos os SW registrados
+                const regs = await navigator.serviceWorker.getRegistrations();
+                for (const reg of regs) {
+                    await reg.unregister();
+                }
+                // 2. Apaga todos os caches (inclusive os que podem estar bloqueando JS)
+                if ('caches' in window) {
+                    const keys = await caches.keys();
+                    for (const key of keys) {
+                        await caches.delete(key);
+                    }
+                }
+            } catch(e) {
+                // Ignorar erros silenciosamente
+            }
+        })();
+    </script>
+
+    <script>
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = 'js/app.js?v=' + Date.now();
+        document.body.appendChild(script);
+    </script>
+    <script>
+        // Fail-safe: if app is still loading after 5s, it might be a cache/network issue
+        setTimeout(() => {
+            const app = document.getElementById('app');
+            if (app && app.textContent.includes('Carregando aplicação...')) {
+                console.warn('App stuck on loading, attempting cache-bust reload...');
+                location.href = location.href.split('?')[0] + '?v=' + Date.now();
+            }
+        }, 5000);
+    </script>
+</body>
+
+</html>

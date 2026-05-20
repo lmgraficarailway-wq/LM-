@@ -1,0 +1,14 @@
+node_modules/
+.git/
+.gemini/
+scratch/
+.env
+database.sqlite
+public/uploads/
+*.exe
+*.zip
+*.db
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+*.log

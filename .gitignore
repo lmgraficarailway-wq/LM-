@@ -1,3 +1,21 @@
 node_modules/
-*.log
+database.sqlite
+database.sqlite-shm
+database.sqlite-wal
+database_backup.sqlite
+error_log.txt
+*.exe
+public/uploads/
 .env
+firebase-credentials.json
+*.zip
+*.pdf
+# Allow logo and public images, block only large uploads
+public/uploads/*.png
+public/uploads/*.jpg
+public/uploads/*.jpeg
+kanban_backup.js  
+
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

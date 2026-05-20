@@ -1,0 +1,2 @@
+Set objShell = CreateObject("WScript.Shell")
+objShell.Run "cmd.exe /k ""cd /d C:\Users\T.i\Desktop\aplicativo && echo. && echo ========================================= && echo   CLIQUE EM AUTHORIZE NO NAVEGADOR && echo ========================================= && echo. && npx @railway/cli login && echo. && echo Fazendo deploy... && npx @railway/cli up --detach && echo. && echo PRONTO! Seu app esta no ar permanentemente! && pause""", 1, False
