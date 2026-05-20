@@ -20,6 +20,7 @@ public/uploads/
 
 # Logs
 error_log.txt
+auto_deploy.log
 
 # ⚠️ PROTEÇÃO: Arte Generator NUNCA deve entrar no repositório junto com o LM PASSO
 arte-generator/
