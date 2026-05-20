@@ -1,21 +1,29 @@
 node_modules/
-database.sqlite
-database.sqlite-shm
-database.sqlite-wal
-database_backup.sqlite
-error_log.txt
-*.exe
-public/uploads/
-.env
-firebase-credentials.json
-*.zip
-*.pdf
-# Allow logo and public images, block only large uploads
-public/uploads/*.png
-public/uploads/*.jpg
-public/uploads/*.jpeg
-kanban_backup.js  
 
+# Banco de dados local
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+database_backup.sqlite
+
+# Segredos
+.env
+firebase-credentials.json
+
+# Uploads gerados pelos usuários
+public/uploads/
+
+# Binários e comprimidos
+*.exe
+*.zip
+*.pdf
+
+# Logs
+error_log.txt
+
+# ⚠️ PROTEÇÃO: Arte Generator NUNCA deve entrar no repositório junto com o LM PASSO
+arte-generator/
+arte-generator.zip
+
+# Backup do kanban
+kanban_backup.js
