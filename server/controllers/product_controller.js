@@ -1,25 +1,31 @@
 const db = require('../database/db');
 
 exports.getAllProducts = (req, res) => {
-    const sql = `
-        SELECT p.*,
-            (SELECT group_concat(cv.id || ':' || cv.color || ':' || cv.quantity, '|||')
-             FROM product_color_variants cv WHERE cv.product_id = p.id) as color_variants_raw
-        FROM products p ORDER BY p.name ASC`;
-    db.all(sql, [], (err, rows) => {
+    const sql = `SELECT * FROM products ORDER BY name ASC`;
+    db.all(sql, [], async (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
+
+        // Buscar color_variants para todos os produtos em paralelo
+        const allColorRows = await new Promise((resolve) => {
+            db.all("SELECT * FROM product_color_variants ORDER BY color ASC", [], (e, r) => resolve(r || []));
+        });
+
+        // Agrupar por product_id
+        const colorsByProduct = {};
+        allColorRows.forEach(cv => {
+            const pid = String(cv.product_id);
+            if (!colorsByProduct[pid]) colorsByProduct[pid] = [];
+            colorsByProduct[pid].push({ id: cv.id, color: cv.color, quantity: cv.quantity });
+        });
+
         const data = rows.map(r => ({
             ...r,
-            color_variants: r.color_variants_raw
-                ? r.color_variants_raw.split('|||').map(v => {
-                    const [id, color, quantity] = v.split(':');
-                    return { id: parseInt(id), color, quantity: parseInt(quantity) };
-                })
-                : []
+            color_variants: colorsByProduct[String(r.id)] || []
         }));
         res.json({ data });
     });
 };
+
 
 exports.createProduct = (req, res) => {
     const { name, type, production_time, price, stock, price_1_day, price_3_days, terceirizado, unit_cost } = req.body;

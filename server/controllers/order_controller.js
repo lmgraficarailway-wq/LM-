@@ -1,6 +1,17 @@
+
+// Helper para parsear checklist (SQLite=string JSON, Firestore=objeto)
+function parseChecklist(v) {
+    if (!v) return { arte: false, impressao: false, corte: false, embalagem: false };
+    if (typeof v === 'object') return v;
+    try { return JSON.parse(v); } catch(e) { return { arte: false, impressao: false, corte: false, embalagem: false }; }
+}
+
 const db = require('../database/db');
 const { brasiliaDatetime, brasiliaISO } = require('../utils/dateHelper');
 const { calculateProductionTime } = require('../utils/production_calculator');
+const { uploadFile, isStorageUrl } = require('../utils/firebaseStorage');
+
+const USE_STORAGE = process.env.NODE_ENV === 'production' || process.env.USE_FIREBASE_STORAGE === 'true';
 
 // Helper to calculate deadline (dias úteis)
 const calculateDeadline = (days) => {
@@ -53,21 +64,51 @@ exports.getAllOrders = (req, res) => {
     // Simple verification (in production we would use the token user info directly)
     // If role is Vendedor, maybe see only their own? For now, open or filter if requested.
 
-    sql += ` ORDER BY 
-        CASE WHEN o.status = 'finalizado' THEN COALESCE(o.moved_at, o.created_at) ELSE NULL END DESC,
-        CASE WHEN o.status != 'finalizado' THEN o.is_priority ELSE 0 END DESC,
-        CASE WHEN o.status != 'finalizado' THEN o.created_at ELSE NULL END DESC`;
+    sql += ` ORDER BY o.created_at DESC`; // Firestore ignora CASE; ordenação real é feita em JS abaixo
 
     db.all(sql, [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
-        // Parse checklist JSON
+
         const data = rows.map(r => ({
             ...r,
-            checklist: r.checklist ? JSON.parse(r.checklist) : { arte: false, impressao: false, corte: false, embalagem: false }
+            checklist: parseChecklist(r.checklist)
         }));
+
+        // ── Ordenação correta do Kanban (igual ao Railway) ────────────────────
+        // Finalizados: mais recentemente movidos primeiro
+        // Ativos: prioridade → prazo mais próximo → criação mais recente
+        data.sort((a, b) => {
+            const isFinalA = a.status === 'finalizado';
+            const isFinalB = b.status === 'finalizado';
+
+            // finalizado ordena por moved_at DESC
+            if (isFinalA && isFinalB) {
+                const tA = new Date(a.moved_at || a.created_at || 0).getTime();
+                const tB = new Date(b.moved_at || b.created_at || 0).getTime();
+                return tB - tA;
+            }
+
+            // não-finalizado ordena por: prioridade → deadline → created_at DESC
+            if (!isFinalA && !isFinalB) {
+                if ((b.is_priority || 0) !== (a.is_priority || 0))
+                    return (b.is_priority || 0) - (a.is_priority || 0);
+                if (a.deadline && b.deadline) {
+                    const dA = new Date(a.deadline).getTime();
+                    const dB = new Date(b.deadline).getTime();
+                    if (dA !== dB) return dA - dB; // prazo mais próximo primeiro
+                }
+                const cA = new Date(a.created_at || 0).getTime();
+                const cB = new Date(b.created_at || 0).getTime();
+                return cB - cA; // mais recente primeiro
+            }
+
+            // finalizado vai para o final
+            return isFinalA ? 1 : -1;
+        });
+
         res.json({ data });
 
-        // Auto-archive old finalizado orders (>30) — Firestore-compatible
+        // Auto-archive: mantém só os 30 finalizados mais recentes
         db.all(`SELECT id FROM orders WHERE status = 'finalizado' ORDER BY created_at DESC`, [], (err2, allFin) => {
             if (err2 || !allFin || allFin.length <= 30) return;
             const toArchive = allFin.slice(30).map(r => r.id);
@@ -77,7 +118,6 @@ exports.getAllOrders = (req, res) => {
         });
     });
 };
-
 
 exports.updateChecklist = (req, res) => {
     const { checklist } = req.body; // Expecting JSON object
@@ -291,25 +331,42 @@ exports.createOrder = (req, res) => {
 };
 
 // Upload attachments for an order
-exports.uploadAttachments = (req, res) => {
+exports.uploadAttachments = async (req, res) => {
     if (!req.files || req.files.length === 0) {
         return res.status(400).json({ error: 'Nenhum arquivo enviado' });
     }
 
-    const fileNames = req.files.map(f => f.filename).join(',');
     const orderId = req.params.id;
 
-    db.get("SELECT attachments FROM orders WHERE id = ?", [orderId], (err, row) => {
-        if (err) return res.status(500).json({ error: err.message });
-        const existing = row && row.attachments ? row.attachments : '';
-        const updated = existing ? existing + ',' + fileNames : fileNames;
+    try {
+        let fileRefs;
+        if (USE_STORAGE) {
+            // Envia para Firebase Storage e guarda as URLs completas
+            const urls = await Promise.all(req.files.map(f =>
+                uploadFile(f.buffer, f.originalname, f.mimetype, 'attachments')
+            ));
+            fileRefs = urls.join(',');
+        } else {
+            // Local: usa filename do disco
+            fileRefs = req.files.map(f => f.filename).join(',');
+        }
 
-        db.run("UPDATE orders SET attachments = ? WHERE id = ?", [updated, orderId], function (err) {
+        db.get("SELECT attachments FROM orders WHERE id = ?", [orderId], (err, row) => {
             if (err) return res.status(500).json({ error: err.message });
-            res.json({ message: 'Arquivos anexados', files: req.files.map(f => f.filename) });
+            const existing = row && row.attachments ? row.attachments : '';
+            const updated = existing ? existing + ',' + fileRefs : fileRefs;
+
+            db.run("UPDATE orders SET attachments = ? WHERE id = ?", [updated, orderId], function (err) {
+                if (err) return res.status(500).json({ error: err.message });
+                res.json({ message: 'Arquivos anexados', files: fileRefs.split(',') });
+            });
         });
-    });
+    } catch (e) {
+        console.error('[Order] Erro ao anexar arquivos:', e.message);
+        res.status(500).json({ error: 'Erro no upload: ' + e.message });
+    }
 };
+
 
 exports.acceptOrder = (req, res) => {
     // Buscar o pedido para validar o prazo original do vendedor
@@ -432,10 +489,23 @@ exports.finalizeOrder = (req, res) => {
     });
 };
 
-exports.concludeOrder = (req, res) => {
-    // Moves to 'finalizado' with photo
-    const pickup_photo = req.file ? req.file.filename : null;
+exports.concludeOrder = async (req, res) => {
+    // Moves to 'finalizado' with optional photo
     const { carrier, dispatch_amount } = req.body;
+    let pickup_photo = null;
+
+    try {
+        if (req.file) {
+            if (USE_STORAGE) {
+                pickup_photo = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype, 'pickup_photos');
+            } else {
+                pickup_photo = req.file.filename;
+            }
+        }
+    } catch (e) {
+        console.error('[Order] Erro ao salvar foto de conclusão:', e.message);
+        // Não bloqueia a conclusão do pedido
+    }
 
     db.run("UPDATE orders SET status = 'finalizado', pickup_photo = ? WHERE id = ?", [pickup_photo, req.params.id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
@@ -455,6 +525,7 @@ exports.concludeOrder = (req, res) => {
         res.json({ message: 'Pedido concluído com sucesso' });
     });
 };
+
 
 // Simple JSON conclude (sem upload de foto) — usado pelo front-end como fallback confiável
 exports.concludeSimple = (req, res) => {
@@ -661,7 +732,7 @@ exports.getClientOrders = (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         const data = rows.map(r => ({
             ...r,
-            checklist: r.checklist ? JSON.parse(r.checklist) : { arte: false, impressao: false, corte: false, embalagem: false }
+            checklist: parseChecklist(r.checklist)
         }));
         res.json({ data });
     });
@@ -912,91 +983,100 @@ exports.getProductDemand = (req, res) => {
         'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
     ];
 
-    const buildQuery = (dateFrom, dateTo) => `
-        SELECT
-            COALESCE(oi.product_snapshot_name, p.name, 'Produto Desconhecido') as product_name,
-            SUM(oi.quantity) as total_qty,
-            COUNT(DISTINCT o.id) as total_orders
-        FROM order_items oi
-        JOIN orders o ON oi.order_id = o.id
-        LEFT JOIN products p ON oi.product_id = p.id
-        WHERE o.status IN ('em_balcao', 'finalizado', 'arquivado')
-          AND o.is_internal = 0
-          AND DATE(o.created_at) >= '${dateFrom}'
-          AND DATE(o.created_at) <= '${dateTo}'
-        GROUP BY COALESCE(oi.product_snapshot_name, p.name)
-        ORDER BY total_qty DESC
-    `;
+    db.all("SELECT id, status, is_internal, created_at FROM orders WHERE is_internal = 0", [], (err, orders) => {
+        if (err) return res.status(500).json({ error: err.message });
+        
+        db.all("SELECT order_id, product_id, quantity, product_snapshot_name FROM order_items", [], (err, orderItems) => {
+            if (err) return res.status(500).json({ error: err.message });
+            
+            db.all("SELECT id, name FROM products", [], (err, products) => {
+                if (err) return res.status(500).json({ error: err.message });
 
-    const processRows = (rows, limit = 5) => {
-        if (!rows || rows.length === 0) return { top: [], bottom: [], total_qty: 0, total_orders: 0 };
-        const totalQty = rows.reduce((s, r) => s + (r.total_qty || 0), 0);
-        const totalOrders = rows.reduce((s, r) => s + (r.total_orders || 0), 0);
-        const top = rows.slice(0, limit);
-        const bottom = rows.length > limit ? rows.slice(-limit).reverse() : [];
-        const topNames = new Set(top.map(r => r.product_name));
-        return {
-            top,
-            bottom: bottom.filter(r => !topNames.has(r.product_name)),
-            total_qty: totalQty,
-            total_orders: totalOrders
-        };
-    };
+                const productsMap = {};
+                products.forEach(p => productsMap[p.id] = p.name);
 
-    // Build all 12 monthly queries and 4 quarterly queries in parallel using callbacks chain
-    const monthQueries = [];
-    for (let m = 0; m < 12; m++) {
-        const from = new Date(year, m, 1).toISOString().slice(0, 10);
-        const to   = new Date(year, m + 1, 0, 23, 59, 59).toISOString().slice(0, 10);
-        monthQueries.push({ month: m + 1, label: MONTH_NAMES[m], from, to });
-    }
+                // Map orders by ID
+                const ordersMap = {};
+                orders.forEach(o => {
+                    if (['em_balcao', 'finalizado', 'arquivado'].includes(o.status)) {
+                        ordersMap[o.id] = new Date(o.created_at);
+                    }
+                });
 
-    const quarterDefs = [
-        { label: 'T1 — Jan / Fev / Mar', months: [1,2,3], from: `${year}-01-01`, to: `${year}-03-31` },
-        { label: 'T2 — Abr / Mai / Jun', months: [4,5,6], from: `${year}-04-01`, to: `${year}-06-30` },
-        { label: 'T3 — Jul / Ago / Set', months: [7,8,9], from: `${year}-07-01`, to: `${year}-09-30` },
-        { label: 'T4 — Out / Nov / Dez', months: [10,11,12], from: `${year}-10-01`, to: `${year}-12-31` }
-    ];
+                // Prepare buckets
+                const monthBuckets = Array.from({length: 12}, () => ({}));
+                const quarterBuckets = Array.from({length: 4}, () => ({}));
+                const annualBucket = {};
 
-    const annualFrom = `${year}-01-01`;
-    const annualTo   = `${year}-12-31`;
+                const addToBucket = (bucket, productName, qty, orderId) => {
+                    if (!bucket[productName]) bucket[productName] = { qty: 0, orderIds: new Set() };
+                    bucket[productName].qty += qty;
+                    bucket[productName].orderIds.add(orderId);
+                };
 
-    // Run all queries: 12 months + 4 quarters + 1 annual = 17 queries
-    const allQueries = [
-        ...monthQueries.map(mq => ({ key: `m_${mq.month}`, sql: buildQuery(mq.from, mq.to) })),
-        ...quarterDefs.map((qd, i) => ({ key: `q_${i}`, sql: buildQuery(qd.from, qd.to) })),
-        { key: 'annual', sql: buildQuery(annualFrom, annualTo) }
-    ];
+                orderItems.forEach(item => {
+                    const orderDate = ordersMap[item.order_id];
+                    if (!orderDate) return;
+                    if (orderDate.getFullYear() !== year) return;
 
-    const results = {};
-    let done = 0;
-    let hasError = false;
+                    const productName = item.product_snapshot_name || productsMap[item.product_id] || 'Produto Desconhecido';
+                    const qty = parseFloat(item.quantity) || 0;
+                    const month = orderDate.getMonth();
+                    const quarter = Math.floor(month / 3);
 
-    allQueries.forEach(({ key, sql }) => {
-        db.all(sql, [], (err, rows) => {
-            if (hasError) return;
-            if (err) {
-                hasError = true;
-                return res.status(500).json({ error: err.message });
-            }
-            results[key] = rows || [];
-            done++;
-            if (done === allQueries.length) {
-                // Build response
-                const months = monthQueries.map(mq => ({
-                    month: mq.month,
-                    label: mq.label,
-                    period: `${mq.from} — ${mq.to}`,
-                    ...processRows(results[`m_${mq.month}`], 5)
-                }));
+                    addToBucket(monthBuckets[month], productName, qty, item.order_id);
+                    addToBucket(quarterBuckets[quarter], productName, qty, item.order_id);
+                    addToBucket(annualBucket, productName, qty, item.order_id);
+                });
 
-                const quarters = quarterDefs.map((qd, i) => ({
-                    label: qd.label,
-                    period: `${qd.from} — ${qd.to}`,
-                    ...processRows(results[`q_${i}`], 5)
-                }));
+                const processBucket = (bucket, limit = 5) => {
+                    const rows = Object.entries(bucket).map(([name, data]) => ({
+                        product_name: name,
+                        total_qty: data.qty,
+                        total_orders: data.orderIds.size
+                    }));
+                    rows.sort((a, b) => b.total_qty - a.total_qty);
 
-                const annualData = processRows(results['annual'], 10);
+                    const totalQty = rows.reduce((s, r) => s + r.total_qty, 0);
+                    const totalOrders = rows.reduce((s, r) => s + r.total_orders, 0);
+                    const top = rows.slice(0, limit);
+                    const bottom = rows.length > limit ? rows.slice(-limit).reverse() : [];
+                    const topNames = new Set(top.map(r => r.product_name));
+
+                    return {
+                        top,
+                        bottom: bottom.filter(r => !topNames.has(r.product_name)),
+                        total_qty: totalQty,
+                        total_orders: totalOrders
+                    };
+                };
+
+                const months = monthBuckets.map((bucket, i) => {
+                    const mFrom = new Date(year, i, 1).toISOString().slice(0, 10);
+                    const mTo = new Date(year, i + 1, 0).toISOString().slice(0, 10);
+                    return {
+                        month: i + 1,
+                        label: MONTH_NAMES[i],
+                        period: `${mFrom} — ${mTo}`,
+                        ...processBucket(bucket, 5)
+                    };
+                });
+
+                const quarters = quarterBuckets.map((bucket, i) => {
+                    const qFrom = new Date(year, i * 3, 1).toISOString().slice(0, 10);
+                    const qTo = new Date(year, (i * 3) + 3, 0).toISOString().slice(0, 10);
+                    const labels = [
+                        'T1 — Jan / Fev / Mar',
+                        'T2 — Abr / Mai / Jun',
+                        'T3 — Jul / Ago / Set',
+                        'T4 — Out / Nov / Dez'
+                    ];
+                    return {
+                        label: labels[i],
+                        period: `${qFrom} — ${qTo}`,
+                        ...processBucket(bucket, 5)
+                    };
+                });
 
                 res.json({
                     year,
@@ -1004,11 +1084,11 @@ exports.getProductDemand = (req, res) => {
                     quarters,
                     annual: {
                         label: String(year),
-                        period: `${annualFrom} — ${annualTo}`,
-                        ...annualData
+                        period: `${year}-01-01 — ${year}-12-31`,
+                        ...processBucket(annualBucket, 10)
                     }
                 });
-            }
+            });
         });
     });
 };

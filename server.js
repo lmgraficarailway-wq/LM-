@@ -48,6 +48,12 @@ app.use((req, res, next) => {
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
     }
+    // Cache curto (10s) para respostas de leitura da API — acelera reloads
+    if (req.method === 'GET' && req.path.startsWith('/api/') && !req.path.includes('/auth')) {
+        res.setHeader('Cache-Control', 'public, max-age=10, stale-while-revalidate=30');
+    }
+    // Keep-Alive para reutilizar conexões e reduzir latência
+    res.setHeader('Connection', 'keep-alive');
     next();
 });
 
@@ -91,8 +97,106 @@ const authRoutes = require('./server/routes/auth.routes');
 app.use('/api', apiRoutes);
 app.use('/api/auth', authRoutes);
 
-// Rota de saúde para o monitor de reinício
-app.get('/api/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime() }));
+// ── Auto-Sync Railway → Firestore ─────────────────────────────────────────────
+let _syncDb = null;
+const { startAutoSync, syncRailwayToFirestore } = require('./server/utils/railwaySync');
+
+// ── SSE (Server-Sent Events) — atualizações em tempo real para o Kanban ────────
+const sseClients = new Set();
+
+function broadcastOrdersUpdate(reason) {
+    if (sseClients.size === 0) return;
+    const msg = `data: ${JSON.stringify({ type: 'orders_updated', ts: Date.now(), reason: reason || 'change' })}\n\n`;
+    for (const client of sseClients) {
+        try { client.write(msg); } catch(e) { sseClients.delete(client); }
+    }
+    if (sseClients.size > 0) console.log(`[SSE] Broadcast para ${sseClients.size} cliente(s): ${reason}`);
+}
+
+// Escuta o Firestore em tempo real e notifica clientes SSE
+function startOrdersListener(firestoreDb) {
+    firestoreDb.collection('orders').onSnapshot(
+        { includeMetadataChanges: false },
+        (snapshot) => {
+            if (snapshot.docChanges().length === 0) return;
+            broadcastOrdersUpdate('firestore_change');
+        },
+        (err) => console.error('[SSE] Listener error:', err.message)
+    );
+    console.log('[SSE] Escutando orders em tempo real via Firestore onSnapshot.');
+}
+
+// Inicializa o sync + listener SSE assim que o Firebase estiver pronto
+function initSync() {
+    try {
+        const admin = require('firebase-admin');
+        if (admin.apps.length > 0) {
+            _syncDb = admin.firestore();
+            startAutoSync(_syncDb);
+            startOrdersListener(_syncDb);
+            console.log('[Sync] Auto-sync e listener SSE iniciados com sucesso.');
+        } else {
+            console.warn('[Sync] Firebase ainda não pronto, tentando em 5s...');
+            setTimeout(initSync, 5000);
+        }
+    } catch(e) {
+        console.warn('[Sync] Erro ao iniciar sync:', e.message, '— tentando em 10s...');
+        setTimeout(initSync, 10000);
+    }
+}
+setTimeout(initSync, 2000);
+
+// ── Rota SSE — clientes se conectam aqui para receber atualizações em tempo real ──
+app.get('/api/orders/stream', (req, res) => {
+    res.set({
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'X-Accel-Buffering': 'no'
+    });
+    res.flushHeaders();
+    res.write(`data: ${JSON.stringify({ type: 'connected', ts: Date.now() })}\n\n`);
+
+    sseClients.add(res);
+    console.log(`[SSE] Cliente conectado. Total: ${sseClients.size}`);
+
+    // Heartbeat a cada 25s para manter a conexão viva
+    const heartbeat = setInterval(() => {
+        try { res.write(': ping\n\n'); } catch(e) { sseClients.delete(res); clearInterval(heartbeat); }
+    }, 25000);
+
+    req.on('close', () => {
+        sseClients.delete(res);
+        clearInterval(heartbeat);
+        console.log(`[SSE] Cliente desconectado. Total: ${sseClients.size}`);
+    });
+});
+
+// ── Rota de sync forçado ───────────────────────────────────────────────────────
+app.post('/api/force-sync', async (req, res) => {
+    try {
+        if (!_syncDb) {
+            const admin = require('firebase-admin');
+            _syncDb = admin.apps.length ? admin.firestore() : null;
+        }
+        if (!_syncDb) return res.json({ ok: false, error: 'Firebase não inicializado' });
+        await syncRailwayToFirestore(_syncDb);
+        broadcastOrdersUpdate('force_sync');
+        res.json({ ok: true, message: 'Sync concluído com sucesso', ts: new Date().toISOString() });
+    } catch(e) {
+        res.status(500).json({ ok: false, error: e.message });
+    }
+});
+
+// ── Keep-alive: impede o Cloud Run de escalar para zero ───────────────────────
+setInterval(() => {
+    const http = require('http');
+    const req = http.get(`http://localhost:${PORT}/api/health`, (r) => r.resume());
+    req.on('error', () => {});
+}, 4 * 60 * 1000);
+
+// Rota de saúde
+app.get('/api/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime(), sync: !!_syncDb, sse_clients: sseClients.size }));
 
 // Rota de diagnóstico do banco (temporária)
 app.get('/api/dbtest', async (req, res) => {

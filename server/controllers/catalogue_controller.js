@@ -1,16 +1,82 @@
+
+// Helper para parsear image_url (SQLite=JSON string, Firestore=array)
+function parseImageUrl(v) {
+    if (!v) return [];
+    if (Array.isArray(v)) return v;
+    if (typeof v === 'string') {
+        // Se for uma string simples (URL) e não um JSON array
+        if (v.startsWith('http') || v.startsWith('/uploads/')) return [v];
+        try { 
+            const parsed = JSON.parse(v); 
+            return Array.isArray(parsed) ? parsed : [parsed];
+        } catch(e) { 
+            return [v]; 
+        }
+    }
+    return [v];
+}
+
 const db = require('../database/db');
 const fs = require('fs');
 const path = require('path');
+const { uploadFile, deleteFile, isStorageUrl } = require('../utils/firebaseStorage');
+
+// ── Helper: determina se deve usar Storage (produção) ou disco (local) ────────
+const USE_STORAGE = process.env.NODE_ENV === 'production' || process.env.USE_FIREBASE_STORAGE === 'true';
+
+/**
+ * Processa arquivos recebidos pelo multer:
+ * - Em produção (Cloud Run): envia para Firebase Storage e retorna URLs públicas
+ * - Em desenvolvimento (local): salva em public/uploads/ e retorna paths locais
+ */
+async function processUploadedFiles(files) {
+    if (!files || files.length === 0) return [];
+
+    if (USE_STORAGE) {
+        // Upload para Firebase Storage
+        const urls = await Promise.all(files.map(file => {
+            const buffer = file.buffer; // multer memoryStorage
+            return uploadFile(buffer, file.originalname, file.mimetype, 'uploads');
+        }));
+        return urls;
+    } else {
+        // Modo local: arquivo já foi salvo em disco pelo multer diskStorage
+        return files.map(file => `/uploads/${file.filename}`);
+    }
+}
+
+/**
+ * Deleta imagens anteriores (Storage ou disco local)
+ */
+async function deleteOldImages(imageUrls) {
+    for (const imgUrl of imageUrls) {
+        if (!imgUrl) continue;
+        if (isStorageUrl(imgUrl)) {
+            await deleteFile(imgUrl);
+        } else {
+            // Arquivo local
+            const filename = path.basename(imgUrl.split('?')[0]);
+            const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
+            fs.unlink(filePath, (err) => {
+                if (err && err.code !== 'ENOENT') {
+                    console.error('Erro ao excluir imagem local:', err.message);
+                }
+            });
+        }
+    }
+}
+
+// ── Controladores ─────────────────────────────────────────────────────────────
 
 exports.getAllItems = (req, res) => {
     db.all(`SELECT * FROM catalogue_items ORDER BY created_at DESC`, [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
-        
+
         const mappedRows = rows.map(row => {
             let images = [];
             if (row.image_url) {
                 try {
-                    images = JSON.parse(row.image_url);
+                    images = parseImageUrl(row.image_url)
                     if (!Array.isArray(images)) images = [row.image_url];
                 } catch(e) {
                     images = [row.image_url];
@@ -27,7 +93,7 @@ exports.getAllItems = (req, res) => {
     });
 };
 
-exports.createItem = (req, res) => {
+exports.createItem = async (req, res) => {
     const { title, description } = req.body;
     const files = req.files;
 
@@ -35,59 +101,58 @@ exports.createItem = (req, res) => {
         return res.status(400).json({ error: 'Ao menos uma imagem é obrigatória.' });
     }
 
-    const image_urls = files.map(file => `/uploads/${file.filename}`);
-    const image_url_json = JSON.stringify(image_urls);
+    try {
+        const image_urls = await processUploadedFiles(files);
+        const image_url_json = JSON.stringify(image_urls);
 
-    db.run(`INSERT INTO catalogue_items (title, description, image_url) VALUES (?, ?, ?)`, 
-    [title || '', description || '', image_url_json], function(err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.status(201).json({ id: this.lastID, title, description, image_url: image_url_json, images: image_urls });
-    });
+        db.run(`INSERT INTO catalogue_items (title, description, image_url) VALUES (?, ?, ?)`,
+            [title || '', description || '', image_url_json], function(err) {
+                if (err) return res.status(500).json({ error: err.message });
+                res.status(201).json({ id: this.lastID, title, description, image_url: image_url_json, images: image_urls });
+            });
+    } catch (e) {
+        console.error('[Catalogue] Erro no upload:', e.message);
+        res.status(500).json({ error: 'Erro ao fazer upload das imagens: ' + e.message });
+    }
 };
 
-exports.updateItem = (req, res) => {
+exports.updateItem = async (req, res) => {
     const { id } = req.params;
     const { title, description } = req.body;
     const files = req.files;
 
     if (files && files.length > 0) {
-        const image_urls = files.map(file => `/uploads/${file.filename}`);
-        const image_url_json = JSON.stringify(image_urls);
+        try {
+            const image_urls = await processUploadedFiles(files);
+            const image_url_json = JSON.stringify(image_urls);
 
-        // Fetch old images to delete them
-        db.get(`SELECT image_url FROM catalogue_items WHERE id = ?`, [id], (err, row) => {
-            if (row && row.image_url) {
-                let images = [];
-                try {
-                    images = JSON.parse(row.image_url);
-                    if (!Array.isArray(images)) images = [row.image_url];
-                } catch(e) {
-                    images = [row.image_url];
-                }
-
-                images.forEach(imgUrl => {
-                    if (imgUrl) {
-                        const filename = path.basename(imgUrl);
-                        const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
-                        fs.unlink(filePath, (unlinkErr) => {
-                            if (unlinkErr && unlinkErr.code !== 'ENOENT') {
-                                console.error('Erro ao excluir imagem física ao editar catálogo:', unlinkErr);
-                            }
-                        });
+            // Buscar imagens antigas para deletar
+            db.get(`SELECT image_url FROM catalogue_items WHERE id = ?`, [id], async (err, row) => {
+                if (row && row.image_url) {
+                    let oldImages = [];
+                    try {
+                        oldImages = parseImageUrl(row.image_url)
+                        if (!Array.isArray(oldImages)) oldImages = [row.image_url];
+                    } catch(e) {
+                        oldImages = [row.image_url];
                     }
-                });
-            }
-
-            db.run(`UPDATE catalogue_items SET title = ?, description = ?, image_url = ? WHERE id = ?`,
-                [title, description, image_url_json, id],
-                function(updateErr) {
-                    if (updateErr) return res.status(500).json({ error: updateErr.message });
-                    res.json({ success: true, image_url: image_url_json, images: image_urls });
+                    await deleteOldImages(oldImages);
                 }
-            );
-        });
+
+                db.run(`UPDATE catalogue_items SET title = ?, description = ?, image_url = ? WHERE id = ?`,
+                    [title, description, image_url_json, id],
+                    function(updateErr) {
+                        if (updateErr) return res.status(500).json({ error: updateErr.message });
+                        res.json({ success: true, image_url: image_url_json, images: image_urls });
+                    }
+                );
+            });
+        } catch (e) {
+            console.error('[Catalogue] Erro ao atualizar imagens:', e.message);
+            res.status(500).json({ error: 'Erro ao fazer upload das imagens: ' + e.message });
+        }
     } else {
-        // update only texts
+        // Atualizar apenas texto
         db.run(`UPDATE catalogue_items SET title = ?, description = ? WHERE id = ?`,
             [title, description, id],
             function(err) {
@@ -99,40 +164,26 @@ exports.updateItem = (req, res) => {
     }
 };
 
-exports.deleteItem = (req, res) => {
+exports.deleteItem = async (req, res) => {
     const { id } = req.params;
-    
-    // First, fetch the item to find the image URL
-    db.get(`SELECT image_url FROM catalogue_items WHERE id = ?`, [id], (err, row) => {
+
+    db.get(`SELECT image_url FROM catalogue_items WHERE id = ?`, [id], async (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!row) return res.status(404).json({ error: 'Item não encontrado.' });
 
-        const image_url = row.image_url;
-
-        db.run(`DELETE FROM catalogue_items WHERE id = ?`, [id], function(err) {
+        db.run(`DELETE FROM catalogue_items WHERE id = ?`, [id], async function(err) {
             if (err) return res.status(500).json({ error: err.message });
 
-            // delete the physical files securely
-            if (image_url) {
+            // Deletar arquivos (Storage ou local)
+            if (row.image_url) {
                 let images = [];
                 try {
-                    images = JSON.parse(image_url);
-                    if (!Array.isArray(images)) images = [image_url];
+                    images = parseImageUrl(row.image_url)
+                    if (!Array.isArray(images)) images = [row.image_url];
                 } catch(e) {
-                    images = [image_url];
+                    images = [row.image_url];
                 }
-
-                images.forEach(imgUrl => {
-                    if (imgUrl) {
-                        const filename = path.basename(imgUrl);
-                        const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
-                        fs.unlink(filePath, (unlinkErr) => {
-                            if (unlinkErr && unlinkErr.code !== 'ENOENT') {
-                                console.error('Erro ao excluir imagem física do catálogo:', unlinkErr);
-                            }
-                        });
-                    }
-                });
+                await deleteOldImages(images);
             }
 
             res.json({ success: true });

@@ -35,18 +35,35 @@ exports.stream = (req, res) => {
 };
 
 exports.getHistory = (req, res) => {
-    db.all(`SELECT t.*, u.avatar as author_avatar FROM team_chat t LEFT JOIN users u ON t.user_id = u.id ORDER BY t.created_at ASC LIMIT 100`, (err, rows) => {
+    // Busca as 100 mais RECENTES (ORDER BY DESC + LIMIT) e depois inverte para exibir na ordem certa
+    db.all(`SELECT t.*, u.avatar as author_avatar FROM team_chat t LEFT JOIN users u ON t.user_id = u.id ORDER BY t.id DESC LIMIT 100`, (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
-        res.json({ messages: rows || [] });
+        // Inverte para ordem cronológica (mais antiga primeiro, mais recente no final)
+        const messages = (rows || []).reverse().map(m => ({
+            ...m,
+            // Corrige avatares que apontam para /uploads/ local → URL pública do Storage
+            author_avatar: m.author_avatar && m.author_avatar.startsWith('/uploads/')
+                ? `https://lm-passo-production.up.railway.app${m.author_avatar}`
+                : m.author_avatar
+        }));
+        res.json({ messages });
     });
 };
 
-exports.uploadImage = (req, res) => {
+exports.uploadImage = async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'Nenhuma imagem enviada.' });
     }
-    const imageUrl = `/uploads/${req.file.filename}`;
-    res.json({ url: imageUrl });
+    try {
+        const { uploadFile } = require('../utils/firebaseStorage');
+        const publicUrl = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype, 'chat');
+        res.json({ url: publicUrl });
+    } catch (e) {
+        console.error('[Chat Upload] Erro:', e.message);
+        // Fallback: URL relativa (funciona apenas no Railway)
+        const imageUrl = `/uploads/${req.file.filename || req.file.originalname}`;
+        res.json({ url: imageUrl });
+    }
 };
 
 exports.sendMessage = (req, res) => {

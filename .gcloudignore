@@ -1,0 +1,17 @@
+.gcloudignore
+.git
+node_modules/
+npm-debug.log
+.env
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+database_backup.sqlite
+public/uploads/
+*.exe
+*.zip
+*.pdf
+error_log.txt
+auto_deploy.log
+arte-generator/
+kanban_backup.js

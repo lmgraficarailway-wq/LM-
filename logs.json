@@ -1,0 +1,1315 @@
+[
+  {
+    "insertId": "6a0f1e220009bfc98a34955d",
+    "labels": {
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:50.836968680Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"lm-passo-api-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2026-05-21T15:00:50.638921Z"
+  },
+  {
+    "insertId": "6a0f1e220007c1ece9222a41",
+    "labels": {
+      "container_name": "lm-passo-api-1",
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:50.836968680Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(1).",
+    "timestamp": "2026-05-21T15:00:50.508388773Z"
+  },
+  {
+    "insertId": "6a0f1e2200002ea8b4fa5976",
+    "labels": {
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:50.315314972Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server.js",
+    "timestamp": "2026-05-21T15:00:50.011944Z"
+  },
+  {
+    "insertId": "6a0f1e2200002ea530078e22",
+    "labels": {
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:50.315314972Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/db.js",
+    "timestamp": "2026-05-21T15:00:50.011941Z"
+  },
+  {
+    "insertId": "6a0f1e2200002ea218a395ef",
+    "labels": {
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:50.315314972Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/firestore.js",
+    "timestamp": "2026-05-21T15:00:50.011938Z"
+  },
+  {
+    "insertId": "6a0f1e2200002e9eda6ab5ab",
+    "labels": {
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:50.315314972Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "Require stack:",
+    "timestamp": "2026-05-21T15:00:50.011934Z"
+  },
+  {
+    "insertId": "6a0f1e2200002e916acbb541",
+    "labels": {
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:50.315314972Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "? ERRO ao inicializar Firebase: Cannot find module '/app/firebase-credentials.json'",
+    "timestamp": "2026-05-21T15:00:50.011921Z"
+  },
+  {
+    "insertId": "6a0f1e21000ac1af311ff540",
+    "labels": {
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2026-05-21T15:00:49.858593196Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: ? add secrets lifecycle management: https://dotenvx.com/ops",
+    "timestamp": "2026-05-21T15:00:49.704943Z"
+  },
+  {
+    "insertId": "6a0f1e210006130c9ddfaab0",
+    "labels": {
+      "instanceId": "0007b734d90f8b7a2a2d657ec86ece7fd82adca9ff82f1fc0da683a6bca1398f853d3364676695388174cb33da48528da4a4779339bd786819b512e2439fb3167c38897335d9f9e8d4a323d7852c57",
+      "scaling_reason": "MANUAL_OR_CUSTOMER_MIN_INSTANCE"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:49.503478231Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "textPayload": "Starting new instance. Reason: MANUAL_OR_CUSTOMER_MIN_INSTANCE - Instance started because of customer-configured min-instances or manual scaling.",
+    "timestamp": "2026-05-21T15:00:49.398092Z"
+  },
+  {
+    "insertId": "c8ahf9dyo34",
+    "logName": "projects/lm-passo/logs/cloudaudit.googleapis.com%2Fsystem_event",
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "methodName": "/Services.CreateService",
+      "resourceName": "namespaces/lm-passo/services/lm-passo-api",
+      "response": {
+        "@type": "type.googleapis.com/google.cloud.run.v1.Service",
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Service",
+        "metadata": {
+          "annotations": {
+            "run.googleapis.com/build-enable-automatic-updates": "false",
+            "run.googleapis.com/build-id": "e0b26209-72a8-458f-9700-665e0aea0ade",
+            "run.googleapis.com/build-image-uri": "southamerica-east1-docker.pkg.dev/lm-passo/cloud-run-source-deploy/lm-passo-api",
+            "run.googleapis.com/build-name": "projects/61970172348/locations/southamerica-east1/builds/e0b26209-72a8-458f-9700-665e0aea0ade",
+            "run.googleapis.com/build-source-location": "gs://run-sources-lm-passo-southamerica-east1/services/lm-passo-api/1779375535.09604-1e0c3e95275944a1bda04d714261986e.zip#1779375538794377",
+            "run.googleapis.com/client-name": "gcloud",
+            "run.googleapis.com/client-version": "569.0.0",
+            "run.googleapis.com/ingress": "all",
+            "run.googleapis.com/ingress-status": "all",
+            "run.googleapis.com/maxScale": "20",
+            "run.googleapis.com/operation-id": "f28d4f57-51e3-4a76-8479-522ca4e3ca9d",
+            "run.googleapis.com/urls": "[\"https://lm-passo-api-61970172348.southamerica-east1.run.app\"]",
+            "serving.knative.dev/creator": "lmingressosorganizacional@gmail.com",
+            "serving.knative.dev/lastModifier": "lmingressosorganizacional@gmail.com"
+          },
+          "creationTimestamp": "2026-05-21T15:00:26.297169Z",
+          "generation": 1,
+          "labels": {
+            "cloud.googleapis.com/location": "southamerica-east1",
+            "run.googleapis.com/satisfiesPzs": "true"
+          },
+          "name": "lm-passo-api",
+          "namespace": "61970172348",
+          "resourceVersion": "AAZSVS1xtdc",
+          "selfLink": "/apis/serving.knative.dev/v1/namespaces/61970172348/services/lm-passo-api",
+          "uid": "a7492bd7-49b4-4343-8a22-f8e9907c455e"
+        },
+        "spec": {
+          "template": {
+            "metadata": {
+              "annotations": {
+                "autoscaling.knative.dev/maxScale": "5",
+                "autoscaling.knative.dev/minScale": "1",
+                "run.googleapis.com/client-name": "gcloud",
+                "run.googleapis.com/client-version": "569.0.0",
+                "run.googleapis.com/startup-cpu-boost": "true"
+              },
+              "labels": {
+                "client.knative.dev/nonce": "xzmzbjhfms",
+                "run.googleapis.com/startupProbeType": "Default"
+              }
+            },
+            "spec": {
+              "containerConcurrency": 80,
+              "containers": [
+                {
+                  "env": [
+                    {
+                      "name": "NODE_ENV",
+                      "value": "production"
+                    },
+                    {
+                      "name": "USE_FIREBASE_STORAGE",
+                      "value": "true"
+                    },
+                    {
+                      "name": "GEMINI_API_KEY",
+                      "value": "AIzaSyBb2G6FBdckww5a2hVWa-E6uOlaz3_jYBc"
+                    }
+                  ],
+                  "image": "southamerica-east1-docker.pkg.dev/lm-passo/cloud-run-source-deploy/lm-passo-api@sha256:1dfc3e39a9aabb8199f499be19f0eb8ab0866633a24efe9798c9d64d9e11d3b1",
+                  "ports": [
+                    {
+                      "containerPort": 8080,
+                      "name": "http1"
+                    }
+                  ],
+                  "resources": {
+                    "limits": {
+                      "cpu": "1",
+                      "memory": "512Mi"
+                    }
+                  },
+                  "startupProbe": {
+                    "failureThreshold": 1,
+                    "periodSeconds": 240,
+                    "tcpSocket": {
+                      "port": 8080
+                    },
+                    "timeoutSeconds": 240
+                  }
+                }
+              ],
+              "serviceAccountName": "61970172348-compute@developer.gserviceaccount.com",
+              "timeoutSeconds": 60
+            }
+          },
+          "traffic": [
+            {
+              "latestRevision": true,
+              "percent": 100
+            }
+          ]
+        },
+        "status": {
+          "conditions": [
+            {
+              "lastTransitionTime": "2026-05-21T15:00:48.349400Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=lm-passo&resource=cloud_run_revision/service_name/lm-passo-api/revision_name/lm-passo-api-00001-vtt&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22lm-passo-api%22%0Aresource.labels.revision_name%3D%22lm-passo-api-00001-vtt%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastTransitionTime": "2026-05-21T15:00:48.349400Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=lm-passo&resource=cloud_run_revision/service_name/lm-passo-api/revision_name/lm-passo-api-00001-vtt&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22lm-passo-api%22%0Aresource.labels.revision_name%3D%22lm-passo-api-00001-vtt%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "ConfigurationsReady"
+            },
+            {
+              "lastTransitionTime": "2026-05-21T15:00:37.668834Z",
+              "message": "Provisioning revision instances to receive traffic.",
+              "status": "Unknown",
+              "type": "RoutesReady"
+            }
+          ],
+          "latestCreatedRevisionName": "lm-passo-api-00001-vtt",
+          "observedGeneration": 1
+        }
+      },
+      "serviceName": "run.googleapis.com",
+      "status": {
+        "code": 9,
+        "message": "Ready condition status changed to False for Service lm-passo-api with message: The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=lm-passo&resource=cloud_run_revision/service_name/lm-passo-api/revision_name/lm-passo-api-00001-vtt&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22lm-passo-api%22%0Aresource.labels.revision_name%3D%22lm-passo-api-00001-vtt%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start"
+      }
+    },
+    "receiveTimestamp": "2026-05-21T15:00:49.359947292Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "timestamp": "2026-05-21T15:00:48.400786Z"
+  },
+  {
+    "insertId": "tey4widpn26",
+    "logName": "projects/lm-passo/logs/cloudaudit.googleapis.com%2Fsystem_event",
+    "protoPayload": {
+      "@type": "type.googleapis.com/google.cloud.audit.AuditLog",
+      "methodName": "/Services.CreateService",
+      "resourceName": "namespaces/lm-passo/revisions/lm-passo-api-00001-vtt",
+      "response": {
+        "@type": "type.googleapis.com/google.cloud.run.v1.Revision",
+        "apiVersion": "serving.knative.dev/v1",
+        "kind": "Revision",
+        "metadata": {
+          "annotations": {
+            "autoscaling.knative.dev/maxScale": "5",
+            "autoscaling.knative.dev/minScale": "1",
+            "run.googleapis.com/build-source-location": "{\"lm-passo-api-1\":\"gs://run-sources-lm-passo-southamerica-east1/services/lm-passo-api/1779375535.09604-1e0c3e95275944a1bda04d714261986e.zip#1779375538794377\"}",
+            "run.googleapis.com/client-name": "gcloud",
+            "run.googleapis.com/client-version": "569.0.0",
+            "run.googleapis.com/operation-id": "f28d4f57-51e3-4a76-8479-522ca4e3ca9d",
+            "run.googleapis.com/startup-cpu-boost": "true",
+            "serving.knative.dev/creator": "lmingressosorganizacional@gmail.com"
+          },
+          "creationTimestamp": "2026-05-21T15:00:26.507246Z",
+          "generation": 1,
+          "labels": {
+            "client.knative.dev/nonce": "xzmzbjhfms",
+            "cloud.googleapis.com/location": "southamerica-east1",
+            "run.googleapis.com/satisfiesPzs": "true",
+            "run.googleapis.com/startupProbeType": "Default",
+            "serving.knative.dev/configuration": "lm-passo-api",
+            "serving.knative.dev/configurationGeneration": "1",
+            "serving.knative.dev/route": "lm-passo-api",
+            "serving.knative.dev/service": "lm-passo-api",
+            "serving.knative.dev/serviceUid": "a7492bd7-49b4-4343-8a22-f8e9907c455e"
+          },
+          "name": "lm-passo-api-00001-vtt",
+          "namespace": "61970172348",
+          "ownerReferences": [
+            {
+              "apiVersion": "serving.knative.dev/v1",
+              "blockOwnerDeletion": true,
+              "controller": true,
+              "kind": "Configuration",
+              "name": "lm-passo-api",
+              "uid": "2366373e-fd20-4f0c-9782-0538db6b0295"
+            }
+          ],
+          "resourceVersion": "AAZSVS1wlew",
+          "selfLink": "/apis/serving.knative.dev/v1/namespaces/61970172348/revisions/lm-passo-api-00001-vtt",
+          "uid": "82150f84-bf2f-49aa-ae0d-f1f83c13fa7c"
+        },
+        "spec": {
+          "containerConcurrency": 80,
+          "containers": [
+            {
+              "env": [
+                {
+                  "name": "NODE_ENV",
+                  "value": "production"
+                },
+                {
+                  "name": "USE_FIREBASE_STORAGE",
+                  "value": "true"
+                },
+                {
+                  "name": "GEMINI_API_KEY",
+                  "value": "AIzaSyBb2G6FBdckww5a2hVWa-E6uOlaz3_jYBc"
+                }
+              ],
+              "image": "southamerica-east1-docker.pkg.dev/lm-passo/cloud-run-source-deploy/lm-passo-api@sha256:1dfc3e39a9aabb8199f499be19f0eb8ab0866633a24efe9798c9d64d9e11d3b1",
+              "name": "lm-passo-api-1",
+              "ports": [
+                {
+                  "containerPort": 8080,
+                  "name": "http1"
+                }
+              ],
+              "resources": {
+                "limits": {
+                  "cpu": "1",
+                  "memory": "512Mi"
+                }
+              },
+              "startupProbe": {
+                "failureThreshold": 1,
+                "periodSeconds": 240,
+                "tcpSocket": {
+                  "port": 8080
+                },
+                "timeoutSeconds": 240
+              }
+            }
+          ],
+          "serviceAccountName": "61970172348-compute@developer.gserviceaccount.com",
+          "timeoutSeconds": 60
+        },
+        "status": {
+          "conditions": [
+            {
+              "lastTransitionTime": "2026-05-21T15:00:48.314860Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=lm-passo&resource=cloud_run_revision/service_name/lm-passo-api/revision_name/lm-passo-api-00001-vtt&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22lm-passo-api%22%0Aresource.labels.revision_name%3D%22lm-passo-api-00001-vtt%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "Ready"
+            },
+            {
+              "lastTransitionTime": "2026-05-21T15:00:48.314860Z",
+              "message": "The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=lm-passo&resource=cloud_run_revision/service_name/lm-passo-api/revision_name/lm-passo-api-00001-vtt&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22lm-passo-api%22%0Aresource.labels.revision_name%3D%22lm-passo-api-00001-vtt%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start",
+              "reason": "HealthCheckContainerError",
+              "status": "False",
+              "type": "ContainerHealthy"
+            },
+            {
+              "lastTransitionTime": "2026-05-21T15:00:37.573309Z",
+              "message": "Container image import completed in 10.48s.",
+              "status": "True",
+              "type": "ContainerReady"
+            },
+            {
+              "lastTransitionTime": "2026-05-21T15:00:39.121139Z",
+              "reason": "MinInstancesWarming",
+              "status": "Unknown",
+              "type": "MinInstancesProvisioned"
+            },
+            {
+              "lastTransitionTime": "2026-05-21T15:00:39.121139Z",
+              "message": "Provisioning imported containers completed in 1.55s. Checking container health. This will wait for up to 4m for the configured startup probe, including an initial delay of 0s.",
+              "status": "True",
+              "type": "ResourcesAvailable"
+            },
+            {
+              "lastTransitionTime": "2026-05-21T15:00:39.121139Z",
+              "message": "System will retry after 00:00 from lastTransitionTime for attempt 0.",
+              "reason": "ImmediateRetry",
+              "severity": "Info",
+              "status": "True",
+              "type": "Retry"
+            }
+          ],
+          "containerStatuses": [
+            {
+              "imageDigest": "southamerica-east1-docker.pkg.dev/lm-passo/cloud-run-source-deploy/lm-passo-api@sha256:1dfc3e39a9aabb8199f499be19f0eb8ab0866633a24efe9798c9d64d9e11d3b1",
+              "name": "lm-passo-api-1"
+            }
+          ],
+          "desiredReplicas": 1,
+          "imageDigest": "southamerica-east1-docker.pkg.dev/lm-passo/cloud-run-source-deploy/lm-passo-api@sha256:1dfc3e39a9aabb8199f499be19f0eb8ab0866633a24efe9798c9d64d9e11d3b1",
+          "logUrl": "https://console.cloud.google.com/logs/viewer?project=lm-passo&resource=cloud_run_revision/service_name/lm-passo-api/revision_name/lm-passo-api-00001-vtt&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22lm-passo-api%22%0Aresource.labels.revision_name%3D%22lm-passo-api-00001-vtt%22",
+          "observedGeneration": 1
+        }
+      },
+      "serviceName": "run.googleapis.com",
+      "status": {
+        "code": 9,
+        "message": "Ready condition status changed to False for Revision lm-passo-api-00001-vtt with message: The user-provided container failed to start and listen on the port defined provided by the PORT=8080 environment variable within the allocated timeout. This can happen when the container port is misconfigured or if the timeout is too short. The health check timeout can be extended. Logs for this revision might contain more information.\n\nLogs URL: https://console.cloud.google.com/logs/viewer?project=lm-passo&resource=cloud_run_revision/service_name/lm-passo-api/revision_name/lm-passo-api-00001-vtt&advancedFilter=resource.type%3D%22cloud_run_revision%22%0Aresource.labels.service_name%3D%22lm-passo-api%22%0Aresource.labels.revision_name%3D%22lm-passo-api-00001-vtt%22 \nFor more troubleshooting guidance, see https://cloud.google.com/run/docs/troubleshooting#container-failed-to-start"
+      }
+    },
+    "receiveTimestamp": "2026-05-21T15:00:48.880501059Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "timestamp": "2026-05-21T15:00:48.323784Z"
+  },
+  {
+    "insertId": "6a0f1e1f00094b497ac86219",
+    "labels": {
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:47.840126354Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"lm-passo-api-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2026-05-21T15:00:47.609097Z"
+  },
+  {
+    "insertId": "6a0f1e1f000813cea81e2a50",
+    "labels": {
+      "container_name": "lm-passo-api-1",
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:47.840126354Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(1).",
+    "timestamp": "2026-05-21T15:00:47.529350354Z"
+  },
+  {
+    "insertId": "6a0f1e1f00007409b4387114",
+    "labels": {
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:47.316407967Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server.js",
+    "timestamp": "2026-05-21T15:00:47.029705Z"
+  },
+  {
+    "insertId": "6a0f1e1f000074064e5724fc",
+    "labels": {
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:47.316407967Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/db.js",
+    "timestamp": "2026-05-21T15:00:47.029702Z"
+  },
+  {
+    "insertId": "6a0f1e1f000074026d120a68",
+    "labels": {
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:47.316407967Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/firestore.js",
+    "timestamp": "2026-05-21T15:00:47.029698Z"
+  },
+  {
+    "insertId": "6a0f1e1f000073fef8e09e4b",
+    "labels": {
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:47.316407967Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "Require stack:",
+    "timestamp": "2026-05-21T15:00:47.029694Z"
+  },
+  {
+    "insertId": "6a0f1e1f000073f191fcd938",
+    "labels": {
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:47.316407967Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "? ERRO ao inicializar Firebase: Cannot find module '/app/firebase-credentials.json'",
+    "timestamp": "2026-05-21T15:00:47.029681Z"
+  },
+  {
+    "insertId": "6a0f1e1e000af961b5537def",
+    "labels": {
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2026-05-21T15:00:46.864378087Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: ??  run anywhere with `dotenvx run -- yourcommand`",
+    "timestamp": "2026-05-21T15:00:46.719201Z"
+  },
+  {
+    "insertId": "6a0f1e1e00061384b036b3ef",
+    "labels": {
+      "instanceId": "0007b734d9ab0d3c289a864c36d23400e8125a5308fc7b7e9d7bc389677b0c76de6a0c666e5bb8b0deba557ae5fdc8af953ed4d39511b2e6fa2d743b4cad5a5a65e1504aa46466d8ec38ee9da1edfb",
+      "scaling_reason": "MANUAL_OR_CUSTOMER_MIN_INSTANCE"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:46.510568846Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "textPayload": "Starting new instance. Reason: MANUAL_OR_CUSTOMER_MIN_INSTANCE - Instance started because of customer-configured min-instances or manual scaling.",
+    "timestamp": "2026-05-21T15:00:46.398212Z"
+  },
+  {
+    "insertId": "6a0f1e1d000b4bdebd9dc8ec",
+    "labels": {
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:45.843359170Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"lm-passo-api-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2026-05-21T15:00:45.740318Z"
+  },
+  {
+    "insertId": "6a0f1e1d0008515580a4dac9",
+    "labels": {
+      "container_name": "lm-passo-api-1",
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:45.843359170Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(1).",
+    "timestamp": "2026-05-21T15:00:45.545100543Z"
+  },
+  {
+    "insertId": "6a0f1e1d000298d2dd3f5d5c",
+    "labels": {
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:45.320097767Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server.js",
+    "timestamp": "2026-05-21T15:00:45.170194Z"
+  },
+  {
+    "insertId": "6a0f1e1d000298cfdf4700b1",
+    "labels": {
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:45.320097767Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/db.js",
+    "timestamp": "2026-05-21T15:00:45.170191Z"
+  },
+  {
+    "insertId": "6a0f1e1d000298cb4cfb2987",
+    "labels": {
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:45.320097767Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/firestore.js",
+    "timestamp": "2026-05-21T15:00:45.170187Z"
+  },
+  {
+    "insertId": "6a0f1e1d000298c703d65de6",
+    "labels": {
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:45.320097767Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "Require stack:",
+    "timestamp": "2026-05-21T15:00:45.170183Z"
+  },
+  {
+    "insertId": "6a0f1e1d000298bad7275c49",
+    "labels": {
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:45.320097767Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "? ERRO ao inicializar Firebase: Cannot find module '/app/firebase-credentials.json'",
+    "timestamp": "2026-05-21T15:00:45.170170Z"
+  },
+  {
+    "insertId": "6a0f1e1c000bc572e09f6778",
+    "labels": {
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2026-05-21T15:00:44.863465659Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: ? add observability to secrets: https://dotenvx.com/ops",
+    "timestamp": "2026-05-21T15:00:44.771442Z"
+  },
+  {
+    "insertId": "6a0f1e1c0006164ee3e2da80",
+    "labels": {
+      "instanceId": "0007b734d9f4d84c586dcb8782136c0b6a15aa39ddd3ab30ccfae2c3a6289c3655fc175dcc987cb27fe153ec9c042d488eddd3c90e5736749c609bdc17ba7a14599bb223dad57db81d8bcd3d22f08e",
+      "scaling_reason": "MANUAL_OR_CUSTOMER_MIN_INSTANCE"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:44.511953830Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "textPayload": "Starting new instance. Reason: MANUAL_OR_CUSTOMER_MIN_INSTANCE - Instance started because of customer-configured min-instances or manual scaling.",
+    "timestamp": "2026-05-21T15:00:44.398926Z"
+  },
+  {
+    "insertId": "6a0f1e1b000938706a1c507d",
+    "labels": {
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:43.844272682Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"lm-passo-api-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2026-05-21T15:00:43.604272Z"
+  },
+  {
+    "insertId": "6a0f1e1b0007c33c2fc8d3a2",
+    "labels": {
+      "container_name": "lm-passo-api-1",
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:43.844272682Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(1).",
+    "timestamp": "2026-05-21T15:00:43.508724579Z"
+  },
+  {
+    "insertId": "6a0f1e1b000213b13fe236f6",
+    "labels": {
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:43.323196760Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server.js",
+    "timestamp": "2026-05-21T15:00:43.136113Z"
+  },
+  {
+    "insertId": "6a0f1e1b000213ae0f1b1af8",
+    "labels": {
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:43.323196760Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/db.js",
+    "timestamp": "2026-05-21T15:00:43.136110Z"
+  },
+  {
+    "insertId": "6a0f1e1b000213abe2162ccb",
+    "labels": {
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:43.323196760Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/firestore.js",
+    "timestamp": "2026-05-21T15:00:43.136107Z"
+  },
+  {
+    "insertId": "6a0f1e1b000213a75838e040",
+    "labels": {
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:43.323196760Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "Require stack:",
+    "timestamp": "2026-05-21T15:00:43.136103Z"
+  },
+  {
+    "insertId": "6a0f1e1b00021392d4002523",
+    "labels": {
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:43.323196760Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "? ERRO ao inicializar Firebase: Cannot find module '/app/firebase-credentials.json'",
+    "timestamp": "2026-05-21T15:00:43.136082Z"
+  },
+  {
+    "insertId": "6a0f1e1a000b7bfbd4ad80e4",
+    "labels": {
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2026-05-21T15:00:42.866369758Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: ? add access controls to secrets: https://dotenvx.com/ops",
+    "timestamp": "2026-05-21T15:00:42.752635Z"
+  },
+  {
+    "insertId": "6a0f1e1a000614f3a8a732fd",
+    "labels": {
+      "instanceId": "0007b734d9139443aa1b5141ef9fe2c3915f46e6f35b761fc5c2b98380c4074840d673910507d1828fe91d47374f8e2fa583c29306bc7963e7e93c3ef50f89b1ccafd1f53b3bef393d4aafff9250db",
+      "scaling_reason": "MANUAL_OR_CUSTOMER_MIN_INSTANCE"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:42.511044296Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "textPayload": "Starting new instance. Reason: MANUAL_OR_CUSTOMER_MIN_INSTANCE - Instance started because of customer-configured min-instances or manual scaling.",
+    "timestamp": "2026-05-21T15:00:42.398579Z"
+  },
+  {
+    "insertId": "6a0f1e19000b568eabb0daae",
+    "labels": {
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:41.844272359Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"lm-passo-api-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2026-05-21T15:00:41.743054Z"
+  },
+  {
+    "insertId": "6a0f1e19000829b152223ba7",
+    "labels": {
+      "container_name": "lm-passo-api-1",
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:41.844272359Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(1).",
+    "timestamp": "2026-05-21T15:00:41.534951921Z"
+  },
+  {
+    "insertId": "6a0f1e190002295fc38a4008",
+    "labels": {
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:41.323545531Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server.js",
+    "timestamp": "2026-05-21T15:00:41.141663Z"
+  },
+  {
+    "insertId": "6a0f1e190002295b1858e56a",
+    "labels": {
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:41.323545531Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/db.js",
+    "timestamp": "2026-05-21T15:00:41.141659Z"
+  },
+  {
+    "insertId": "6a0f1e1900022956bc25054b",
+    "labels": {
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:41.323545531Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server/database/firestore.js",
+    "timestamp": "2026-05-21T15:00:41.141654Z"
+  },
+  {
+    "insertId": "6a0f1e1900022951adcf8221",
+    "labels": {
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:41.323545531Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "Require stack:",
+    "timestamp": "2026-05-21T15:00:41.141649Z"
+  },
+  {
+    "insertId": "6a0f1e19000229424799293d",
+    "labels": {
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:41.323545531Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "? ERRO ao inicializar Firebase: Cannot find module '/app/firebase-credentials.json'",
+    "timestamp": "2026-05-21T15:00:41.141634Z"
+  },
+  {
+    "insertId": "6a0f1e18000b653e6ffd9d67",
+    "labels": {
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstdout",
+    "receiveTimestamp": "2026-05-21T15:00:40.868377192Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "[dotenv@17.2.3] injecting env (0) from .env -- tip: ??  enable debug logging with { debug: true }",
+    "timestamp": "2026-05-21T15:00:40.746814Z"
+  },
+  {
+    "insertId": "6a0f1e18000614eb1ea3f155",
+    "labels": {
+      "instanceId": "0007b734d9616b949e2ddfc6ad4f9546224336d1f52a573da43a6293677ec7eaff28bd5afd094a829d5d9ff644b766adf9661b6b7e9859d7b858b310fc57030ad6390567c6c890e85d185cddd14778",
+      "scaling_reason": "MANUAL_OR_CUSTOMER_MIN_INSTANCE"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:40.514406746Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "INFO",
+    "textPayload": "Starting new instance. Reason: MANUAL_OR_CUSTOMER_MIN_INSTANCE - Instance started because of customer-configured min-instances or manual scaling.",
+    "timestamp": "2026-05-21T15:00:40.398571Z"
+  },
+  {
+    "insertId": "6a0f1e17000e535c47cdd31f",
+    "labels": {
+      "instanceId": "0007b734d9c98fb41f37915cd6c12a393df3fbe4752b106917d41988084091ce8d1366b64fea6a06a06b86fd57445258efa45d0e262aa654ec40ffef9cb443546c6a83133dd3c3d88d9304c36f5b67"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:40.178548883Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "ERROR",
+    "textPayload": "Default STARTUP TCP probe failed 1 time consecutively for container \"lm-passo-api-1\" on port 8080. The instance was not started.\nConnection failed with status CANCELLED.",
+    "timestamp": "2026-05-21T15:00:39.938844Z"
+  },
+  {
+    "insertId": "6a0f1e17000ad2a1c7ce70bf",
+    "labels": {
+      "container_name": "lm-passo-api-1",
+      "instanceId": "0007b734d9c98fb41f37915cd6c12a393df3fbe4752b106917d41988084091ce8d1366b64fea6a06a06b86fd57445258efa45d0e262aa654ec40ffef9cb443546c6a83133dd3c3d88d9304c36f5b67"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fvarlog%2Fsystem",
+    "receiveTimestamp": "2026-05-21T15:00:39.846080163Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "severity": "WARNING",
+    "textPayload": "Container called exit(1).",
+    "timestamp": "2026-05-21T15:00:39.709180190Z"
+  },
+  {
+    "insertId": "6a0f1e170009f730652e6eee",
+    "labels": {
+      "instanceId": "0007b734d9c98fb41f37915cd6c12a393df3fbe4752b106917d41988084091ce8d1366b64fea6a06a06b86fd57445258efa45d0e262aa654ec40ffef9cb443546c6a83133dd3c3d88d9304c36f5b67"
+    },
+    "logName": "projects/lm-passo/logs/run.googleapis.com%2Fstderr",
+    "receiveTimestamp": "2026-05-21T15:00:39.664833234Z",
+    "resource": {
+      "labels": {
+        "configuration_name": "lm-passo-api",
+        "location": "southamerica-east1",
+        "project_id": "lm-passo",
+        "revision_name": "lm-passo-api-00001-vtt",
+        "service_name": "lm-passo-api"
+      },
+      "type": "cloud_run_revision"
+    },
+    "textPayload": "- /app/server.js",
+    "timestamp": "2026-05-21T15:00:39.653104Z"
+  }
+]

@@ -213,20 +213,25 @@ export const render = (user, onLogout, onNavigate) => {
 
     container.innerHTML = `
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-header" style="display:flex; align-items:center; gap:0.5rem; margin-bottom:2rem; padding:0.5rem; border-bottom:1px solid rgba(255,255,255,0.1);">
-                <img src="/logo.png?v=2" alt="Logo" style="width:32px; height:32px; border-radius:6px; object-fit:contain; flex-shrink:0;">
-                <span class="nav-text" translate="no" style="white-space:nowrap; font-size:1.1rem; font-weight:800; letter-spacing:-0.02em; margin-left:0;">LM | PASSO</span>
+            <div class="sidebar-header" style="display:flex; flex-direction:column; align-items:center; margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:1px solid rgba(255,255,255,0.1);">
+                <div style="display:flex; align-items:center; justify-content:center; width:100%;">
+                    <img src="/logo.png?v=2" alt="Logo" style="width:32px; height:32px; border-radius:6px; object-fit:contain; flex-shrink:0;">
+                    <span class="header-logo-text" translate="no">LM | PASSO</span>
+                </div>
+                <div class="sidebar-clock" id="sidebar-clock">
+                    <div class="clock-date-top" id="clock-date-top">--/--</div>
+                    <div class="clock-time" id="clock-time">
+                        <span id="clock-h">--</span><span class="clock-sep">:</span><span id="clock-m">--</span>
+                    </div>
+                    <div class="clock-day" id="clock-day">------</div>
+                </div>
             </div>
             <ul class="nav-links">
                 ${menuItems}
             </ul>
-            <div class="sidebar-clock" id="sidebar-clock">
-                <div class="clock-time" id="clock-time">--:--:--</div>
-                <div class="clock-date" id="clock-date">--/--/----</div>
-            </div>
-            <div class="user-info">
+            <div class="user-info" style="margin-top:auto;">
                 <div class="nav-text" style="margin-bottom:0.5rem; font-size:0.72rem; color:#94a3b8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Olá, ${user.name}</div>
-                <a class="nav-link" id="logout-btn" title="Sair" style="color:#ef4444;">
+                <a class="nav-link" id="logout-btn" title="Sair" style="color:#ef4444; height: 42px; padding: 0.5rem 1.15rem;">
                     ${icons.logout} <span class="nav-text" translate="no">Sair</span>
                 </a>
             </div>
@@ -245,15 +250,26 @@ export const render = (user, onLogout, onNavigate) => {
 
     container.querySelector('#logout-btn').addEventListener('click', onLogout);
 
-    // ── Live Clock (Horário de Brasília) ─────────────────────────────────────────
+    // ── Live Clock ─────────────────────────────────────────────────────────────────
+    const DAYS_PT = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const MONTHS_PT = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
     const updateClock = () => {
         const now = new Date();
-        const brTime = now.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        const brDate = now.toLocaleDateString('pt-BR', { timeZone: 'America/Sao_Paulo', weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' });
-        const timeEl = container.querySelector('#clock-time');
-        const dateEl = container.querySelector('#clock-date');
-        if (timeEl) timeEl.textContent = brTime;
-        if (dateEl) dateEl.textContent = brDate.charAt(0).toUpperCase() + brDate.slice(1);
+        const h = String(now.getHours()).padStart(2, '0');
+        const m = String(now.getMinutes()).padStart(2, '0');
+        const day = now.getDate();
+        const mon = MONTHS_PT[now.getMonth()];
+        const wday = DAYS_PT[now.getDay()];
+
+        const hEl    = container.querySelector('#clock-h');
+        const mEl    = container.querySelector('#clock-m');
+        const dateTop = container.querySelector('#clock-date-top');
+        const dayEl  = container.querySelector('#clock-day');
+
+        if (hEl)     hEl.textContent = h;
+        if (mEl)     mEl.textContent = m;
+        if (dateTop) dateTop.textContent = `${mon}.${String(day).padStart(2,'0')}`;
+        if (dayEl)   dayEl.textContent = wday;
     };
     updateClock();
     setInterval(updateClock, 1000);

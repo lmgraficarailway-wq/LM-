@@ -268,26 +268,43 @@ body::before {
     transform: scale(1.1) rotate(5deg);
 }
 
+.header-logo-text {
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-left: 0.5rem;
+}
+
+.sidebar:hover .header-logo-text {
+    opacity: 1;
+    width: 100px; /* enough width for LM | PASSO */
+}
+
 .nav-links {
     list-style: none;
     flex: 1;
 }
 
 .nav-item {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.2rem;
 }
 
 .nav-link {
     display: flex;
     align-items: center;
-    padding: 0.85rem 1.15rem;
+    padding: 0.75rem 1.15rem;
     color: rgba(255, 255, 255, 0.65);
     text-decoration: none;
     border-radius: 14px;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
     font-weight: 500;
-    height: 52px;
+    height: 46px;
     border: 1px solid transparent;
 }
 
@@ -347,36 +364,134 @@ body::before {
     pointer-events: auto;
 }
 
-/* ── Sidebar Clock ──────────────────────────────────────────── */
+/* ── Sidebar Clock ─── smartwatch style ─────────────────────── */
 .sidebar-clock {
-    padding: 0.6rem 0.5rem;
-    margin-top: auto;
-    text-align: center;
-    border-top: 1px solid rgba(255,255,255,0.08);
-    opacity: 0;
-    max-height: 0;
-    overflow: hidden;
-    transition: opacity 0.25s ease 0.05s, max-height 0.3s ease;
+    padding: 0.4rem 0 0.3rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.sidebar:hover .sidebar-clock {
-    opacity: 1;
-    max-height: 120px;
+
+/* "MAI.25" */
+.clock-date-top {
+    font-size: 0.48rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* digits row */
 .clock-time {
-    font-size: 1.15rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    font-variant-numeric: tabular-nums;
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 52px;
+}
+
+#clock-h, #clock-m {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    line-height: 1;
+    color: rgba(255,255,255,0.75);
+    -webkit-text-fill-color: rgba(255,255,255,0.75);
+    background: none;
+    letter-spacing: -0.02em;
+    text-shadow: none;
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    flex: 1;
+    text-align: center;
+}
+
+/* real colon element – blinks between h and m */
+.clock-sep {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.85rem;
+    line-height: 1;
+    color: rgba(255,255,255,0.35);
+    animation: blinkColon 1s step-end infinite;
+    flex-shrink: 0;
+    margin: 0 1px;
+    align-self: center;
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+@keyframes blinkColon {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.1; }
+}
+
+/* "DOM" */
+.clock-day {
+    font-size: 0.46rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ─── EXPANDED STATE ─── */
+.sidebar:hover .sidebar-clock {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 0.3rem 0;
+}
+.sidebar:hover .clock-date-top {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.1em;
+}
+.sidebar:hover .clock-time {
+    width: auto;
+}
+.sidebar:hover #clock-h,
+.sidebar:hover #clock-m {
+    font-size: 0.95rem;
     font-weight: 800;
     color: white;
-    letter-spacing: 0.05em;
-    font-variant-numeric: tabular-nums;
-    text-shadow: 0 0 12px rgba(124,58,237,0.4);
+    -webkit-text-fill-color: white;
+    letter-spacing: 0.04em;
+    text-shadow: none;
+    flex: none;
 }
-.clock-date {
-    font-size: 0.7rem;
-    font-weight: 500;
-    color: rgba(255,255,255,0.55);
-    letter-spacing: 0.03em;
-    margin-top: 2px;
+.sidebar:hover .clock-sep {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.4);
+    animation: none;
+    opacity: 1;
+    margin: 0;
 }
+.sidebar:hover .clock-day {
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.45);
+}
+
+/* legacy */
+.clock-colon { display: none; }
+.clock-date  { display: none; }
+#clock-s     { display: none; }
+
+/* remove the broken ::after colon */
+.clock-time::after { display: none; content: none; }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+
+
 
 .user-info {
     padding-top: 1rem;

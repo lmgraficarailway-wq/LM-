@@ -1338,7 +1338,7 @@ export const render = () => {
                                 <img src="/uploads/${f}" 
                                      style="width:70px;height:70px;object-fit:cover;border-radius:6px;border:1px solid #ccc;cursor:pointer;" 
                                      title="${f}"
-                                     onerror="this.onerror=null; this.outerHTML='<div style=\'width:70px;height:70px;background:#fee2e2;color:#b91c1c;font-size:10px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:6px;padding:4px;border:1px solid #fca5a5;\'>Erro:<br>'+this.src.split(\'/\').pop()+'</div>';">
+                                     onerror="this.onerror=null; this.outerHTML='<div style=&quot;width:70px;height:70px;background:#fee2e2;color:#b91c1c;font-size:10px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:6px;padding:4px;border:1px solid #fca5a5;&quot;>Erro:<br>'+this.src.split('/').pop()+'</div>';">
                             </a>`;
                         } else if (ext === 'pdf') {
                             return `<a href="/uploads/${f}" target="_blank" style="background:#fee2e2;color:#b91c1c;border-radius:6px;padding:4px 10px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;border:1px solid #fca5a5;">
@@ -2832,19 +2832,91 @@ export const render = () => {
     setupDragDrop();
     loadOrders();
 
-    // Auto-refresh: atualiza o quadro a cada 20 segundos
-    // Não recarrega se houver um modal aberto (para não interromper o usuário)
+    // ══ Força sync com Railway ao abrir o Kanban ══
+    const token = localStorage.getItem('token');
+    fetch('/api/force-sync', {
+        method: 'POST',
+        headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    }).then(() => loadOrders()).catch(() => {});
+
+    // ══ SSE — atualizações em tempo real ══
+    // O servidor notifica instantaneamente quando qualquer pedido muda no Firestore
+    let sseConnected = false;
+    let sseRetryTimeout = null;
+    let evtSource = null;
+
+    function connectSSE() {
+        if (!document.body.contains(container)) return;
+        try {
+            evtSource = new EventSource('/api/orders/stream');
+
+            evtSource.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    if (data.type === 'connected') {
+                        sseConnected = true;
+                        console.log('[SSE] Conectado — atualizações em tempo real ativas.');
+                    } else if (data.type === 'orders_updated') {
+                        const anyModalOpen = container.querySelector('.modal-overlay.open');
+                        if (!anyModalOpen && document.body.contains(container)) {
+                            loadOrders();
+                        }
+                    }
+                } catch(err) {}
+            };
+
+            evtSource.onerror = () => {
+                sseConnected = false;
+                evtSource.close();
+                // Reconnect em 5 segundos
+                if (document.body.contains(container)) {
+                    sseRetryTimeout = setTimeout(connectSSE, 5000);
+                }
+            };
+        } catch(e) {
+            // Fallback: só polling
+        }
+    }
+
+    connectSSE();
+
+    // Atualiza ao voltar para a aba (force-sync + refresh)
+    const handleVisibility = () => {
+        if (document.visibilityState === 'visible' && document.body.contains(container)) {
+            fetch('/api/force-sync', { method: 'POST', headers: token ? { 'Authorization': 'Bearer ' + token } : {} })
+                .finally(() => loadOrders()).catch(() => {});
+            // Reconecta SSE se necessário
+            if (!sseConnected) connectSSE();
+        }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // Fallback: polling a cada 60s (SSE já cuida das atualizações em tempo real)
     const autoRefreshInterval = setInterval(() => {
         const anyModalOpen = container.querySelector('.modal-overlay.open');
-        if (!anyModalOpen) {
+        if (!anyModalOpen && document.body.contains(container)) {
             loadOrders();
         }
-    }, 20000);
+    }, 60000);
 
-    // Cancela o intervalo quando o container é removido do DOM (troca de tela)
+    // Atualiza quando modal fecha
+    container.addEventListener('click', (e) => {
+        const closeBtn = e.target.closest('.modal-close, [data-target]');
+        if (closeBtn) {
+            setTimeout(() => {
+                const anyModalOpen = container.querySelector('.modal-overlay.open');
+                if (!anyModalOpen) loadOrders();
+            }, 300);
+        }
+    });
+
+    // Limpa tudo ao sair do Kanban
     const stopObserver = new MutationObserver(() => {
         if (!document.body.contains(container)) {
             clearInterval(autoRefreshInterval);
+            clearTimeout(sseRetryTimeout);
+            if (evtSource) evtSource.close();
+            document.removeEventListener('visibilitychange', handleVisibility);
             stopObserver.disconnect();
         }
     });

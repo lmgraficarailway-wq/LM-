@@ -4,21 +4,28 @@ const multer = require('multer');
 const path = require('path');
 
 // Multer Config
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const fs = require('fs');
-        const uploadPath = path.join(process.cwd(), 'public/uploads/');
-        if (!fs.existsSync(uploadPath)) {
-            fs.mkdirSync(uploadPath, { recursive: true });
+// Em produção (Cloud Run): usa memoryStorage para enviar buffer direto ao Firebase Storage
+// Em desenvolvimento (local): usa diskStorage para salvar em public/uploads/
+const USE_STORAGE = process.env.NODE_ENV === 'production' || process.env.USE_FIREBASE_STORAGE === 'true';
+
+const storage = USE_STORAGE
+    ? multer.memoryStorage()
+    : multer.diskStorage({
+        destination: (req, file, cb) => {
+            const fs = require('fs');
+            const uploadPath = path.join(process.cwd(), 'public/uploads/');
+            if (!fs.existsSync(uploadPath)) {
+                fs.mkdirSync(uploadPath, { recursive: true });
+            }
+            cb(null, uploadPath);
+        },
+        filename: (req, file, cb) => {
+            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+            cb(null, uniqueSuffix + path.extname(file.originalname));
         }
-        cb(null, uploadPath);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage: storage });
+    });
+
+const upload = multer({ storage, limits: { fileSize: 20 * 1024 * 1024 } }); // 20MB max
 
 const clientController = require('../controllers/client_controller');
 const productController = require('../controllers/product_controller');

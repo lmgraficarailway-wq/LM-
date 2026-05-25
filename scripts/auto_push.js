@@ -33,8 +33,8 @@ function log(msg) {
 
 function hasChanges() {
     try {
-        // Monitora apenas arquivos de código importantes
-        const status = runGit('git status --porcelain -- server/ public/ server.js package.json railway.json .railwayignore .gitignore');
+        // Monitora APENAS código do app — não configs que causam rebuilds desnecessários
+        const status = runGit('git status --porcelain -- server/ public/ server.js package.json');
         return status.length > 0;
     } catch {
         return false;

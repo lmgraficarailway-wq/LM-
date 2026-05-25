@@ -28,7 +28,7 @@ const getAll = (req, res) => {
 
 // GET /api/reminders/pending-count — returns count of pending reminders
 const getPendingCount = (req, res) => {
-    db.get(`SELECT COUNT(*) AS count FROM reminders WHERE status = 'pendente'`, [], (err, row) => {
+    db.get(`SELECT COUNT(*) AS count FROM reminders WHERE status = ?`, ['pendente'], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ count: row ? row.count : 0 });
     });
@@ -46,17 +46,21 @@ const create = (req, res) => {
     const userFromToken = getUserFromToken(req);
     const userId = userFromToken ? userFromToken.id : null;
 
+    // IMPORTANTE: usar ? para TODOS os valores — valores literais no SQL
+    // confundem o parser do Firestore (desalinha índices de params)
     db.run(
-        `INSERT INTO reminders (title, description, priority, status, created_by) VALUES (?, ?, ?, 'pendente', ?)`,
-        [title.trim(), description?.trim() || '', prio, userId],
+        `INSERT INTO reminders (title, description, priority, status, created_by) VALUES (?, ?, ?, ?, ?)`,
+        [title.trim(), description?.trim() || '', prio, 'pendente', userId],
         function (err) {
             if (err) return res.status(500).json({ error: err.message });
+            const insertedId = this.lastID;
             db.get(
                 `SELECT r.*, u.name AS created_by_name, u.role AS created_by_role FROM reminders r LEFT JOIN users u ON r.created_by = u.id WHERE r.id = ?`,
-                [this.lastID],
+                [insertedId],
                 (err2, row) => {
                     if (err2) return res.status(500).json({ error: err2.message });
-                    res.status(201).json({ data: row });
+                    // Garante dados mínimos na resposta mesmo se SELECT falhar
+                    res.status(201).json({ data: row || { id: insertedId, title: title.trim(), description: description?.trim() || '', priority: prio, status: 'pendente', created_by: userId, created_at: new Date().toISOString() } });
                 }
             );
         }
@@ -91,7 +95,9 @@ const toggle = (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!row) return res.status(404).json({ error: 'Lembrete não encontrado.' });
 
-        const newStatus = row.status === 'pendente' ? 'concluido' : 'pendente';
+        // Normaliza status: pode vir como número por bug de migração
+        const currentStatus = String(row.status || '').toLowerCase();
+        const newStatus = currentStatus === 'pendente' ? 'concluido' : 'pendente';
         const concludedAt = newStatus === 'concluido' ? new Date().toISOString() : null;
 
         db.run(

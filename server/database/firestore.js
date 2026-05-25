@@ -37,14 +37,20 @@ function _flushQueue() {
         if (process.env.FIREBASE_CREDENTIALS) {
             creds = JSON.parse(process.env.FIREBASE_CREDENTIALS);
             if (!admin.apps.length) {
-                admin.initializeApp({ credential: admin.credential.cert(creds) });
+                admin.initializeApp({
+                    credential: admin.credential.cert(creds),
+                    storageBucket: `${creds.project_id}.firebasestorage.app`
+                });
             }
             console.log('🔥 Firebase: Inicializado via variável de ambiente.');
         } else {
             const credsPath = path.resolve(process.cwd(), 'firebase-credentials.json');
             creds = require(credsPath);
             if (!admin.apps.length) {
-                admin.initializeApp({ credential: admin.credential.cert(creds) });
+                admin.initializeApp({
+                    credential: admin.credential.cert(creds),
+                    storageBucket: `${creds.project_id}.firebasestorage.app`
+                });
             }
             console.log('🔥 Firebase: Inicializado via arquivo local.');
         }
@@ -52,6 +58,28 @@ function _flushQueue() {
         db.settings({ ignoreUndefinedProperties: true });
         _flushQueue();
         console.log('✅ Firestore conectado com sucesso!');
+
+        // 🔥 Pré-aquecimento do cache: carrega as coleções mais acessadas diretamente
+        // no cache de queries, assim o primeiro request do usuário já encontra tudo em memória
+        // Sem setTimeout: db já está pronto, executa imediatamente em background
+        (async () => {
+            try {
+                const { getCachedCollection } = require('./firestoreQueries');
+                const warmTables = [
+                    'orders', 'clients', 'products', 'order_items',
+                    'users', 'reminders', 'suppliers', 'team_chat',
+                    'stock', 'stock_movements', 'catalogue_items'
+                ];
+                // Carrega em paralelo — tudo de uma vez
+                const results = await Promise.allSettled(
+                    warmTables.map(t => getCachedCollection(t, db).then(data => ({ t, n: Object.keys(data).length })))
+                );
+                const ok = results.filter(r => r.status === 'fulfilled').map(r => `${r.value.t}(${r.value.n})`);
+                console.log('✅ Cache aquecido:', ok.join(', '));
+            } catch (e) {
+                console.log('⚠️ Warm-up parcial:', e.message);
+            }
+        })();
     } catch (err) {
         console.error('❌ ERRO ao inicializar Firebase:', err.message);
         process.exit(1);
@@ -113,28 +141,62 @@ async function run(sql, params = [], callback) {
             const columns = extractColumns(sql);
             const newId = await getNextId(table);
 
+            // Extrai os valores do VALUES (?, 'literal', ?, ...) respeitando literais
+            const valuesStr = sql.match(/VALUES\s*\(([^)]+)\)/i)?.[1] || '';
+            const valueParts = valuesStr.split(',').map(v => v.trim());
+
             const data = {};
+            let paramIdx = 0;
             columns.forEach((col, i) => {
-                data[col] = params[i] !== undefined ? params[i] : null;
+                const valExpr = valueParts[i] || '?';
+                if (valExpr === '?') {
+                    // Valor dinâmico: pega do array de params
+                    data[col] = params[paramIdx] !== undefined ? params[paramIdx] : null;
+                    paramIdx++;
+                } else if (valExpr.match(/^'(.*)'$/)) {
+                    // Valor literal string: 'pendente', 'cliente', etc.
+                    data[col] = valExpr.replace(/^'|'$/g, '');
+                } else if (valExpr === 'NULL' || valExpr === 'null') {
+                    data[col] = null;
+                } else if (!isNaN(valExpr)) {
+                    // Número literal
+                    data[col] = Number(valExpr);
+                } else {
+                    data[col] = valExpr;
+                }
             });
             data.created_at = data.created_at || new Date().toISOString();
 
             await db.collection(table).doc(String(newId)).set(data);
-            getQueries().invalidateCache(table);
+            // Smart cache: adiciona o novo documento ao cache sem invalida-lo
+            getQueries().patchCache(table, 'upsert', newId, data);
+            // Invalida query cache (resultados de queries com JOIN)
+            getQueries().invalidateQueryCache(table);
             cb.call({ lastID: newId, changes: 1 }, null);
         }
 
         // ── UPDATE ──────────────────────────────────────────────────────────
         else if (q.startsWith('UPDATE')) {
+            const table = extractTable(sql, 'UPDATE');
             const changes = await handleUpdate(sql, params);
-            getQueries().invalidateCache(extractTable(sql, 'UPDATE'));
+            // Smart cache: marca como vencido para stale-while-revalidate (não apaga)
+            getQueries().invalidateCache(table);
+            // Invalida query cache (resultados de queries com JOIN)
+            getQueries().invalidateQueryCache(table);
             cb.call({ lastID: null, changes }, null);
         }
 
         // ── DELETE ──────────────────────────────────────────────────────────
         else if (q.startsWith('DELETE')) {
+            const table = extractTable(sql, 'DELETE');
             const changes = await handleDelete(sql, params);
-            getQueries().invalidateCache(extractTable(sql, 'DELETE'));
+            // Smart cache: se WHERE id=? simples, remove só esse doc do cache
+            const idMatch = sql.match(/WHERE\s+id\s*=\s*\?/i);
+            if (idMatch && params.length > 0) {
+                getQueries().patchCache(table, 'delete', params[0]);
+            } else {
+                getQueries().invalidateCache(table);
+            }
             cb.call({ lastID: null, changes }, null);
         }
 
@@ -231,7 +293,8 @@ async function handleUpdate(sql, params) {
     const { setClause, whereClause } = extractUpdateParts(sql);
     
     const setColumns = parseSetColumns(setClause, params);
-    const whereParams = params.slice(Object.keys(setColumns).length);
+    const setParamsCount = (setClause.match(/\?/g) || []).length;
+    const whereParams = params.slice(setParamsCount);
     
     const docIds = await resolveWhereIds(table, whereClause, whereParams, db);
     
@@ -368,11 +431,15 @@ function parseSetColumns(setClause, params) {
         if (eqMatch) {
             const col = eqMatch[1];
             const valExpr = eqMatch[2].trim();
+            const valUpper = valExpr.toUpperCase();
             if (valExpr === '?') {
                 result[col] = params[paramIdx++] !== undefined ? params[paramIdx - 1] : null;
             } else if (valExpr.match(/^\w+\s*[\+\-]\s*\?/)) {
                 // Expressão como "stock = stock + ?" — resolveremos via update field
                 result[col] = admin.firestore.FieldValue.increment(params[paramIdx++]);
+            } else if (valUpper === 'CURRENT_TIMESTAMP' || valUpper === 'NOW()' || valUpper === 'DATETIME(\'NOW\')') {
+                // ← CORREÇÃO CRÍTICA: converte CURRENT_TIMESTAMP para ISO string real
+                result[col] = new Date().toISOString();
             } else {
                 result[col] = valExpr.replace(/['"]/g, '');
             }
