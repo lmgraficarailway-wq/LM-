@@ -1090,11 +1090,11 @@ export const render = () => {
                 actions = `
                     <div style="margin-top: 1rem; border-top: 1px solid #eee; padding-top: 1rem;">
                         <p style="margin-bottom:0.5rem; font-weight:600">Produção - Aceitar Pedido:</p>
-                        <div style="margin-bottom:0.5rem; padding:0.5rem; border-radius:6px; font-size:0.9rem; ${isExpired ? 'background:#fef2f2; border:1px solid #fecaca; color:#b91c1c;' : 'background:#f0fdf4; border:1px solid #bbf7d0; color:#166534;'}">
+                        <div style="margin-bottom:0.5rem; padding:0.5rem; border-radius:6px; font-size:0.9rem; ${isExpired ? 'background:#fff7ed; border:1px solid #fed7aa; color:#9a3412;' : 'background:#f0fdf4; border:1px solid #bbf7d0; color:#166534;'}">
                             📅 Prazo do vendedor: <b>${deadlineLabel}</b> (${order.deadline_type || 'N/A'})
-                            ${isExpired ? '<br><span style="font-weight:700;">⚠️ PRAZO EXPIRADO — não é possível aceitar</span>' : ''}
+                            ${isExpired ? '<br><span style="font-weight:600;">⚠️ Prazo vencido — você ainda pode aceitar e alinhar novo prazo com o cliente.</span>' : ''}
                         </div>
-                        <button class="btn btn-primary btn-accept" ${isExpired ? 'disabled style="opacity:0.5; cursor:not-allowed;"' : ''}>✅ Aceitar Pedido</button>
+                        <button class="btn btn-primary btn-accept">✅ Aceitar Pedido</button>
                     </div>
                 `;
             }

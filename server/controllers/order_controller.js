@@ -13,11 +13,13 @@ const { uploadFile, isStorageUrl } = require('../utils/firebaseStorage');
 
 const USE_STORAGE = process.env.NODE_ENV === 'production' || process.env.USE_FIREBASE_STORAGE === 'true';
 
-// Helper to calculate deadline (dias úteis)
+// Helper to calculate deadline (dias úteis) — usa fuso horário de Brasília
 const calculateDeadline = (days) => {
-    const date = new Date();
+    // Obtém a data/hora atual no fuso de Brasília
+    const nowBrasilia = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+    const date = new Date(nowBrasilia);
     let remainingDays = parseInt(days);
-    
+
     while (remainingDays > 0) {
         date.setDate(date.getDate() + 1);
         const dayOfWeek = date.getDay();
@@ -26,6 +28,8 @@ const calculateDeadline = (days) => {
             remainingDays--;
         }
     }
+    // Define o horário final do prazo como 23:59:59 do dia calculado (horário de Brasília)
+    date.setHours(23, 59, 59, 0);
     return date.toISOString();
 };
 
@@ -369,22 +373,15 @@ exports.uploadAttachments = async (req, res) => {
 
 
 exports.acceptOrder = (req, res) => {
-    // Buscar o pedido para validar o prazo original do vendedor
-    db.get("SELECT deadline_at, deadline_type FROM orders WHERE id = ?", [req.params.id], (err, order) => {
+    // Buscar o pedido — sem bloquear por prazo expirado (produção deve poder aceitar sempre)
+    db.get("SELECT deadline_at, deadline_type, status FROM orders WHERE id = ?", [req.params.id], (err, order) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!order) return res.status(404).json({ error: 'Pedido não encontrado' });
-
-        // Validar se ainda está dentro do prazo
-        const now = new Date();
-        const deadline = new Date(order.deadline_at);
-        if (now > deadline) {
-            return res.status(400).json({
-                error: 'Prazo expirado! O prazo de entrega definido pelo vendedor já passou.',
-                deadline_at: order.deadline_at
-            });
+        if (order.status !== 'aguardando_aceite') {
+            return res.status(400).json({ error: 'Pedido não está aguardando aceite.' });
         }
 
-        // Aceitar sem recalcular — manter deadline original do vendedor
+        // Aceitar — manter deadline original do vendedor
         db.run("UPDATE orders SET status = 'producao' WHERE id = ?", [req.params.id], function (err) {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ message: 'Pedido aceito e em produção', deadline_at: order.deadline_at });
