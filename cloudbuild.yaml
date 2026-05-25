@@ -1,0 +1,35 @@
+steps:
+  # 1. Instalar dependências
+  - name: 'node:18'
+    entrypoint: 'npm'
+    args: ['ci', '--omit=dev']
+
+  # 2. Deploy no Cloud Run (API/backend)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'lm-passo-api'
+      - '--source'
+      - '.'
+      - '--region'
+      - 'southamerica-east1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--quiet'
+
+  # 3. Deploy Firebase Hosting (frontend)
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        npm install -g firebase-tools
+        firebase deploy --only hosting --project lm-passo
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: '1200s'
