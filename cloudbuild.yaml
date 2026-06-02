@@ -21,7 +21,7 @@ steps:
       - '--quiet'
 
   # 3. Deploy Firebase Hosting (frontend)
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  - name: 'node:18'
     entrypoint: 'bash'
     args:
       - '-c'
