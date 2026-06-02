@@ -43,14 +43,18 @@ app.use(compression());
 
 // Proibir cache de arquivos JS no navegador — garante que celulares sempre carregam versão atualizada
 app.use((req, res, next) => {
+    // JS: nunca cachear — garante versão mais recente
     if (req.path.endsWith('.js')) {
         res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         res.setHeader('Pragma', 'no-cache');
         res.setHeader('Expires', '0');
     }
-    // Cache curto (10s) para respostas de leitura da API — acelera reloads
-    if (req.method === 'GET' && req.path.startsWith('/api/') && !req.path.includes('/auth')) {
-        res.setHeader('Cache-Control', 'public, max-age=10, stale-while-revalidate=30');
+    // API: NUNCA cachear — pedidos criados devem aparecer imediatamente
+    // Cache público (mesmo que curto) faz o Firebase CDN e o browser servirem dados antigos
+    if (req.path.startsWith('/api/')) {
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
     }
     // Keep-Alive para reutilizar conexões e reduzir latência
     res.setHeader('Connection', 'keep-alive');
@@ -97,44 +101,18 @@ const authRoutes = require('./server/routes/auth.routes');
 app.use('/api', apiRoutes);
 app.use('/api/auth', authRoutes);
 
-// ── Auto-Sync Railway → Firestore ─────────────────────────────────────────────
+// ── Auto-Sync Railway → Firestore (sem SSE — custo mínimo) ───────────────────
 let _syncDb = null;
 const { startAutoSync, syncRailwayToFirestore } = require('./server/utils/railwaySync');
 
-// ── SSE (Server-Sent Events) — atualizações em tempo real para o Kanban ────────
-const sseClients = new Set();
-
-function broadcastOrdersUpdate(reason) {
-    if (sseClients.size === 0) return;
-    const msg = `data: ${JSON.stringify({ type: 'orders_updated', ts: Date.now(), reason: reason || 'change' })}\n\n`;
-    for (const client of sseClients) {
-        try { client.write(msg); } catch(e) { sseClients.delete(client); }
-    }
-    if (sseClients.size > 0) console.log(`[SSE] Broadcast para ${sseClients.size} cliente(s): ${reason}`);
-}
-
-// Escuta o Firestore em tempo real e notifica clientes SSE
-function startOrdersListener(firestoreDb) {
-    firestoreDb.collection('orders').onSnapshot(
-        { includeMetadataChanges: false },
-        (snapshot) => {
-            if (snapshot.docChanges().length === 0) return;
-            broadcastOrdersUpdate('firestore_change');
-        },
-        (err) => console.error('[SSE] Listener error:', err.message)
-    );
-    console.log('[SSE] Escutando orders em tempo real via Firestore onSnapshot.');
-}
-
-// Inicializa o sync + listener SSE assim que o Firebase estiver pronto
+// Inicializa o sync assim que o Firebase estiver pronto
 function initSync() {
     try {
         const admin = require('firebase-admin');
         if (admin.apps.length > 0) {
             _syncDb = admin.firestore();
             startAutoSync(_syncDb);
-            startOrdersListener(_syncDb);
-            console.log('[Sync] Auto-sync e listener SSE iniciados com sucesso.');
+            console.log('[Sync] Auto-sync iniciado.');
         } else {
             console.warn('[Sync] Firebase ainda não pronto, tentando em 5s...');
             setTimeout(initSync, 5000);
@@ -146,31 +124,12 @@ function initSync() {
 }
 setTimeout(initSync, 2000);
 
-// ── Rota SSE — clientes se conectam aqui para receber atualizações em tempo real ──
+// ── Rota legada /api/orders/stream — retorna resposta simples (SSE removido para economizar custo) ──
 app.get('/api/orders/stream', (req, res) => {
-    res.set({
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'X-Accel-Buffering': 'no'
-    });
-    res.flushHeaders();
-    res.write(`data: ${JSON.stringify({ type: 'connected', ts: Date.now() })}\n\n`);
-
-    sseClients.add(res);
-    console.log(`[SSE] Cliente conectado. Total: ${sseClients.size}`);
-
-    // Heartbeat a cada 25s para manter a conexão viva
-    const heartbeat = setInterval(() => {
-        try { res.write(': ping\n\n'); } catch(e) { sseClients.delete(res); clearInterval(heartbeat); }
-    }, 25000);
-
-    req.on('close', () => {
-        sseClients.delete(res);
-        clearInterval(heartbeat);
-        console.log(`[SSE] Cliente desconectado. Total: ${sseClients.size}`);
-    });
+    res.setHeader('Cache-Control', 'no-store');
+    res.json({ type: 'disabled', message: 'SSE desativado para reduzir custo. Use polling.' });
 });
+
 
 // ── Rota de sync forçado ───────────────────────────────────────────────────────
 app.post('/api/force-sync', async (req, res) => {
@@ -188,15 +147,8 @@ app.post('/api/force-sync', async (req, res) => {
     }
 });
 
-// ── Keep-alive: impede o Cloud Run de escalar para zero ───────────────────────
-setInterval(() => {
-    const http = require('http');
-    const req = http.get(`http://localhost:${PORT}/api/health`, (r) => r.resume());
-    req.on('error', () => {});
-}, 4 * 60 * 1000);
-
 // Rota de saúde
-app.get('/api/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime(), sync: !!_syncDb, sse_clients: sseClients.size }));
+app.get('/api/health', (req, res) => res.json({ status: 'ok', uptime: process.uptime(), sync: !!_syncDb, sse_clients: 0 }));
 
 // Rota de diagnóstico do banco (temporária)
 app.get('/api/dbtest', async (req, res) => {
@@ -304,44 +256,7 @@ app.listen(PORT, '0.0.0.0', () => {
     console.log('');
 });
 
-// ── Firebase Sync Worker (opcional - roda em background) ─────────────────────
-// Só ativa se houver credenciais do Firebase configuradas
-if (process.env.FIREBASE_CREDENTIALS || process.env.FIREBASE_PROJECT_ID) {
-    try {
-        const { startWorker } = require('./server/utils/firebaseSync');
-        startWorker();
-        console.log('🔥 Firebase Sync ativo (backup em tempo real)');
-    } catch (err) {
-        console.log('ℹ️  Firebase Sync indisponível:', err.message);
-    }
-} else {
-    console.log('ℹ️  Modo SQLite puro — Firebase Sync desativado');
-}
-
-// ── Keep-Alive: evita o "sleep" do Render/Railway free tier ──────────────────
-if (process.env.NODE_ENV === 'production') {
-    const https = require('https');
-    // Suporta Railway (RAILWAY_PUBLIC_DOMAIN) e Render (RENDER_EXTERNAL_URL)
-    const PROD_URL = process.env.RAILWAY_PUBLIC_DOMAIN
-        ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-        : (process.env.RENDER_EXTERNAL_URL || 'https://lm-passo.onrender.com');
-    const PING_INTERVAL = 10 * 60 * 1000; // 10 minutos
-
-    const keepAlive = () => {
-        const url = `${PROD_URL}/api/health`;
-        https.get(url, (res) => {
-            console.log(`[Keep-Alive] Ping OK - ${new Date().toLocaleTimeString('pt-BR')} - Status: ${res.statusCode}`);
-        }).on('error', (err) => {
-            console.log(`[Keep-Alive] Ping falhou: ${err.message}`);
-        });
-    };
-
-    setTimeout(() => {
-        keepAlive();
-        setInterval(keepAlive, PING_INTERVAL);
-        console.log('⏰ Keep-Alive ativado — ping a cada 10 min para manter o servidor acordado');
-    }, 60 * 1000);
-}
+// ── Firebase Sync Worker — DESATIVADO (app 100% no Firebase/Cloud Run) ──────
 
 // ── Backup Automático Firebase → Local ───────────────────────────────────────
 // Só roda em modo Firebase (sem SQLite local) e fora da produção

@@ -199,11 +199,11 @@ export const render = () => {
                         <button class="btn btn-secondary cat-link-btn" data-id="${item.id}" title="Copiar Link" style="flex: 1; min-width: 40%; padding: 0.6rem;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:text-bottom; flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg> Link
                         </button>
-                        <button class="btn btn-secondary cat-copy-btn" data-img="${item.image_url}" data-desc="${encodeURIComponent(safeDesc)}" style="flex: 1; min-width: 40%; display:flex; align-items:center; gap:6px; justify-content:center; padding: 0.6rem;">
+                        <button class="btn btn-secondary cat-copy-btn" data-img="${images[0] || ''}" data-desc="${encodeURIComponent(safeDesc)}" style="flex: 1; min-width: 40%; display:flex; align-items:center; gap:6px; justify-content:center; padding: 0.6rem;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
                             Copiar
                         </button>
-                        <button class="cat-share-btn" data-id="${item.id}" data-img="${item.image_url}" data-desc="${encodeURIComponent(safeDesc)}" title="Enviar pelo WhatsApp" style="flex: 1 1 100%; display:flex; align-items:center; gap:6px; justify-content:center; background:#25D366; color:#fff; border:none; font-weight:700; border-radius:8px; padding:0.6rem 0.5rem; cursor:pointer; font-size:0.9rem; transition: background 0.2s;">
+                        <button class="cat-share-btn" data-id="${item.id}" data-img="${images[0] || ''}" data-desc="${encodeURIComponent(safeDesc)}" title="Enviar pelo WhatsApp" style="flex: 1 1 100%; display:flex; align-items:center; gap:6px; justify-content:center; background:#25D366; color:#fff; border:none; font-weight:700; border-radius:8px; padding:0.6rem 0.5rem; cursor:pointer; font-size:0.9rem; transition: background 0.2s;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.558 4.14 1.535 5.877L.057 23.428a.75.75 0 00.917.92l5.688-1.456A11.946 11.946 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.946 0-3.773-.497-5.363-1.367l-.38-.217-3.977 1.018 1.052-3.875-.232-.388A9.944 9.944 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
                             WhatsApp
                         </button>
@@ -290,7 +290,7 @@ export const render = () => {
         const copyToClipboard = async (imgUrl, textDesc) => {
             const img = new Image();
             img.crossOrigin = 'Anonymous';
-            img.src = imgUrl;
+            img.src = imgUrl.startsWith('http') ? imgUrl : (window.location.origin + imgUrl);
 
             await new Promise((resolve, reject) => {
                 img.onload = resolve;
