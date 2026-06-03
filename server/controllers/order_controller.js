@@ -1052,6 +1052,7 @@ exports.getProductDemand = (req, res) => {
                     return {
                         top,
                         bottom: bottom.filter(r => !topNames.has(r.product_name)),
+                        all: rows,  // ALL sold products sorted by qty desc
                         total_qty: totalQty,
                         total_orders: totalOrders
                     };

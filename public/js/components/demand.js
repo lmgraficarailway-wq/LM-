@@ -23,33 +23,28 @@ export const render = () => {
         </div>
         <div style="max-width:960px;">
 
-            <!-- Tab buttons -->
-            <div style="display:flex; gap:0.5rem; margin-bottom:1.75rem; background:#f1f5f9; padding:0.35rem; border-radius:12px; width:fit-content;">
-                <button class="dmd-tab active" data-tab="monthly"
-                    style="padding:0.55rem 1.4rem; border-radius:9px; border:none; background:var(--primary); color:white; font-weight:700; font-size:0.87rem; cursor:pointer; transition:all 0.2s;">
-                    📅 Mensal
-                </button>
-                <button class="dmd-tab" data-tab="quarterly"
-                    style="padding:0.55rem 1.4rem; border-radius:9px; border:none; background:transparent; color:#64748b; font-weight:700; font-size:0.87rem; cursor:pointer; transition:all 0.2s;">
-                    📊 Trimestral
-                </button>
-                <button class="dmd-tab" data-tab="annual"
-                    style="padding:0.55rem 1.4rem; border-radius:9px; border:none; background:transparent; color:#64748b; font-weight:700; font-size:0.87rem; cursor:pointer; transition:all 0.2s;">
-                    🗓️ Anual
+            <!-- Tab buttons + Resumo -->
+            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1.75rem; flex-wrap:wrap;">
+                <div style="display:flex; gap:0.35rem; background:#f1f5f9; padding:0.35rem; border-radius:12px;">
+                    <button class="dmd-tab active" data-tab="monthly"
+                        style="padding:0.55rem 1.1rem; border-radius:9px; border:none; background:var(--primary); color:white; font-weight:700; font-size:0.87rem; cursor:pointer; transition:all 0.2s;">
+                        📅 Mensal
+                    </button>
+                    <button class="dmd-tab" data-tab="quarterly"
+                        style="padding:0.55rem 1.1rem; border-radius:9px; border:none; background:transparent; color:#64748b; font-weight:700; font-size:0.87rem; cursor:pointer; transition:all 0.2s;">
+                        📓 Trimestral
+                    </button>
+                    <button class="dmd-tab" data-tab="annual"
+                        style="padding:0.55rem 1.1rem; border-radius:9px; border:none; background:transparent; color:#64748b; font-weight:700; font-size:0.87rem; cursor:pointer; transition:all 0.2s;">
+                        🗓️ Anual
+                    </button>
+                </div>
+                <button id="btn-summary" style="display:inline-flex;align-items:center;gap:0.45rem;padding:0.55rem 1.15rem;border:none;border-radius:9px;cursor:pointer;font-size:0.87rem;font-weight:700;background:linear-gradient(135deg,#0891b2 0%,#0e7490 100%);color:white;box-shadow:0 3px 12px rgba(8,145,178,0.3);transition:all 0.2s;white-space:nowrap;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                    Resumo Geral
                 </button>
             </div>
-            <button id="btn-summary" style="
-                display:inline-flex;align-items:center;gap:0.45rem;
-                padding:0.55rem 1.2rem;border:none;border-radius:9px;cursor:pointer;
-                font-size:0.87rem;font-weight:700;
-                background:linear-gradient(135deg,#0891b2 0%,#0e7490 100%);
-                color:white;box-shadow:0 3px 12px rgba(8,145,178,0.35);
-                transition:all 0.2s;white-space:nowrap;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
-                Resumo Geral
-            </button>
-
-            <!-- Content area -->
+                        <!-- Content area -->
             <div id="dmd-content">
                 <div style="text-align:center; padding:4rem; color:#94a3b8; font-size:0.95rem;">
                     <div style="font-size:2rem; margin-bottom:0.75rem;">⏳</div>
@@ -329,8 +324,8 @@ export const render = () => {
             </div>`;
         }).join('');
 
-        const topRows10 = annual.top.slice(0, 10).map((item, i) => {
-            const pct = Math.round((item.total_qty / (annual.top[0].total_qty || 1)) * 100);
+        const topRows10 = (annual.all || annual.top).slice(0, 20).map((item, i) => {
+            const pct = Math.round((item.total_qty / ((annual.all || annual.top)[0].total_qty || 1)) * 100);
             const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i+1}`;
             return `
             <div style="display:flex; align-items:center; gap:0.75rem; padding:0.7rem 0; border-bottom:1px solid #f1f5f9;">
@@ -390,7 +385,7 @@ export const render = () => {
             <!-- Top 10 e Bottom 10 lado a lado -->
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem;">
                 <div style="background:white; border-radius:14px; border:1px solid #e2e8f0; padding:1.4rem 1.6rem; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
-                    <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:#7c3aed; margin-bottom:1rem;">▲ Top 10 Mais Vendidos</div>
+                    <div style="font-size:0.75rem; font-weight:800; text-transform:uppercase; letter-spacing:0.09em; color:#7c3aed; margin-bottom:1rem;">▲ Todos os Vendidos — por Volume</div>
                     ${topRows10 || emptyState('Sem dados.')}
                 </div>
                 <div style="background:white; border-radius:14px; border:1px solid #e2e8f0; padding:1.4rem 1.6rem; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
@@ -413,100 +408,200 @@ export const render = () => {
 
     // ───────────────────────── Load ─────────────────────────
 
-    // Summary panel
+    // Summary panel - uses /api/products + demandData
     const renderSummary = async () => {
         const el = container.querySelector('#dmd-content');
-        el.innerHTML = `<div style="text-align:center;padding:3rem;color:#94a3b8;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">⏳</div>Carregando resumo...</div>`;
+        el.innerHTML = '<div style="text-align:center;padding:3rem;color:#94a3b8;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">&#9203;</div>Carregando resumo...</div>';
 
         try {
-            const res = await fetch('/api/reports/product-summary');
+            const res = await fetch('/api/products');
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const json = await res.json();
-            const { data, grand_total, grand_qty, year } = json;
+            const products = json.data || [];
 
-            const fmt = (v) => 'R$�' + parseFloat(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            const fmtQty = (v) => parseFloat(v || 0).toLocaleString('pt-BR');
+            const qtyMap = {};
+            if (demandData) {
+                // Use annual.all (full list) if available, fallback to top+bottom
+                const allSold = (demandData.annual && demandData.annual.all)
+                    ? demandData.annual.all
+                    : [...(demandData.annual.top || []), ...(demandData.annual.bottom || [])];
+                allSold.forEach(item => {
+                    qtyMap[item.product_name] = item.total_qty;
+                });
+            }
 
-            // Sort: most sold first
-            const sorted = [...data].sort((a, b) => b.total_qty - a.total_qty);
+            const fmt  = (v) => 'R$\u00a0' + parseFloat(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const fmtN = (v) => parseFloat(v || 0).toLocaleString('pt-BR');
+            const year = demandData ? demandData.year : new Date().getFullYear();
+            const allRows = products.map(p => {
+                const qty       = qtyMap[p.name] || 0;
+                const unitPrice = parseFloat(p.price_3_days || p.price || 0);
+                return { name: p.name, unit_price: unitPrice, qty, total: qty * unitPrice };
+            });
 
-            const rows = sorted.map((p, i) => {
-                const hasSales = p.total_qty > 0;
-                const pct = grand_qty > 0 ? ((p.total_qty / grand_qty) * 100).toFixed(1) : '0.0';
-                return `
-                <tr style="border-bottom:1px solid #f1f5f9; transition:background 0.15s;" 
-                    onmouseover="this.style.background='#f8f7ff'" onmouseout="this.style.background=''">
-                    <td style="padding:0.7rem 1rem;font-size:0.78rem;font-weight:800;color:#94a3b8;text-align:center;width:40px;">${hasSales ? (i+1) : '-'}</td>
-                    <td style="padding:0.7rem 0.5rem;font-size:0.875rem;font-weight:600;color:#1e293b;">${p.name}</td>
-                    <td style="padding:0.7rem 1rem;font-size:0.85rem;font-weight:700;color:#7c3aed;text-align:right;white-space:nowrap;">${fmt(p.unit_price)}</td>
-                    <td style="padding:0.7rem 1rem;text-align:center;">
-                        <div style="display:flex;align-items:center;gap:0.5rem;">
-                            <div style="flex:1;height:7px;background:#e2e8f0;border-radius:999px;overflow:hidden;min-width:60px;">
-                                <div style="height:100%;width:${hasSales ? pct : 0}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:999px;transition:width 0.8s ease;"></div>
-                            </div>
-                            <span style="font-size:0.85rem;font-weight:800;color:#334155;min-width:30px;text-align:right;">${fmtQty(p.total_qty)}</span>
-                        </div>
-                    </td>
-                    <td style="padding:0.7rem 1rem;font-size:0.875rem;font-weight:800;color:${hasSales ? '#059669' : '#94a3b8'};text-align:right;white-space:nowrap;">${fmt(p.total_value)}</td>
-                </tr>`;
-            }).join('');
+            const grandQty   = allRows.reduce((s, r) => s + r.qty,   0);
+            const grandTotal = allRows.reduce((s, r) => s + r.total, 0);
 
-            el.innerHTML = `
-                <!-- Summary Header -->
-                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">
-                    <div style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:14px;padding:1.25rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(124,58,237,0.25);">
-                        <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">📦 Total Vendido</div>
-                        <div style="font-size:1.9rem;font-weight:900;">${fmtQty(grand_qty)}</div>
-                        <div style="font-size:0.75rem;opacity:0.75;margin-top:0.2rem;">unidades em ${year}</div>
-                    </div>
-                    <div style="background:linear-gradient(135deg,#059669,#6ee7b7);border-radius:14px;padding:1.25rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(5,150,105,0.25);">
-                        <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">💰 Receita Total</div>
-                        <div style="font-size:1.5rem;font-weight:900;">${fmt(grand_total)}</div>
-                        <div style="font-size:0.75rem;opacity:0.75;margin-top:0.2rem;">todos os produtos</div>
-                    </div>
-                    <div style="background:linear-gradient(135deg,#0891b2,#67e8f9);border-radius:14px;padding:1.25rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(8,145,178,0.25);">
-                        <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">📋 Produtos Cad.</div>
-                        <div style="font-size:1.9rem;font-weight:900;">${data.length}</div>
-                        <div style="font-size:0.75rem;opacity:0.75;margin-top:0.2rem;">${data.filter(p => p.total_qty > 0).length} com vendas</div>
-                    </div>
-                </div>
+            const getSorted = (type) => {
+                if (type === 'az')    return [...allRows].sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+                if (type === 'mais')  return [...allRows].sort((a, b) => b.qty - a.qty);
+                if (type === 'menos') return [...allRows].sort((a, b) => {
+                    if (a.qty === 0 && b.qty === 0) return a.name.localeCompare(b.name, 'pt-BR');
+                    if (a.qty === 0) return 1;
+                    if (b.qty === 0) return -1;
+                    return a.qty - b.qty;
+                });
+                return allRows;
+            };
 
-                <!-- Table -->
-                <div style="background:white;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
-                    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid #f1f5f9;background:#faf9ff;">
-                        <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed;">📋 Todos os Produtos — ${year}</div>
-                        <div style="font-size:0.8rem;color:#64748b;font-weight:500;">${data.length} produtos cadastrados</div>
-                    </div>
-                    <div style="overflow-x:auto;">
-                        <table style="width:100%;border-collapse:collapse;">
-                            <thead>
-                                <tr style="background:#f8fafc;">
-                                    <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:center;width:40px;">#</th>
-                                    <th style="padding:0.6rem 0.5rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:left;">Produto</th>
-                                    <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:right;">Valor Unit.</th>
-                                    <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:center;">Qtd Vendida</th>
-                                    <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:right;">Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>${rows}</tbody>
-                            <tfoot>
-                                <tr style="background:linear-gradient(135deg,rgba(124,58,237,0.06),rgba(139,92,246,0.04));border-top:2px solid rgba(124,58,237,0.15);">
-                                    <td colspan="3" style="padding:0.9rem 1rem;font-size:0.85rem;font-weight:800;color:#4b5563;">TOTAL GERAL</td>
-                                    <td style="padding:0.9rem 1rem;font-size:0.875rem;font-weight:900;color:#7c3aed;text-align:center;">${fmtQty(grand_qty)}</td>
-                                    <td style="padding:0.9rem 1rem;font-size:0.875rem;font-weight:900;color:#059669;text-align:right;white-space:nowrap;">${fmt(grand_total)}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>`;
+            const buildRows = (rows) => {
+                const maxQty = Math.max(...rows.map(r => r.qty), 1);
+                return rows.map((p, i) => {
+                    const hasSales = p.qty > 0;
+                    const pct = ((p.qty / maxQty) * 100).toFixed(1);
+                    const trStyle = "border-bottom:1px solid #f1f5f9;";
+                    return "<tr style=\"" + trStyle + "\" onmouseover=\"this.style.background='#f8f7ff'\" onmouseout=\"this.style.background=''\">"
+                        + "<td style=\"padding:0.65rem 0.75rem;font-size:0.78rem;font-weight:800;color:#94a3b8;text-align:center;\">" + (hasSales ? (i + 1) : "-") + "</td>"
+                        + "<td style=\"padding:0.65rem 0.5rem;font-size:0.875rem;font-weight:600;color:#1e293b;\">" + p.name + "</td>"
+                        + "<td style=\"padding:0.65rem 0.75rem;font-size:0.85rem;font-weight:700;color:#7c3aed;text-align:right;white-space:nowrap;\">" + fmt(p.unit_price) + "</td>"
+                        + "<td style=\"padding:0.65rem 0.75rem;text-align:center;\"><div style=\"display:flex;align-items:center;gap:0.5rem;\"><div style=\"flex:1;height:7px;background:#e2e8f0;border-radius:999px;overflow:hidden;min-width:50px;\"><div style=\"height:100%;width:" + pct + "%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:999px;\"></div></div><span style=\"font-size:0.85rem;font-weight:800;color:#334155;min-width:28px;text-align:right;\">" + fmtN(p.qty) + "</span></div></td>"
+                        + "<td style=\"padding:0.65rem 0.75rem;font-size:0.875rem;font-weight:800;color:" + (hasSales ? "#059669" : "#94a3b8") + ";text-align:right;white-space:nowrap;\">" + fmt(p.total) + "</td>"
+                        + "</tr>";
+                }).join("");
+            };
+
+            el.innerHTML =
+                '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">'
+              +   '<div style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:14px;padding:1.2rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(124,58,237,0.25);">'
+              +     '<div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">Total Vendido</div>'
+              +     '<div style="font-size:1.9rem;font-weight:900;">' + fmtN(grandQty) + '</div>'
+              +     '<div style="font-size:0.72rem;opacity:0.75;margin-top:0.2rem;">unidades em ' + year + '</div>'
+              +   '</div>'
+              +   '<div style="background:linear-gradient(135deg,#059669,#6ee7b7);border-radius:14px;padding:1.2rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(5,150,105,0.25);">'
+              +     '<div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">Receita Estimada</div>'
+              +     '<div style="font-size:1.4rem;font-weight:900;">' + fmt(grandTotal) + '</div>'
+              +     '<div style="font-size:0.72rem;opacity:0.75;margin-top:0.2rem;">todos os produtos</div>'
+              +   '</div>'
+              +   '<div style="background:linear-gradient(135deg,#0891b2,#67e8f9);border-radius:14px;padding:1.2rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(8,145,178,0.25);">'
+              +     '<div style="font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">Produtos Cad.</div>'
+              +     '<div style="font-size:1.9rem;font-weight:900;">' + products.length + '</div>'
+              +     '<div style="font-size:0.72rem;opacity:0.75;margin-top:0.2rem;">' + allRows.filter(r => r.qty > 0).length + ' com vendas</div>'
+              +   '</div>'
+              + '</div>'
+              + '<div style="background:white;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);">'
+              +   '<div style="display:flex;align-items:center;justify-content:space-between;padding:0.9rem 1.25rem;border-bottom:1px solid #f1f5f9;background:#faf9ff;flex-wrap:wrap;gap:0.75rem;">'
+              +     '<div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed;">Todos os Produtos &mdash; ' + year + '</div>'
+              +     '<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">'
+              +       '<div style="display:flex;gap:0.3rem;background:#f1f5f9;padding:0.25rem;border-radius:10px;">'
+              +         '<button class="sum-sort active" data-sort="mais"  style="padding:0.32rem 0.8rem;border-radius:7px;border:none;background:var(--primary,#8b5cf6);color:white;font-size:0.74rem;font-weight:700;cursor:pointer;transition:all 0.18s;white-space:nowrap;">&#8595; Mais Vendido</button>'
+              +         '<button class="sum-sort"        data-sort="menos" style="padding:0.32rem 0.8rem;border-radius:7px;border:none;background:transparent;color:#64748b;font-size:0.74rem;font-weight:700;cursor:pointer;transition:all 0.18s;white-space:nowrap;">&#8593; Menos Vendido</button>'
+              +         '<button class="sum-sort"        data-sort="az"    style="padding:0.32rem 0.8rem;border-radius:7px;border:none;background:transparent;color:#64748b;font-size:0.74rem;font-weight:700;cursor:pointer;transition:all 0.18s;white-space:nowrap;">A &#8594; Z</button>'
+              +       '</div>'
+              +       '<button id="btn-export-summary" style="display:inline-flex;align-items:center;gap:0.35rem;padding:0.35rem 0.9rem;border:none;border-radius:8px;cursor:pointer;font-size:0.74rem;font-weight:700;background:linear-gradient(135deg,#16a34a,#15803d);color:white;box-shadow:0 2px 8px rgba(22,163,74,0.3);transition:all 0.18s;white-space:nowrap;"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Exportar Excel</button>'
+              +     '</div>'
+              +   '</div>'
+              +   '<div style="overflow-x:auto;">'
+              +     '<table style="width:100%;border-collapse:collapse;">'
+              +       '<thead><tr style="background:#f8fafc;">'
+              +         '<th style="padding:0.55rem 0.75rem;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;text-align:center;width:36px;">#</th>'
+              +         '<th style="padding:0.55rem 0.5rem;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;text-align:left;">Produto</th>'
+              +         '<th style="padding:0.55rem 0.75rem;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;text-align:right;">Valor Unit.</th>'
+              +         '<th style="padding:0.55rem 0.75rem;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;text-align:center;">Qtd Vendida</th>'
+              +         '<th style="padding:0.55rem 0.75rem;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;text-align:right;">Total</th>'
+              +       '</tr></thead>'
+              +       '<tbody id="sum-tbody">' + buildRows(getSorted('mais')) + '</tbody>'
+              +       '<tfoot><tr style="background:rgba(124,58,237,0.05);border-top:2px solid rgba(124,58,237,0.15);">'
+              +         '<td colspan="3" style="padding:0.85rem 0.75rem;font-size:0.82rem;font-weight:800;color:#374151;">TOTAL GERAL</td>'
+              +         '<td style="padding:0.85rem 0.75rem;font-size:0.875rem;font-weight:900;color:#7c3aed;text-align:center;">' + fmtN(grandQty) + '</td>'
+              +         '<td style="padding:0.85rem 0.75rem;font-size:0.875rem;font-weight:900;color:#059669;text-align:right;white-space:nowrap;">' + fmt(grandTotal) + '</td>'
+              +       '</tr></tfoot>'
+              +     '</table>'
+              +   '</div>'
+              + '</div>';
+
+            // Wire sort buttons
+            el.querySelectorAll('.sum-sort').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    el.querySelectorAll('.sum-sort').forEach(b => {
+                        b.style.background = 'transparent';
+                        b.style.color = '#64748b';
+                    });
+                    btn.style.background = 'var(--primary, #8b5cf6)';
+                    btn.style.color = 'white';
+                    const tbody = el.querySelector('#sum-tbody');
+                    if (tbody) tbody.innerHTML = buildRows(getSorted(btn.dataset.sort));
+                });
+            });
+
+            // Wire summary Excel export
+            const exportSumBtn = el.querySelector('#btn-export-summary');
+            if (exportSumBtn) {
+                exportSumBtn.addEventListener('click', () => {
+                    // Get current sort order from active button
+                    const activeSort = el.querySelector('.sum-sort.active');
+                    const sortType = activeSort ? activeSort.dataset.sort : 'mais';
+                    const sortedRows = getSorted(sortType);
+
+                    const thS = 'background:#16a34a;color:white;font-weight:bold;padding:7px 12px;border:1px solid #14532d;';
+                    const tdS = 'padding:6px 12px;border:1px solid #e2e8f0;';
+                    const tdR = 'padding:6px 12px;border:1px solid #e2e8f0;text-align:right;';
+                    const trA = 'background:#f0fdf4;';
+
+                    let html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
+                    html += '<head><meta charset="UTF-8">';
+                    html += '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>';
+                    html += '<x:ExcelWorksheet><x:Name>Resumo Geral ' + year + '</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>';
+                    html += '</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+                    html += '<table border="1" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;">';
+
+                    // Header
+                    html += '<tr>';
+                    ['#', 'Produto', 'Valor Unit. (R$)', 'Qtd Vendida', 'Total (R$)'].forEach(h => {
+                        html += '<th style="' + thS + '">' + h + '</th>';
+                    });
+                    html += '</tr>';
+
+                    // Rows
+                    sortedRows.forEach((p, i) => {
+                        const hasSales = p.qty > 0;
+                        const rowStyle = i % 2 === 1 ? ' style="' + trA + '"' : '';
+                        html += '<tr' + rowStyle + '>';
+                        html += '<td style="' + tdR + '">' + (hasSales ? (i + 1) : '-') + '</td>';
+                        html += '<td style="' + tdS + '">' + p.name + '</td>';
+                        html += '<td style="' + tdR + '">' + parseFloat(p.unit_price || 0).toFixed(2).replace('.', ',') + '</td>';
+                        html += '<td style="' + tdR + '">' + p.qty + '</td>';
+                        html += '<td style="' + tdR + '">' + parseFloat(p.total || 0).toFixed(2).replace('.', ',') + '</td>';
+                        html += '</tr>';
+                    });
+
+                    // Total row
+                    html += '<tr style="background:#f5f3ff;font-weight:bold;border-top:2px solid #7c3aed;">';
+                    html += '<td style="' + tdS + '" colspan="3">TOTAL GERAL</td>';
+                    html += '<td style="' + tdR + '">' + grandQty + '</td>';
+                    html += '<td style="' + tdR + '">' + parseFloat(grandTotal).toFixed(2).replace('.', ',') + '</td>';
+                    html += '</tr>';
+
+                    html += '</table></body></html>';
+
+                    const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Resumo_Geral_Produtos_' + year + '.xls';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                });
+            }
 
         } catch(err) {
             const el2 = container.querySelector('#dmd-content');
-            if (el2) el2.innerHTML = `<div style="text-align:center;padding:2rem;color:#ef4444;">\u274c Erro ao carregar: ${err.message}</div>`;
+            if (el2) el2.innerHTML = '<div style="text-align:center;padding:2rem;color:#ef4444;">&#10060; Erro: ' + err.message + '</div>';
         }
     };
 
-    // Excel Export
+        // Excel Export
     const exportToExcel = () => {
         if (!demandData) { alert('Aguarde os dados carregarem!'); return; }
 
