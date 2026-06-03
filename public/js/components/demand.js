@@ -8,14 +8,18 @@ export const render = () => {
 
     container.innerHTML = `
         <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 2rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom: 2rem;">
             <div style="display:flex; flex-direction:column; gap:0.2rem;">
                 <h2 style="font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, var(--primary), #4c1d95); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin:0; letter-spacing: -0.03em;">
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:middle; margin-right:0.2rem; color:var(--primary);"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-                    Demanda de Produtos
+                    Ranking de Produtos
                 </h2>
                 <p style="color: #64748b; margin: 0; font-size: 0.95rem; font-weight:500; white-space: nowrap;">Análise de giro e popularidade dos itens vendidos.</p>
             </div>
+            <button id="btn-export-excel" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.65rem 1.4rem;border:none;border-radius:12px;cursor:pointer;font-size:0.875rem;font-weight:800;letter-spacing:0.01em;background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);color:white;box-shadow:0 4px 16px rgba(22,163,74,0.35),0 1px 0 rgba(255,255,255,0.15) inset;transition:all 0.22s cubic-bezier(0.4,0,0.2,1);white-space:nowrap;flex-shrink:0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h4a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+                Exportar Excel
+            </button>
         </div>
         <div style="max-width:960px;">
 
@@ -34,6 +38,16 @@ export const render = () => {
                     🗓️ Anual
                 </button>
             </div>
+            <button id="btn-summary" style="
+                display:inline-flex;align-items:center;gap:0.45rem;
+                padding:0.55rem 1.2rem;border:none;border-radius:9px;cursor:pointer;
+                font-size:0.87rem;font-weight:700;
+                background:linear-gradient(135deg,#0891b2 0%,#0e7490 100%);
+                color:white;box-shadow:0 3px 12px rgba(8,145,178,0.35);
+                transition:all 0.2s;white-space:nowrap;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                Resumo Geral
+            </button>
 
             <!-- Content area -->
             <div id="dmd-content">
@@ -399,6 +413,198 @@ export const render = () => {
 
     // ───────────────────────── Load ─────────────────────────
 
+    // Summary panel
+    const renderSummary = async () => {
+        const el = container.querySelector('#dmd-content');
+        el.innerHTML = `<div style="text-align:center;padding:3rem;color:#94a3b8;"><div style="font-size:1.8rem;margin-bottom:0.5rem;">⏳</div>Carregando resumo...</div>`;
+
+        try {
+            const res = await fetch('/api/reports/product-summary');
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const json = await res.json();
+            const { data, grand_total, grand_qty, year } = json;
+
+            const fmt = (v) => 'R$�' + parseFloat(v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const fmtQty = (v) => parseFloat(v || 0).toLocaleString('pt-BR');
+
+            // Sort: most sold first
+            const sorted = [...data].sort((a, b) => b.total_qty - a.total_qty);
+
+            const rows = sorted.map((p, i) => {
+                const hasSales = p.total_qty > 0;
+                const pct = grand_qty > 0 ? ((p.total_qty / grand_qty) * 100).toFixed(1) : '0.0';
+                return `
+                <tr style="border-bottom:1px solid #f1f5f9; transition:background 0.15s;" 
+                    onmouseover="this.style.background='#f8f7ff'" onmouseout="this.style.background=''">
+                    <td style="padding:0.7rem 1rem;font-size:0.78rem;font-weight:800;color:#94a3b8;text-align:center;width:40px;">${hasSales ? (i+1) : '-'}</td>
+                    <td style="padding:0.7rem 0.5rem;font-size:0.875rem;font-weight:600;color:#1e293b;">${p.name}</td>
+                    <td style="padding:0.7rem 1rem;font-size:0.85rem;font-weight:700;color:#7c3aed;text-align:right;white-space:nowrap;">${fmt(p.unit_price)}</td>
+                    <td style="padding:0.7rem 1rem;text-align:center;">
+                        <div style="display:flex;align-items:center;gap:0.5rem;">
+                            <div style="flex:1;height:7px;background:#e2e8f0;border-radius:999px;overflow:hidden;min-width:60px;">
+                                <div style="height:100%;width:${hasSales ? pct : 0}%;background:linear-gradient(90deg,#7c3aed,#a78bfa);border-radius:999px;transition:width 0.8s ease;"></div>
+                            </div>
+                            <span style="font-size:0.85rem;font-weight:800;color:#334155;min-width:30px;text-align:right;">${fmtQty(p.total_qty)}</span>
+                        </div>
+                    </td>
+                    <td style="padding:0.7rem 1rem;font-size:0.875rem;font-weight:800;color:${hasSales ? '#059669' : '#94a3b8'};text-align:right;white-space:nowrap;">${fmt(p.total_value)}</td>
+                </tr>`;
+            }).join('');
+
+            el.innerHTML = `
+                <!-- Summary Header -->
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem;">
+                    <div style="background:linear-gradient(135deg,#7c3aed,#a78bfa);border-radius:14px;padding:1.25rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(124,58,237,0.25);">
+                        <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">📦 Total Vendido</div>
+                        <div style="font-size:1.9rem;font-weight:900;">${fmtQty(grand_qty)}</div>
+                        <div style="font-size:0.75rem;opacity:0.75;margin-top:0.2rem;">unidades em ${year}</div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#059669,#6ee7b7);border-radius:14px;padding:1.25rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(5,150,105,0.25);">
+                        <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">💰 Receita Total</div>
+                        <div style="font-size:1.5rem;font-weight:900;">${fmt(grand_total)}</div>
+                        <div style="font-size:0.75rem;opacity:0.75;margin-top:0.2rem;">todos os produtos</div>
+                    </div>
+                    <div style="background:linear-gradient(135deg,#0891b2,#67e8f9);border-radius:14px;padding:1.25rem 1.5rem;color:white;box-shadow:0 4px 16px rgba(8,145,178,0.25);">
+                        <div style="font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.85;margin-bottom:0.4rem;">📋 Produtos Cad.</div>
+                        <div style="font-size:1.9rem;font-weight:900;">${data.length}</div>
+                        <div style="font-size:0.75rem;opacity:0.75;margin-top:0.2rem;">${data.filter(p => p.total_qty > 0).length} com vendas</div>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div style="background:white;border-radius:16px;border:1px solid #e2e8f0;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);">
+                    <div style="display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid #f1f5f9;background:#faf9ff;">
+                        <div style="font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:#7c3aed;">📋 Todos os Produtos — ${year}</div>
+                        <div style="font-size:0.8rem;color:#64748b;font-weight:500;">${data.length} produtos cadastrados</div>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead>
+                                <tr style="background:#f8fafc;">
+                                    <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:center;width:40px;">#</th>
+                                    <th style="padding:0.6rem 0.5rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:left;">Produto</th>
+                                    <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:right;">Valor Unit.</th>
+                                    <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:center;">Qtd Vendida</th>
+                                    <th style="padding:0.6rem 1rem;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:#94a3b8;text-align:right;">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>${rows}</tbody>
+                            <tfoot>
+                                <tr style="background:linear-gradient(135deg,rgba(124,58,237,0.06),rgba(139,92,246,0.04));border-top:2px solid rgba(124,58,237,0.15);">
+                                    <td colspan="3" style="padding:0.9rem 1rem;font-size:0.85rem;font-weight:800;color:#4b5563;">TOTAL GERAL</td>
+                                    <td style="padding:0.9rem 1rem;font-size:0.875rem;font-weight:900;color:#7c3aed;text-align:center;">${fmtQty(grand_qty)}</td>
+                                    <td style="padding:0.9rem 1rem;font-size:0.875rem;font-weight:900;color:#059669;text-align:right;white-space:nowrap;">${fmt(grand_total)}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>`;
+
+        } catch(err) {
+            const el2 = container.querySelector('#dmd-content');
+            if (el2) el2.innerHTML = `<div style="text-align:center;padding:2rem;color:#ef4444;">\u274c Erro ao carregar: ${err.message}</div>`;
+        }
+    };
+
+    // Excel Export
+    const exportToExcel = () => {
+        if (!demandData) { alert('Aguarde os dados carregarem!'); return; }
+
+        const btn = container.querySelector('#btn-export-excel');
+        const origHTML = btn ? btn.innerHTML : '';
+        if (btn) { btn.disabled = true; btn.textContent = '\u23F3 Gerando...'; }
+
+        try {
+            const year = demandData.year || new Date().getFullYear();
+            const monthNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+            // Build multi-sheet XLS (HTML format that Excel reads natively)
+            let html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" ';
+            html += 'xmlns:x="urn:schemas-microsoft-com:office:excel" ';
+            html += 'xmlns="http://www.w3.org/TR/REC-html40">';
+            html += '<head><meta charset="UTF-8">';
+            html += '<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>';
+
+            const sheets = [];
+
+            // Prepare Annual sheet
+            if (demandData.annual) {
+                const rows = [['#', 'Produto', 'Qtd Vendida']];
+                (demandData.annual.top || []).forEach((it, i) => rows.push([i+1, it.product_name, it.total_qty]));
+                if ((demandData.annual.bottom || []).length > 0) {
+                    rows.push(['','Menos Vendidos','']);
+                    (demandData.annual.bottom || []).forEach((it, i) => rows.push([i+1, it.product_name, it.total_qty]));
+                }
+                sheets.push({ name: 'Anual ' + year, rows });
+            }
+
+            // Prepare Monthly sheet
+            if (demandData.months) {
+                const rows = [['M\xeas', 'Posi\xe7\xe3o', 'Produto', 'Qtd Vendida', 'Tipo']];
+                demandData.months.forEach((m, mi) => {
+                    const mn = monthNames[mi] || ('M\xeas '+(mi+1));
+                    (m.top||[]).forEach((it,i) => rows.push([mn,'#'+(i+1), it.product_name, it.total_qty, 'Mais Vendido']));
+                    (m.bottom||[]).forEach((it,i) => rows.push([mn,'#'+(i+1), it.product_name, it.total_qty, 'Menos Vendido']));
+                });
+                sheets.push({ name: 'Mensal ' + year, rows });
+            }
+
+            // Prepare Quarterly sheet
+            if (demandData.quarters) {
+                const rows = [['Trimestre', 'Posi\xe7\xe3o', 'Produto', 'Qtd Vendida', 'Tipo']];
+                demandData.quarters.forEach(q => {
+                    (q.top||[]).forEach((it,i) => rows.push([q.label,'#'+(i+1), it.product_name, it.total_qty, 'Mais Vendido']));
+                    (q.bottom||[]).forEach((it,i) => rows.push([q.label,'#'+(i+1), it.product_name, it.total_qty, 'Menos Vendido']));
+                });
+                sheets.push({ name: 'Trimestral ' + year, rows });
+            }
+
+            sheets.forEach(s => {
+                html += '<x:ExcelWorksheet><x:Name>' + s.name + '</x:Name>';
+                html += '<x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet>';
+            });
+            html += '</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body>';
+
+            const thStyle = 'background:#7c3aed;color:white;font-weight:bold;padding:7px 12px;border:1px solid #5b21b6;';
+            const tdStyle = 'padding:6px 12px;border:1px solid #e2e8f0;';
+            const trAlt = 'background:#f8f7ff;';
+
+            sheets.forEach(s => {
+                html += '<table ss:Sheet="' + s.name + '" border="1" style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;">';
+                s.rows.forEach((row, ri) => {
+                    html += ri % 2 === 0 && ri > 0 ? '<tr style="' + trAlt + '">' : '<tr>';
+                    row.forEach(cell => {
+                        if (ri === 0) {
+                            html += '<th style="' + thStyle + '">' + String(cell) + '</th>';
+                        } else {
+                            html += '<td style="' + tdStyle + '">' + String(cell) + '</td>';
+                        }
+                    });
+                    html += '</tr>';
+                });
+                html += '</table><br/>';
+            });
+
+            html += '</body></html>';
+
+            const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Ranking_Produtos_' + year + '.xls';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+        } catch(err) {
+            alert('Erro ao exportar: ' + err.message);
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerHTML = origHTML; }
+        }
+    };
+
+
     const load = async () => {
         try {
             const res = await fetch('/api/reports/product-demand');
@@ -429,5 +635,23 @@ export const render = () => {
     });
 
     load();
+
+    const exportBtn = container.querySelector('#btn-export-excel');
+    if (exportBtn) exportBtn.addEventListener('click', exportToExcel);
+
+    const summaryBtn = container.querySelector('#btn-summary');
+    if (summaryBtn) {
+        summaryBtn.addEventListener('mouseover', () => { summaryBtn.style.transform='translateY(-2px)'; summaryBtn.style.boxShadow='0 6px 20px rgba(8,145,178,0.5)'; });
+        summaryBtn.addEventListener('mouseout', () => { summaryBtn.style.transform=''; summaryBtn.style.boxShadow='0 3px 12px rgba(8,145,178,0.35)'; });
+        summaryBtn.addEventListener('click', () => {
+            // Deactivate all tabs
+            container.querySelectorAll('.dmd-tab').forEach(b => {
+                b.style.background = 'transparent'; b.style.color = '#64748b'; b.classList.remove('active');
+            });
+            summaryBtn.style.background = 'linear-gradient(135deg,#0e7490,#0891b2)';
+            renderSummary();
+        });
+    }
+
     return container;
 };

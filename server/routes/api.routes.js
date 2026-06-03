@@ -96,6 +96,8 @@ router.post('/orders/open-folder', orderController.openFolder);
 router.get('/reports/material-costs', orderController.getMaterialCostsReport);
 // Product demand report (monthly & quarterly)
 router.get('/reports/product-demand', orderController.getProductDemand);
+// Product summary — all products with qty sold, unit price and total value
+router.get('/reports/product-summary', orderController.getProductSummary);
 
 // Dispatch costs report
 router.get('/reports/dispatch-costs', orderController.getDispatchCosts);
@@ -255,6 +257,7 @@ router.get('/debug-cat', (req, res) => {
 const chatController = require('../controllers/chat_controller');
 router.get('/chat/stream', chatController.stream);
 router.get('/chat/history', chatController.getHistory);
+router.get('/chat/new', chatController.getNewMessages);
 router.post('/chat/message', chatController.sendMessage);
 router.post('/chat/upload', upload.single('image'), chatController.uploadImage);
 router.put('/chat/message/:id', chatController.editMessage);
@@ -367,12 +370,14 @@ router.get('/reminders', reminderController.getAll);
 router.get('/reminders/pending-count', reminderController.getPendingCount);
 router.post('/reminders', reminderController.create);
 router.put('/reminders/reorder', reminderController.updateOrder);
-router.put('/reminders/:id', reminderController.update);
 router.put('/reminders/:id/toggle', reminderController.toggle);
+router.put('/reminders/:id/pin', reminderController.togglePin);
+router.put('/reminders/:id', reminderController.update);
 router.delete('/reminders/:id', reminderController.remove);
 
 // Menu Orders (Cardápios para lançar no CORE)
 const menuOrdersController = require('../controllers/menu_orders_controller');
+router.get('/menu-orders/print-prices', menuOrdersController.getPrintPrices);
 router.get('/menu-orders', menuOrdersController.getAll);
 router.post('/menu-orders', menuOrdersController.create);
 router.put('/menu-orders/reorder', menuOrdersController.updateOrder);

@@ -45,6 +45,7 @@ export const render = (user, onLogout, onNavigate) => {
 
     // Determine Menu Items based on Role
     const canSeeFinance = ['master', 'financeiro'].includes(user.role);
+    const canSeeRanking = ['master', 'financeiro', 'producao'].includes(user.role);
 
     // Inline SVG icons — no external dependency, always visible
     const icons = {        kanban: `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>`,
@@ -188,9 +189,14 @@ export const render = (user, onLogout, onNavigate) => {
                 ${icons.financial} <span class="nav-text" translate="no">FINANCEIRO</span>
             </a>
         </li>
+        `;
+    }
+
+    if (canSeeRanking) {
+        menuItems += `
         <li class="nav-item">
-            <a class="nav-link" id="nav-demand" data-view="demand" title="DEMANDA DE PRODUTOS">
-                ${icons.demand} <span class="nav-text" translate="no">DEMANDA</span>
+            <a class="nav-link" id="nav-demand" data-view="demand" title="RANKING DE PRODUTOS">
+                ${icons.demand} <span class="nav-text" translate="no">RANKING</span>
             </a>
         </li>
         `;
