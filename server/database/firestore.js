@@ -456,7 +456,9 @@ function parseSetColumns(setClause, params) {
             } else if (valUpper === 'NULL' || valUpper === 'NONE') {
                 result[col] = null;
             } else {
-                result[col] = valExpr.replace(/['"]/g, '');
+                const cleaned = valExpr.replace(/['"]/g, '');
+                // Se for numero literal (inteiro ou decimal), converte para numero
+                result[col] = /^-?\d+(\.\d+)?$/.test(cleaned) ? Number(cleaned) : cleaned;
             }
         }
     });
