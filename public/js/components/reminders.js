@@ -933,9 +933,8 @@ export const render = (user) => {
                 <div class="rm-field" style="margin-top:0.5rem;">
                     <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; user-select:none; font-weight:600; color:#7c3aed;">
                         <input id="menu-inp-discount-close" type="checkbox" style="width:18px; height:18px; accent-color:#7c3aed; cursor:pointer; flex-shrink:0;"/>
-                        <span>?? Descontar no Fechamento do Evento</span>
-                    </label>
-                    <small style="color:#6b7280; font-size:0.78rem; margin-left:26px; display:block;">Marque se o valor deste cardápio deve ser descontado no fechamento do evento. Esta observação aparecerá no financeiro.</small>
+                        <span>&#9888;&#65039; Descontar no Fechamento do Evento</span>
+                     <small style="color:#6b7280; font-size:0.78rem; margin-left:26px; display:block;">Marque se o valor deste cardápio deve ser descontado no fechamento do evento. Esta observação aparecerá no financeiro.</small>
                 </div>
 
             </div>

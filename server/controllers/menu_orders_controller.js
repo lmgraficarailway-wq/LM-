@@ -165,11 +165,11 @@ const launchToCore = (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!row) return res.status(404).json({ error: 'Cardápio não encontrado.' });
 
-        const isUnlaunching = parseInt(row.launched_to_core) === 1;
+        const isUnlaunching = parseInt(row.launched_to_core) === 1 || row.launched_to_core == 1 || row.status === 'lan�ado';
 
         if (isUnlaunching) {
             revertOrderData(row, userId, () => {
-                db.run(`UPDATE menu_orders SET launched_to_core = 0, status = 'pendente', order_id = NULL, launched_at = NULL WHERE id = ?`, [id], function(e) {
+                db.run(`UPDATE menu_orders SET launched_to_core = ?, status = 'pendente', order_id = NULL, launched_at = NULL WHERE id = ?`, [0, id], function(e) {
                     if (e) return res.status(500).json({ error: e.message });
                     res.json({ success: true, launched_to_core: 0 });
                 });
@@ -220,7 +220,7 @@ const launchToCore = (req, res) => {
                                     [productId, -row.quantity, `Cardápio (CORE) Pedido #${orderId}`, userId]);
 
                                 // Finally update the menu_order itself
-                                db.run(`UPDATE menu_orders SET launched_to_core = 1, status = 'lançado', order_id = ?, launched_at = CURRENT_TIMESTAMP WHERE id = ?`, [orderId, id], function(e) {
+                                db.run(`UPDATE menu_orders SET launched_to_core = ?, status = 'lan�ado', order_id = ?, launched_at = CURRENT_TIMESTAMP WHERE id = ?`, [1, orderId, id], function(e) {
                                     if (e) return res.status(500).json({ error: e.message });
                                     res.json({ success: true, launched_to_core: 1, order_id: orderId, launched_at: new Date().toISOString() });
                                 });
