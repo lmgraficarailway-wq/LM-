@@ -930,11 +930,14 @@ export const render = (user) => {
                     <input id="menu-inp-price" type="number" min="0" step="0.01" placeholder="Ex: 1.50" style="font-size:1rem;"/>
                     <small style="color:#6b7280; font-size:0.78rem;">Valor unit√°rio da impress√£o. O total ser√° calculado automaticamente.</small>
                 </div>
-                <div class="rm-field" style="margin-top:0.5rem;">
-                    <label style="display:flex; align-items:center; gap:0.6rem; cursor:pointer; user-select:none; font-weight:600; color:#7c3aed;">
-                        <input id="menu-inp-discount-close" type="checkbox" style="width:18px; height:18px; accent-color:#7c3aed; cursor:pointer; flex-shrink:0;"/>
-                        <span>&#9888;&#65039; Descontar no Fechamento do Evento</span>
-                     <small style="color:#6b7280; font-size:0.78rem; margin-left:26px; display:block;">Marque se o valor deste card·pio deve ser descontado no fechamento do evento. Esta observaÁ„o aparecer· no financeiro.</small>
+                <div class="rm-field" style="margin-top:0.25rem;">
+                    <label for="menu-inp-discount-close" style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; user-select:none;">
+                        <input id="menu-inp-discount-close" type="checkbox" style="width:16px; height:16px; accent-color:#7c3aed; cursor:pointer; flex-shrink:0; margin-top:3px;"/>
+                        <div>
+                            <span style="font-weight:600; color:#374151; font-size:0.9rem;">Descontar no Fechamento do Evento</span>
+                            <small style="display:block; color:#6b7280; font-size:0.78rem; margin-top:2px;">Marque se o valor deste card·pio deve ser descontado no fechamento do evento. A informaÁ„o aparecer· no financeiro.</small>
+                        </div>
+                    </label>
                 </div>
 
             </div>
