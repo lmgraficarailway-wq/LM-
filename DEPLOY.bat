@@ -5,38 +5,40 @@ title LM Passo - Deploy Completo
 echo.
 echo ============================================================
 echo          LM PASSO - DEPLOY COMPLETO
-echo   Railway (backend) + Firebase Hosting (frontend)
+echo   Cloud Run (API) + Firebase Hosting (frontend)
 echo ============================================================
 echo.
 
-:: ---- Pede mensagem do commit --------------------------------
-set /p MSG="Mensagem do commit (Enter para mensagem automatica): "
+set /p MSG="Mensagem do commit (Enter para automatico): "
 if "%MSG%"=="" set MSG=chore: atualizacao %date% %time%
 
-:: ---- 1. Git push para o Railway ----------------------------
-echo [1/2] Enviando para Railway (git push)...
-echo.
+:: ---- 1. Git push (backup/historico) -------------------------
+echo [1/3] Git push...
 git add -A
 git commit -m "%MSG%"
 git push origin master
+echo [OK] Git atualizado
+echo.
+
+:: ---- 2. Cloud Run (BACKEND REAL) ----------------------------
+echo [2/3] Deploy do backend no Cloud Run...
+echo       (aguarde 3-5 minutos)
+echo.
+cmd /c "gcloud run deploy lm-passo-api --source . --region southamerica-east1 --platform managed --allow-unauthenticated --min-instances 1 --max-instances 5 --memory 1Gi --cpu 1 --timeout 60 --set-env-vars NODE_ENV=production,USE_FIREBASE_STORAGE=true,USE_SQLITE=false --project lm-passo"
 
 if %errorlevel% neq 0 (
-    echo.
-    echo [ERRO] Falha no git push! Verifique acima.
+    echo [ERRO] Falha no deploy do Cloud Run!
     pause
     exit /b 1
 )
-echo.
-echo [OK] Railway atualizado!
+echo [OK] Cloud Run atualizado!
 echo.
 
-:: ---- 2. Firebase Hosting -----------------------------------
-echo [2/2] Publicando no Firebase Hosting...
-echo.
+:: ---- 3. Firebase Hosting (FRONTEND) -------------------------
+echo [3/3] Deploy do frontend no Firebase Hosting...
 cmd /c "firebase deploy --only hosting --project lm-passo"
 
 if %errorlevel% neq 0 (
-    echo.
     echo [ERRO] Falha no deploy do Firebase Hosting!
     pause
     exit /b 1
@@ -44,10 +46,9 @@ if %errorlevel% neq 0 (
 
 echo.
 echo ============================================================
-echo               DEPLOY CONCLUIDO COM SUCESSO!
+echo           DEPLOY CONCLUIDO COM SUCESSO!
 echo ------------------------------------------------------------
-echo   Railway (API):   https://lm-passo-api.railway.app
-echo   Firebase (App):  https://lm-passo.web.app
+echo   App: https://lm-passo.web.app
 echo ============================================================
 echo.
 pause
