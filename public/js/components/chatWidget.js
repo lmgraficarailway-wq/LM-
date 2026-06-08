@@ -793,6 +793,8 @@ export const initChatWidget = (user, parentContainer) => {
     let typingTimeout;
     let lastDateShown = null;
     let replyingTo = null; // { id, author, msg }
+    let lastMessageId = 0; // rastrea o último ID recebido (para polling e reconexão SSE)
+
 
     // ── Notificações Nativas (Web Notifications API) ──────
     // Pede permissão assim que o usuário interage pela primeira vez
@@ -1009,8 +1011,9 @@ export const initChatWidget = (user, parentContainer) => {
 
         let attachHtml = '';
         if (msgObj.attachment_url) {
-            const ext = msgObj.attachment_url.split('.').pop().toLowerCase();
-            const isImg = ['jpg','jpeg','png','gif','webp'].includes(ext);
+            const isBlob = msgObj.attachment_url.startsWith('blob:');
+            const ext = !isBlob ? msgObj.attachment_url.split('.').pop().toLowerCase() : '';
+            const isImg = ['jpg','jpeg','png','gif','webp'].includes(ext) || isBlob || msgObj.is_image_override;
             if (isImg) {
                 attachHtml = `<img src="${msgObj.attachment_url}" class="chat-msg-img" alt="Anexo" onclick="window.open('${msgObj.attachment_url}', '_blank')"><br>`;
             } else {
@@ -1064,7 +1067,10 @@ export const initChatWidget = (user, parentContainer) => {
         
         body.appendChild(wrap);
         scrollToBottom();
+        // Rastreia o maior ID para polling e reconexão SSE
+        if (msgObj.id && msgObj.id > lastMessageId) lastMessageId = msgObj.id;
     };
+
 
     // Garante container de toasts existe
     let toastContainer = document.getElementById('chat-toast-container');
@@ -1212,80 +1218,251 @@ export const initChatWidget = (user, parentContainer) => {
         .then(r => r.json())
         .then(data => { (data.messages || []).forEach(addMessage); });
 
-    // ── Enviar mensagem ───────────────────────────────────
-    form.onsubmit = async (e) => {
-        e.preventDefault();
-        const text = input.value.trim();
-        
-        if (!text && !selectedImageFile) return;
+    // ── Recebimento de mensagem nova (de outros usuários) ─────────────────────────────────────
+    const handleIncomingMessage = (msg) => {
+        // Verifica se já existe no DOM pelo ID real
+        if (body.querySelector(`[data-msg-id="${msg.id}"]`)) return;
 
-        // Visual instant feedback could be complex with pictures, so we wait for server slightly
-        const submitBtn = form.querySelector('.chat-send-btn');
-        submitBtn.disabled = true;
-        submitBtn.style.opacity = '0.5';
-
-        try {
-            let attachment_url = null;
-            if (selectedImageFile) {
-                const formData = new FormData();
-                formData.append('image', selectedImageFile);
-                const uploadRes = await fetch('/api/chat/upload', {
-                    method: 'POST',
-                    body: formData
-                });
-                const uploadData = await uploadRes.json();
-                if (uploadData.url) attachment_url = uploadData.url;
-                cancelAttachment();
+        // Se for do próprio usuário, verifica se há mensagem otimista (temp_*) para substituir
+        if (msg.user_id === user.id) {
+            const tempWrap = body.querySelector('[data-msg-id^="temp_"]');
+            if (tempWrap) {
+                tempWrap.dataset.msgId = msg.id;
+                // Atualiza lastMessageId
+                if (msg.id > lastMessageId) lastMessageId = msg.id;
+                return; // Já está visível (optimistic), só atualiza o ID
             }
+        }
 
-            input.value = '';
-            
-            fetch('/api/chat/typing', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ isTyping: false, user_id: user.id, user_name: user.name, user_role: user.role })
-            }).catch(() => {});
-
-            const payload = { message: text, user_id: user.id, user_name: user.name, user_role: user.role };
-            if (replyingTo) {
-                payload.reply_to_id = replyingTo.id;
-                payload.reply_to_author = replyingTo.author;
-                payload.reply_to_msg = replyingTo.msg;
-                cancelReply();
+        addMessage(msg);
+        if (msg.user_id !== user.id) {
+            if (!isOpen) {
+                unreadCount++;
+                badge.style.display = 'flex';
+                badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+                btn.classList.add('has-unread');
             }
-            if (attachment_url) {
-                payload.attachment_url = attachment_url;
-            }
-
-            await fetch('/api/chat/message', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
-            
-        } catch (err) { 
-            console.error('Erro ao enviar mensagem:', err); 
-            alert('Erro de conexão ao enviar mensagem');
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.style.opacity = '1';
+            showToast(msg.user_name, msg.user_role, msg.message, msg.author_avatar);
+            showNativeNotification(msg.user_name, msg.message, msg.author_avatar);
+            playNotificationSound();
         }
     };
 
-    // ── Typing ────────────────────────────────────────────
+    // ── SSE — canal em tempo real (primário) ──────────────────────────────────────────────────
+    let sseSource = null;
+    let sseFailCount = 0;
+
+    const connectSSE = () => {
+        if (sseSource) { try { sseSource.close(); } catch(e) {} }
+        try {
+            sseSource = new EventSource('/api/chat/stream');
+
+            sseSource.onmessage = (e) => {
+                try {
+                    const data = JSON.parse(e.data);
+                    if (!data || data.type === 'connected') return;
+
+                    if (data.type === 'message') {
+                        handleIncomingMessage(data);
+                    } else if (data.type === 'typing') {
+                        if (data.user_id !== user.id) {
+                            if (data.isTyping) {
+                                typingEl.innerHTML = `<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div> <span>${data.user_name} está digitando…</span>`;
+                                clearTimeout(typingTimeout);
+                                typingTimeout = setTimeout(() => { typingEl.innerHTML = ''; }, 3000);
+                            } else {
+                                typingEl.innerHTML = '';
+                            }
+                        }
+                    } else if (data.type === 'edit') {
+                        applyEdit(data);
+                    } else if (data.type === 'delete') {
+                        const wrap = body.querySelector(`[data-msg-id="${data.id}"]`);
+                        if (wrap) {
+                            wrap.classList.add('removing');
+                            setTimeout(() => wrap.remove(), 320);
+                        }
+                    }
+                } catch(ex) { /* JSON parse error, ignore */ }
+            };
+
+            sseSource.onopen = () => { sseFailCount = 0; };
+
+            sseSource.onerror = () => {
+                sseFailCount++;
+                try { sseSource.close(); } catch(e) {}
+                sseSource = null;
+                // Reconecta com backoff exponencial (máx 30s)
+                const delay = Math.min(1000 * Math.pow(2, sseFailCount - 1), 30000);
+                setTimeout(connectSSE, delay);
+            };
+        } catch(e) {
+            // SSE não suportado; polling cobre
+        }
+    };
+    connectSSE();
+
+    // ── Polling (fallback — a cada 3s, só quando aba visível) ────────────────────────────────
+    const pollNewMessages = async () => {
+        if (document.visibilityState !== 'visible') return;
+        if (sseSource && sseSource.readyState === EventSource.OPEN) return; // SSE ativo, sem necessidade de poll
+        try {
+            const r = await fetch(`/api/chat/new?after=${lastMessageId}`);
+            if (!r.ok) return;
+            const data = await r.json();
+            (data.messages || []).forEach(handleIncomingMessage);
+        } catch (e) { /* ignora erros de rede */ }
+    };
+    setInterval(pollNewMessages, 3000);
+
+    // ── Enviar mensagem ───────────────────────────────────
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        const text = input.value.trim();
+        const fileToSend = selectedImageFile;
+        
+        if (!text && !fileToSend) return;
+
+        // Captura estado antes de qualquer processamento assíncrono
+        const currentReply = replyingTo ? { ...replyingTo } : null;
+
+        // ── Limpa e feedback imediato na interface ──
+        input.value = '';
+        if (currentReply) cancelReply();
+        if (fileToSend) cancelAttachment();
+
+        const submitBtn = form.querySelector('.chat-send-btn');
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.5';
+        // Libera o botão de envio quase instantaneamente (100ms) para permitir novos envios
+        setTimeout(() => {
+            submitBtn.disabled = false;
+            submitBtn.style.opacity = '1';
+        }, 100);
+
+        // ── Optimistic Update: bolha aparece AGORA no DOM, com anexo/texto local ──
+        const tempId = `temp_${Date.now()}`;
+        const tempAttachmentUrl = fileToSend ? URL.createObjectURL(fileToSend) : null;
+        const isImageOverride = fileToSend && fileToSend.type.startsWith('image/');
+
+        const optimisticMsg = {
+            id: tempId,
+            user_id: user.id,
+            user_name: user.name,
+            user_role: user.role,
+            message: text || '',
+            created_at: new Date().toISOString(),
+            reply_to_id: currentReply ? currentReply.id : null,
+            reply_to_author: currentReply ? currentReply.author : null,
+            reply_to_msg: currentReply ? currentReply.msg : null,
+            attachment_url: tempAttachmentUrl,
+            is_image_override: isImageOverride,
+            author_avatar: null
+        };
+        addMessage(optimisticMsg);
+
+        // Processa o upload e a postagem em segundo plano de forma assíncrona
+        (async () => {
+            try {
+                let attachment_url = null;
+                if (fileToSend) {
+                    const formData = new FormData();
+                    formData.append('image', fileToSend);
+                    const uploadRes = await fetch('/api/chat/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    if (!uploadRes.ok) throw new Error('Erro no upload do anexo');
+                    const uploadData = await uploadRes.json();
+                    if (uploadData.url) {
+                        attachment_url = uploadData.url;
+                        
+                        // Atualiza a bolha otimista substituindo o Blob local pela URL final do servidor
+                        const tempWrap = body.querySelector(`[data-msg-id="${tempId}"]`);
+                        if (tempWrap) {
+                            const img = tempWrap.querySelector('.chat-msg-img');
+                            if (img && attachment_url) {
+                                img.src = attachment_url;
+                                img.setAttribute('onclick', `window.open('${attachment_url}', '_blank')`);
+                            }
+                            const docLink = tempWrap.querySelector('.chat-msg-doc-link');
+                            if (docLink && attachment_url) {
+                                docLink.href = attachment_url;
+                            }
+                        }
+                    }
+                }
+
+                // Dispara o typing: false ao enviar
+                fetch('/api/chat/typing', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ isTyping: false, user_id: user.id, user_name: user.name, user_role: user.role })
+                }).catch(() => {});
+
+                const payload = { message: text, user_id: user.id, user_name: user.name, user_role: user.role };
+                if (currentReply) {
+                    payload.reply_to_id = currentReply.id;
+                    payload.reply_to_author = currentReply.author;
+                    payload.reply_to_msg = currentReply.msg;
+                }
+                if (attachment_url) payload.attachment_url = attachment_url;
+
+                const res = await fetch('/api/chat/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) throw new Error('Erro ao salvar mensagem no servidor');
+                const resData = await res.json();
+
+                // Substitui o ID temporário pelo ID real do servidor
+                if (resData && resData.message && resData.message.id) {
+                    const tempWrap = body.querySelector(`[data-msg-id="${tempId}"]`);
+                    if (tempWrap) tempWrap.dataset.msgId = resData.message.id;
+                    if (resData.message.id > lastMessageId) lastMessageId = resData.message.id;
+                }
+
+            } catch (err) {
+                console.error('Erro no envio em background:', err);
+                // Remove a mensagem otimista em caso de erro real
+                const tempWrap = body.querySelector(`[data-msg-id="${tempId}"]`);
+                if (tempWrap) {
+                    tempWrap.classList.add('removing');
+                    setTimeout(() => tempWrap.remove(), 320);
+                }
+                alert('Erro de conexão ao enviar mensagem. Tente novamente.');
+            } finally {
+                // Revoga a URL do Blob para evitar vazamentos de memória
+                if (tempAttachmentUrl) {
+                    URL.revokeObjectURL(tempAttachmentUrl);
+                }
+            }
+        })();
+    };
+
+    // ── Typing com Throttling (3s) para evitar sobrecarga de requisições HTTP ──
+    let lastTypingSent = 0;
     input.addEventListener('input', () => {
         clearTimeout(typingTimeout);
-        fetch('/api/chat/typing', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ isTyping: true, user_id: user.id, user_name: user.name, user_role: user.role })
-        }).catch(() => {});
+        
+        const now = Date.now();
+        if (now - lastTypingSent > 3000) {
+            lastTypingSent = now;
+            fetch('/api/chat/typing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isTyping: true, user_id: user.id, user_name: user.name, user_role: user.role })
+            }).catch(() => {});
+        }
+
         typingTimeout = setTimeout(() => {
             fetch('/api/chat/typing', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ isTyping: false, user_id: user.id, user_name: user.name, user_role: user.role })
             }).catch(() => {});
+            lastTypingSent = 0; // Permite que a próxima tecla acione o typing instantaneamente
         }, 1500);
     });
 
@@ -1297,59 +1474,4 @@ export const initChatWidget = (user, parentContainer) => {
         }
     });
 
-    // ── SSE ───────────────────────────────────────────────
-    let evtSource;
-
-    const connectSSE = () => {
-        if (evtSource) evtSource.close();
-        
-        evtSource = new EventSource('/api/chat/stream');
-
-        evtSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === 'message') {
-                addMessage(data);
-                if (data.user_id !== user.id) {
-                    if (!isOpen) {
-                        unreadCount++;
-                        badge.style.display = 'flex';
-                        badge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-                        btn.classList.add('has-unread');
-                    }
-                    showToast(data.user_name, data.user_role, data.message, data.author_avatar);
-                    showNativeNotification(data.user_name, data.message, data.author_avatar);
-                    playNotificationSound();
-                }
-            } else if (data.type === 'delete') {
-                const wrapToRemove = body.querySelector(`.chat-bubble-wrap[data-msg-id="${data.id}"]`);
-                if (wrapToRemove) {
-                    wrapToRemove.classList.add('removing');
-                    setTimeout(() => wrapToRemove.remove(), 320);
-                }
-            } else if (data.type === 'typing') {
-                if (data.user_id === user.id) return;
-                if (data.isTyping) {
-                    typingEl.innerHTML = `
-                        <span style="opacity:0.8;">${data.user_name} digitando</span>
-                        <div class="typing-dots">
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                            <span class="typing-dot"></span>
-                        </div>`;
-                } else {
-                    typingEl.innerHTML = '';
-                }
-            } else if (data.type === 'edit') {
-                applyEdit(data);
-            }
-        };
-
-        evtSource.onerror = () => {
-            console.warn('SSE chat: conexão interrompida, tentando reconectar em 5s...');
-            evtSource.close();
-            setTimeout(connectSSE, 5000);
-        };
-    };
-
-    connectSSE();
 };

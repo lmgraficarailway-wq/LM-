@@ -210,6 +210,8 @@ CREATE TABLE IF NOT EXISTS menu_orders (
     order_id INTEGER,
     position INTEGER DEFAULT 0,
     launched_at DATETIME DEFAULT NULL,
+    unit_price REAL DEFAULT 0,
+    discount_on_close INTEGER DEFAULT 0,
     FOREIGN KEY(created_by) REFERENCES users(id)
 );
 
@@ -297,6 +299,15 @@ function initDatabase(db) {
                         }
                     });
                 }
+            });
+
+            // Índices para acelerar queries do chat
+            db.run('CREATE INDEX IF NOT EXISTS idx_team_chat_id ON team_chat(id DESC);');
+            db.run('CREATE INDEX IF NOT EXISTS idx_team_chat_user_id ON team_chat(user_id);');
+
+            // Migrations - add new columns to existing tables
+            db.run("ALTER TABLE menu_orders ADD COLUMN discount_on_close INTEGER DEFAULT 0", function(e) {
+                if (e && !e.message.includes('duplicate column')) console.error('Migration discount_on_close:', e.message);
             });
 
             // Verifica se há usuários (banco novo = sem usuários)

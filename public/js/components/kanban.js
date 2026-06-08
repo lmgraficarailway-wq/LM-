@@ -933,7 +933,7 @@ export const render = () => {
                     </div>
                     ${pieHtml}
                     <div class="card-footer">
-                        <span>${order.created_by_name?.split(' ')[0]}</span>
+                        <span>${(order.description && order.description.startsWith('Cardápio Lançado')) ? 'Cardápios' : (order.created_by_name ? order.created_by_name.split(' ')[0] : 'Sistema')}</span>
                         ${badge}
                     </div>
                     ${order.moved_by_name ? `<div class="card-moved-by" style="font-size:0.75rem; color:#6b7280; padding:3px 6px; background:#f8fafc; border-top:1px solid #e5e7eb; border-radius:0 0 6px 6px; margin-top:2px;">📦 Movido por: <b>${order.moved_by_name.split(' ')[0]}</b></div>` : ''}
@@ -1331,27 +1331,30 @@ export const render = () => {
             ${order.attachments ? `<div class="form-group"><label>📎 Anexos:</label>
                 <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.25rem;">
                     ${order.attachments.split(',').filter(f => f).map(f => {
-                        const ext = f.split('.').pop().toLowerCase();
+                        // In production, f is a full https:// URL (Firebase Storage).
+                        // In development, f is just a filename (served from /uploads/).
+                        const fileUrl = f.startsWith('http') ? f : '/uploads/' + f;
+                        const ext = f.split('.').pop().split('?')[0].toLowerCase();
                         const isImg = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp', 'jfif', 'avif'].includes(ext);
                         if (isImg) {
-                            return `<a href="/uploads/${f}" target="_blank">
-                                <img src="/uploads/${f}" 
+                            return `<a href="${fileUrl}" target="_blank">
+                                <img src="${fileUrl}" 
                                      style="width:70px;height:70px;object-fit:cover;border-radius:6px;border:1px solid #ccc;cursor:pointer;" 
-                                     title="${f}"
-                                     onerror="this.onerror=null; this.outerHTML='<div style=&quot;width:70px;height:70px;background:#fee2e2;color:#b91c1c;font-size:10px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:6px;padding:4px;border:1px solid #fca5a5;&quot;>Erro:<br>'+this.src.split('/').pop()+'</div>';">
+                                     title="${f.split('/').pop()}"
+                                     onerror="this.onerror=null; this.outerHTML='<div style=&quot;width:70px;height:70px;background:#fee2e2;color:#b91c1c;font-size:10px;display:flex;align-items:center;justify-content:center;text-align:center;border-radius:6px;padding:4px;border:1px solid #fca5a5;&quot;>Erro ao carregar</div>';">
                             </a>`;
                         } else if (ext === 'pdf') {
-                            return `<a href="/uploads/${f}" target="_blank" style="background:#fee2e2;color:#b91c1c;border-radius:6px;padding:4px 10px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;border:1px solid #fca5a5;">
+                            return `<a href="${fileUrl}" target="_blank" style="background:#fee2e2;color:#b91c1c;border-radius:6px;padding:4px 10px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;border:1px solid #fca5a5;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16"><path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2zM9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5v2z"/><path d="M4.603 12.087a.81.81 0 0 1-.438-.42c-.195-.388-.13-.776.08-1.102.166-.26.464-.453.81-.547.382-.103.882-.101 1.487-.042a22.428 22.428 0 0 0 1.25-.972c.42-.394.757-.768 1.012-1.121.284-.394.46-.782.512-1.149.057-.417-.05-.826-.35-1.134-.14-.14-.354-.236-.63-.236-.341 0-.622.18-.767.436-.145.256-.168.614-.066 1.054.102.44.34 1.01.68 1.637.13.238.254.465.373.682a20.086 20.086 0 0 0-.623 1.157c-.201.394-.413.82-.628 1.258a12.83 12.83 0 0 0-1.22 2.613c-.09.344-.145.695-.145 1.026 0 .428.188.756.495.93.18.101.402.146.64.146.42 0 .84-.188 1.096-.549.255-.362.338-.853.303-1.428a11.192 11.192 0 0 0-.156-1.572 26.155 26.155 0 0 0 1.583-2.916c.353-.7.643-1.411.83-2.112.188-.701.272-1.37.218-1.996C11.517 4.542 11.1 4 10.334 4c-.752 0-1.189.513-1.298 1.173-.105.626.044 1.343.376 2.052.28 0 .584.227.812.434.227.206.368.423.425.641.057.218.06.438.01.658-.05.22-.165.437-.341.636-.208.234-.51.464-.848.653-.339.189-.728.326-1.154.398-.246-.017-.506-.03-.78-.03-.382 0-.802.025-1.25.074a22.254 22.254 0 0 1-1.077 1.488c-.347.45-.668.857-.96 1.19-.292.333-.538.604-.737.81-.19.196-.341.34-.442.443zm3.504-2.883l-.004-.001c.145-.145.3-.284.46-.418.14-.117.288-.233.447-.35-.285.503-.54.996-.757 1.506-.002-1.34e-4-.004-.004-.006-.007a16.892 16.892 0 0 1-.14-.731z"/></svg> 
                                 PDF
                             </a>`;
                         } else if (['cdr', 'eps', 'ai'].includes(ext)) {
-                            return `<a href="/uploads/${f}" target="_blank" style="background:#fff7ed;color:#c2410c;border-radius:6px;padding:4px 10px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;border:1px solid #fdba74;">
+                            return `<a href="${fileUrl}" target="_blank" style="background:#fff7ed;color:#c2410c;border-radius:6px;padding:4px 10px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;border:1px solid #fdba74;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg> 
                                 VECTOR
                             </a>`;
                         } else {
-                            return `<a href="/uploads/${f}" target="_blank" style="background:#f1f5f9;color:#475569;border-radius:6px;padding:4px 10px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;border:1px solid #cbd5e1;">
+                            return `<a href="${fileUrl}" target="_blank" style="background:#f1f5f9;color:#475569;border-radius:6px;padding:4px 10px;font-size:0.8rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;border:1px solid #cbd5e1;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg> 
                                 DOC
                             </a>`;
@@ -1631,6 +1634,38 @@ export const render = () => {
                 const { data: items } = await itemsRes.json();
 
                 const listDiv = container.querySelector('#finalize-items-list');
+                const lossGroup = container.querySelector('#loss-group');
+
+                if (!items || items.length === 0) {
+                    // Fallback para pedidos sem itens registrados no Firestore
+                    const summary = order.products_summary || order.product_name || 'Produto não informado';
+                    listDiv.innerHTML = `
+                        <table style="width:100%; border-collapse:collapse; font-size:0.9rem">
+                            <thead style="background:#f1f5f9">
+                                <tr>
+                                    <th style="padding:6px; text-align:left">Produto</th>
+                                    <th style="padding:6px; text-align:center">Qtd Pedida</th>
+                                    <th style="padding:6px; text-align:center">Qtd Gasta</th>
+                                    <th style="padding:6px; text-align:center">Perda</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="padding:6px"><b>${summary}</b></td>
+                                    <td style="padding:6px; text-align:center; background:#f0fdf4">—</td>
+                                    <td style="padding:6px; text-align:center">—</td>
+                                    <td style="padding:6px; text-align:center; color:#888">0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="font-size:0.78rem; color:#94a3b8; margin-top:0.5rem;">ℹ️ Detalhes de estoque não disponíveis para este pedido.</p>
+                    `;
+                    lossGroup.style.display = 'none';
+                    container.querySelector('#finalize-loss-justification').value = '';
+                    finalizeModal.classList.add('open');
+                    return;
+                }
+
                 listDiv.innerHTML = `
                     <table style="width:100%; border-collapse:collapse; font-size:0.9rem">
                         <thead style="background:#f1f5f9">
@@ -1657,7 +1692,6 @@ export const render = () => {
                 `;
 
                 // Bind loss detection
-                const lossGroup = container.querySelector('#loss-group');
                 listDiv.querySelectorAll('.finalize-used-input').forEach(input => {
                     input.oninput = () => {
                         const ordered = parseInt(input.dataset.ordered);
@@ -2841,63 +2875,24 @@ export const render = () => {
 
     // ══ SSE — atualizações em tempo real ══
     // O servidor notifica instantaneamente quando qualquer pedido muda no Firestore
-    let sseConnected = false;
-    let sseRetryTimeout = null;
-    let evtSource = null;
-
-    function connectSSE() {
-        if (!document.body.contains(container)) return;
-        try {
-            evtSource = new EventSource('/api/orders/stream');
-
-            evtSource.onmessage = (e) => {
-                try {
-                    const data = JSON.parse(e.data);
-                    if (data.type === 'connected') {
-                        sseConnected = true;
-                        console.log('[SSE] Conectado — atualizações em tempo real ativas.');
-                    } else if (data.type === 'orders_updated') {
-                        const anyModalOpen = container.querySelector('.modal-overlay.open');
-                        if (!anyModalOpen && document.body.contains(container)) {
-                            loadOrders();
-                        }
-                    }
-                } catch(err) {}
-            };
-
-            evtSource.onerror = () => {
-                sseConnected = false;
-                evtSource.close();
-                // Reconnect em 5 segundos
-                if (document.body.contains(container)) {
-                    sseRetryTimeout = setTimeout(connectSSE, 5000);
-                }
-            };
-        } catch(e) {
-            // Fallback: só polling
-        }
-    }
-
-    connectSSE();
-
-    // Atualiza ao voltar para a aba (force-sync + refresh)
-    const handleVisibility = () => {
-        if (document.visibilityState === 'visible' && document.body.contains(container)) {
-            fetch('/api/force-sync', { method: 'POST', headers: token ? { 'Authorization': 'Bearer ' + token } : {} })
-                .finally(() => loadOrders()).catch(() => {});
-            // Reconecta SSE se necessário
-            if (!sseConnected) connectSSE();
-        }
-    };
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    // Fallback: polling a cada 60s (SSE já cuida das atualizações em tempo real)
+    // ── Polling inteligente (sem SSE — custo mínimo no Cloud Run) ─────────────────────────
+    // Atualiza a cada 20s apenas quando a aba está visível. Para quando oculta.
     const autoRefreshInterval = setInterval(() => {
+        if (document.visibilityState !== 'visible') return; // não gasta CPU/Cloud Run com aba oculta
         const anyModalOpen = container.querySelector('.modal-overlay.open');
         if (!anyModalOpen && document.body.contains(container)) {
             loadOrders();
         }
-    }, 60000);
+    }, 20000);
+
+    // Atualiza imediatamente ao voltar para a aba
+    const handleVisibility = () => {
+        if (document.visibilityState === 'visible' && document.body.contains(container)) {
+            const anyModalOpen = container.querySelector('.modal-overlay.open');
+            if (!anyModalOpen) loadOrders();
+        }
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
 
     // Atualiza quando modal fecha
     container.addEventListener('click', (e) => {
@@ -2914,8 +2909,6 @@ export const render = () => {
     const stopObserver = new MutationObserver(() => {
         if (!document.body.contains(container)) {
             clearInterval(autoRefreshInterval);
-            clearTimeout(sseRetryTimeout);
-            if (evtSource) evtSource.close();
             document.removeEventListener('visibilitychange', handleVisibility);
             stopObserver.disconnect();
         }

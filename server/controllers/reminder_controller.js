@@ -1,6 +1,9 @@
 const db = require('../database/db');
 const jwt = require('jsonwebtoken');
 const { brasiliaDatetime } = require('../utils/dateHelper');
+
+// Garante que a coluna pinned existe (migração segura)
+db.run(`ALTER TABLE reminders ADD COLUMN pinned INTEGER DEFAULT 0`, () => {});
 const SECRET_KEY = 'lm-passo-secret-key-change-me';
 
 const getUserFromToken = (req) => {
@@ -10,13 +13,14 @@ const getUserFromToken = (req) => {
     try { return jwt.verify(token, SECRET_KEY, { ignoreExpiration: true }); } catch { return null; }
 };
 
-// GET /api/reminders — list all, ordered by priority then date
+// GET /api/reminders — list all, pinned first then by position/date
 const getAll = (req, res) => {
     const sql = `
         SELECT r.*, u.name AS created_by_name, u.role AS created_by_role
         FROM reminders r
         LEFT JOIN users u ON r.created_by = u.id
         ORDER BY
+            r.pinned DESC,
             r.position ASC,
             r.created_at DESC
     `;
@@ -121,6 +125,20 @@ const remove = (req, res) => {
     });
 };
 
+// PUT /api/reminders/:id/pin — toggle pin state
+const togglePin = (req, res) => {
+    const { id } = req.params;
+    db.get(`SELECT pinned FROM reminders WHERE id = ?`, [id], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!row) return res.status(404).json({ error: 'Lembrete não encontrado.' });
+        const newPinned = row.pinned ? 0 : 1;
+        db.run(`UPDATE reminders SET pinned = ? WHERE id = ?`, [newPinned, id], function(err2) {
+            if (err2) return res.status(500).json({ error: err2.message });
+            res.json({ success: true, pinned: newPinned });
+        });
+    });
+};
+
 // PUT /api/reminders/reorder
 const updateOrder = (req, res) => {
     const { items } = req.body; // Array de { id, position }
@@ -140,4 +158,4 @@ const updateOrder = (req, res) => {
     });
 };
 
-module.exports = { getAll, getPendingCount, create, update, toggle, remove, updateOrder };
+module.exports = { getAll, getPendingCount, create, update, toggle, togglePin, remove, updateOrder };

@@ -122,8 +122,8 @@ async function handleGet(sql, params, db) {
         return { count: snap.size };
     }
 
-    // SELECT com WHERE id = ?
-    if (/WHERE\s+\w+\.?id\s*=\s*\?/i.test(s) || /WHERE\s+id\s*=\s*\?/i.test(s)) {
+    // SELECT com WHERE id = ? (sem JOIN)
+    if ((/WHERE\s+\w+\.?id\s*=\s*\?/i.test(s) || /WHERE\s+id\s*=\s*\?/i.test(s)) && !up.includes('JOIN')) {
         const id = params[0];
         const table = extractFrom(s);
         const doc = await db.collection(table).doc(String(id)).get();

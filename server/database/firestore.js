@@ -172,6 +172,19 @@ async function run(sql, params = [], callback) {
             getQueries().patchCache(table, 'upsert', newId, data);
             // Invalida query cache (resultados de queries com JOIN)
             getQueries().invalidateQueryCache(table);
+            // Invalida caches de tabelas relacionadas para garantir dados frescos
+            // Ex: ao inserir order_items, invalida orders (e vice-versa) para o Kanban ver tudo
+            const relatedTables = {
+                'orders': ['order_items', 'clients', 'products'],
+                'order_items': ['orders'],
+                'stock_movements': ['products'],
+                'client_credit_movements': ['clients'],
+                'material_cost_movements': ['orders'],
+            };
+            (relatedTables[table] || []).forEach(rel => {
+                getQueries().invalidateCache(rel);
+                getQueries().invalidateQueryCache(rel);
+            });
             cb.call({ lastID: newId, changes: 1 }, null);
         }
 
@@ -440,6 +453,8 @@ function parseSetColumns(setClause, params) {
             } else if (valUpper === 'CURRENT_TIMESTAMP' || valUpper === 'NOW()' || valUpper === 'DATETIME(\'NOW\')') {
                 // ← CORREÇÃO CRÍTICA: converte CURRENT_TIMESTAMP para ISO string real
                 result[col] = new Date().toISOString();
+            } else if (valUpper === 'NULL' || valUpper === 'NONE') {
+                result[col] = null;
             } else {
                 result[col] = valExpr.replace(/['"]/g, '');
             }

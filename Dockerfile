@@ -1,18 +1,13 @@
 # ── Build Stage ────────────────────────────────────────────────────────────────
 FROM node:18-slim
 
-# Instalar dependências nativas necessárias para sqlite3 (caso seja usado localmente)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    python3 make g++ \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 
 # Copiar manifests primeiro para cache de dependências
 COPY package*.json ./
 
-# Instalar somente dependências de produção
-RUN npm ci --omit=dev
+# Instalar somente dependências de produção (sem sqlite3 build tools - USE_SQLITE=false em produção)
+RUN npm ci --omit=dev --ignore-scripts
 
 # Copiar todo o código
 COPY . .

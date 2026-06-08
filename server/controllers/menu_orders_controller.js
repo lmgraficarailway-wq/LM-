@@ -12,8 +12,9 @@ const getUserFromToken = (req) => {
 // GET /api/menu-orders — lista todos os cardápios
 const getAll = (req, res) => {
     const sql = `
-        SELECT mo.*, u.name AS created_by_name, u.role AS created_by_role, c.name as client_name, c.core_discount,
+        SELECT mo.*, u.name AS created_by_name, u.role AS created_by_role, c.name as client_name, c.core_discount AS core_discount,
                p.price AS product_price,
+               mo.unit_price,
                o.total_value AS launched_total,
                o.discount_value AS launched_discount
         FROM menu_orders mo
@@ -29,9 +30,10 @@ const getAll = (req, res) => {
     });
 };
 
+
 // POST /api/menu-orders — criar novo cardápio
 const create = (req, res) => {
-    const { quantity, event_name, client_id, producer_name, print_type } = req.body;
+    const { quantity, event_name, client_id, producer_name, print_type, unit_price, discount_on_close } = req.body;
 
     if (!event_name || !event_name.trim()) return res.status(400).json({ error: 'Nome do evento é obrigatório.' });
     if (!client_id) return res.status(400).json({ error: 'Cliente é obrigatório.' });
@@ -40,20 +42,23 @@ const create = (req, res) => {
     const pType = validPrintTypes.includes(print_type) ? print_type : 'frente';
     const qty = parseInt(quantity) > 0 ? parseInt(quantity) : 1;
     const cid = parseInt(client_id);
+    const uPrice = parseFloat(unit_price) > 0 ? parseFloat(unit_price) : 0;
 
     const userFromToken = getUserFromToken(req);
     const userId = userFromToken ? userFromToken.id : null;
+    const discClose = discount_on_close ? 1 : 0;
 
     db.run(
-        `INSERT INTO menu_orders (quantity, event_name, client_id, producer_name, print_type, status, created_by)
-         VALUES (?, ?, ?, ?, ?, 'pendente', ?)`,
-        [qty, event_name.trim(), cid, producer_name || '', pType, userId],
+        `INSERT INTO menu_orders (quantity, event_name, client_id, producer_name, print_type, status, created_by, unit_price, discount_on_close)
+         VALUES (?, ?, ?, ?, ?, 'pendente', ?, ?, ?)`,
+        [qty, event_name.trim(), cid, producer_name || '', pType, userId, uPrice, discClose],
         function (err) {
             if (err) return res.status(500).json({ error: err.message });
             db.get(
                 `SELECT mo.*, u.name AS created_by_name, u.role AS created_by_role,
-                        c.name AS client_name, c.core_discount,
+                        c.name AS client_name, c.core_discount AS core_discount,
                         p.price AS product_price,
+                        mo.unit_price,
                         o.total_value AS launched_total,
                         o.discount_value AS launched_discount
                  FROM menu_orders mo
@@ -72,10 +77,11 @@ const create = (req, res) => {
     );
 };
 
+
 // PUT /api/menu-orders/:id — editar cardápio
 const update = (req, res) => {
     const { id } = req.params;
-    const { quantity, event_name, client_id, producer_name, print_type } = req.body;
+    const { quantity, event_name, client_id, producer_name, print_type, unit_price, discount_on_close } = req.body;
 
     if (!event_name || !event_name.trim()) return res.status(400).json({ error: 'Nome do evento é obrigatório.' });
     if (!client_id) return res.status(400).json({ error: 'Cliente é obrigatório.' });
@@ -84,10 +90,12 @@ const update = (req, res) => {
     const pType = validPrintTypes.includes(print_type) ? print_type : 'frente';
     const qty = parseInt(quantity) > 0 ? parseInt(quantity) : 1;
     const cid = parseInt(client_id);
+    const uPrice = parseFloat(unit_price) >= 0 ? parseFloat(unit_price) : 0;
 
+    const discClose2 = discount_on_close ? 1 : 0;
     db.run(
-        `UPDATE menu_orders SET quantity = ?, event_name = ?, client_id = ?, producer_name = ?, print_type = ? WHERE id = ?`,
-        [qty, event_name.trim(), cid, producer_name || '', pType, id],
+        `UPDATE menu_orders SET quantity = ?, event_name = ?, client_id = ?, producer_name = ?, print_type = ?, unit_price = ?, discount_on_close = ? WHERE id = ?`,
+        [qty, event_name.trim(), cid, producer_name || '', pType, uPrice, discClose2, id],
         function (err) {
             if (err) return res.status(500).json({ error: err.message });
             if (this.changes === 0) return res.status(404).json({ error: 'Cardápio não encontrado.' });
@@ -96,30 +104,55 @@ const update = (req, res) => {
     );
 };
 
+
 const revertOrderData = (row, userId, callback) => {
-    let sql = '', params = [];
-    if (row.order_id) {
-        sql = 'SELECT id FROM orders WHERE id = ?';
-        params = [row.order_id];
-    } else {
-        sql = 'SELECT id FROM orders WHERE description LIKE ? AND client_id = ? ORDER BY id DESC LIMIT 1';
-        params = [`%Cardápio Lançado - Evento: ${row.event_name}%`, row.client_id];
-    }
-    db.get(sql, params, (err, orderRow) => {
-        if (err || !orderRow) return callback();
-        const orderId = orderRow.id;
-        const productId = row.print_type === 'frente_e_verso' ? 94 : 54;
+    // Normaliza order_id: pode ser numero, string com numero, ou null/"NULL"
+    const rawOrderId = row.order_id;
+    const orderId = (rawOrderId !== null && rawOrderId !== undefined &&
+                     String(rawOrderId).toUpperCase() !== 'NULL' &&
+                     String(rawOrderId).trim() !== '' &&
+                     !isNaN(parseInt(rawOrderId)))
+        ? parseInt(rawOrderId) : null;
+
+    const productId = row.print_type === 'frente_e_verso' ? 94 : 54;
+
+    const doDelete = (oId) => {
         db.run('UPDATE products SET stock = stock + ? WHERE id = ?', [row.quantity, productId], () => {
-            db.run('DELETE FROM order_items WHERE order_id = ?', [orderId], () => {
-                db.run('DELETE FROM orders WHERE id = ?', [orderId], () => {
+            db.run('DELETE FROM order_items WHERE order_id = ?', [oId], () => {
+                db.run('DELETE FROM orders WHERE id = ?', [oId], () => {
                     db.run("INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, 'entrada_estorno', ?, ?)",
-                        [productId, row.quantity, `Estorno Cardápio (Exclusão) Pedido #${orderId}`, userId], () => {
+                        [productId, row.quantity, `Estorno Card\u00e1pio (Estorno) Pedido #${oId}`, userId], () => {
                             callback();
                     });
                 });
             });
         });
-    });
+    };
+
+    if (orderId) {
+        // Tenta buscar o pedido pelo ID direto
+        db.get('SELECT id FROM orders WHERE id = ?', [orderId], (err, orderRow) => {
+            if (err) { console.error('[revert] Erro ao buscar order:', err.message); }
+            if (orderRow) {
+                doDelete(orderRow.id);
+            } else {
+                // Nao encontrou pelo ID - tenta buscar pelo descricao
+                db.get('SELECT id FROM orders WHERE client_id = ? ORDER BY id DESC LIMIT 1',
+                    [row.client_id], (err2, fallbackRow) => {
+                        if (fallbackRow) {
+                            doDelete(fallbackRow.id);
+                        } else {
+                            console.warn('[revert] Pedido nao encontrado para card\u00e1pio #' + row.id);
+                            callback();
+                        }
+                });
+            }
+        });
+    } else {
+        // Sem order_id registrado - apenas reverte o status
+        console.warn('[revert] Card\u00e1pio #' + row.id + ' sem order_id, apenas revertendo status');
+        callback();
+    }
 };
 
 // PUT /api/menu-orders/:id/launch-core — marcar como lançado no CORE e abater estoque
@@ -128,11 +161,11 @@ const launchToCore = (req, res) => {
     const userFromToken = getUserFromToken(req);
     const userId = userFromToken ? userFromToken.id : null;
 
-    db.get(`SELECT mo.*, c.core_discount FROM menu_orders mo LEFT JOIN clients c ON mo.client_id = c.id WHERE mo.id = ?`, [id], (err, row) => {
+    db.get(`SELECT mo.*, c.core_discount AS core_discount FROM menu_orders mo LEFT JOIN clients c ON mo.client_id = c.id WHERE mo.id = ?`, [id], (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!row) return res.status(404).json({ error: 'Cardápio não encontrado.' });
 
-        const isUnlaunching = row.launched_to_core === 1;
+        const isUnlaunching = parseInt(row.launched_to_core) === 1;
 
         if (isUnlaunching) {
             revertOrderData(row, userId, () => {
@@ -149,16 +182,21 @@ const launchToCore = (req, res) => {
 
         db.get(`SELECT * FROM products WHERE id = ?`, [productId], (errP, product) => {
             if (errP) return res.status(500).json({ error: errP.message });
-            if (!product) return res.status(400).json({ error: 'Produto de impressão A4 não encontrado no banco.' });
 
-            const itemValue = product.price || 0;
+            // Usa unit_price do cardápio (definido pelo usuário), ou product.price como fallback
+            const itemValue = parseFloat(row.unit_price) > 0
+                ? parseFloat(row.unit_price)
+                : (product ? (product.price || 0) : 0);
+
             const grossValue = itemValue * row.quantity;
             const discountPercent = row.core_discount ? 15 : 0;
             const discountValue = grossValue * (discountPercent / 100);
             const totalValue = grossValue - discountValue;
-            
-            const description = `Cardápio Lançado - Evento: ${row.event_name}`;
-            const productsSummary = `${row.event_name} - ${row.quantity}x ${product.name}`;
+
+            const productName = product ? product.name : `Impressão A4 (${row.print_type})`;
+            const discountNote = row.discount_on_close ? ' | DESCONTAR NO FECHAMENTO DO EVENTO' : '';
+            const description = `Card�pio Lan�ado - Evento: ${row.event_name}${discountNote}`;
+            const productsSummary = `${row.event_name} - ${row.quantity}x ${productName}`;
 
             // Create standard order. launched_to_core is 0 so the financial team can confer and launch it.
             db.run(
@@ -239,4 +277,27 @@ const updateOrder = (req, res) => {
     });
 };
 
-module.exports = { getAll, create, update, launchToCore, remove, updateOrder };
+// GET /api/menu-orders/print-prices — retorna preços dos produtos por tipo de impressão
+const getPrintPrices = (req, res) => {
+    // IDs dos produtos de impressão A4:
+    // 54 = Frente (simples), 94 = Frente e Verso, 95 = Plastificado (fallback 54)
+    db.all(`SELECT id, name, price FROM products WHERE id IN (54, 94, 95) ORDER BY id`, [], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+
+        const byId = {};
+        (rows || []).forEach(r => { byId[r.id] = r; });
+
+        const frente      = byId[54]  || { id: 54,  name: 'Impressão A4 Frente',         price: 0 };
+        const frenteVerso = byId[94]  || { id: 94,  name: 'Impressão A4 Frente e Verso', price: 0 };
+        const plastif     = byId[95]  || byId[54] || { id: 54, name: 'Plastificado',     price: 0 };
+
+        res.setHeader('Cache-Control', 'no-store');
+        res.json({
+            frente:         { id: frente.id,      name: frente.name,      price: frente.price      || 0 },
+            frente_e_verso: { id: frenteVerso.id, name: frenteVerso.name, price: frenteVerso.price || 0 },
+            plastificado:   { id: plastif.id,     name: plastif.name,     price: plastif.price     || 0 },
+        });
+    });
+};
+
+module.exports = { getAll, create, update, launchToCore, remove, updateOrder, getPrintPrices };

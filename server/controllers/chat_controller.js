@@ -41,14 +41,40 @@ exports.getHistory = (req, res) => {
         // Inverte para ordem cronológica (mais antiga primeiro, mais recente no final)
         const messages = (rows || []).reverse().map(m => ({
             ...m,
-            // Corrige avatares que apontam para /uploads/ local → URL pública do Storage
             author_avatar: m.author_avatar && m.author_avatar.startsWith('/uploads/')
                 ? `https://lm-passo-production.up.railway.app${m.author_avatar}`
                 : m.author_avatar
         }));
+        res.setHeader('Cache-Control', 'no-store, no-cache, private');
         res.json({ messages });
     });
 };
+
+// Polling — retorna apenas mensagens novas (id > after)
+exports.getNewMessages = (req, res) => {
+    const after = parseInt(req.query.after) || 0;
+    db.all(
+        `SELECT t.*, u.avatar as author_avatar
+         FROM team_chat t
+         LEFT JOIN users u ON t.user_id = u.id
+         WHERE t.id > ?
+         ORDER BY t.id ASC
+         LIMIT 50`,
+        [after],
+        (err, rows) => {
+            if (err) return res.status(500).json({ error: err.message });
+            const messages = (rows || []).map(m => ({
+                ...m,
+                author_avatar: m.author_avatar && m.author_avatar.startsWith('/uploads/')
+                    ? `https://lm-passo-production.up.railway.app${m.author_avatar}`
+                    : m.author_avatar
+            }));
+            res.setHeader('Cache-Control', 'no-store, no-cache, private');
+            res.json({ messages });
+        }
+    );
+};
+
 
 exports.uploadImage = async (req, res) => {
     if (!req.file) {
@@ -80,25 +106,32 @@ exports.sendMessage = (req, res) => {
             if (err) return res.status(500).json({ error: err.message });
 
             const insertedId = this.lastID;
-            
-            db.get('SELECT avatar FROM users WHERE id = ?', [user_id], (err2, userRow) => {
-                const newMsg = {
-                    id: insertedId,
-                    type: 'message',
-                    user_id: user_id,
-                    user_name: user_name,
-                    user_role: user_role,
-                    message: message ? message.trim() : '',
-                    reply_to_id: reply_to_id || null,
-                    reply_to_author: reply_to_author || null,
-                    reply_to_msg: reply_to_msg || null,
-                    attachment_url: attachment_url || null,
-                    created_at: new Date().toISOString(),
-                    author_avatar: userRow ? userRow.avatar : null
-                };
+            const newMsg = {
+                id: insertedId,
+                type: 'message',
+                user_id: user_id,
+                user_name: user_name,
+                user_role: user_role,
+                message: message ? message.trim() : '',
+                reply_to_id: reply_to_id || null,
+                reply_to_author: reply_to_author || null,
+                reply_to_msg: reply_to_msg || null,
+                attachment_url: attachment_url || null,
+                created_at: new Date().toISOString(),
+                author_avatar: null
+            };
 
+            // Responde ao cliente imediatamente — sem esperar a query do avatar
+            res.json({ success: true, message: newMsg });
+
+            // Busca o avatar em paralelo e faz broadcast para os outros via SSE
+            db.get('SELECT avatar FROM users WHERE id = ?', [user_id], (err2, userRow) => {
+                if (userRow && userRow.avatar) {
+                    newMsg.author_avatar = userRow.avatar.startsWith('/uploads/')
+                        ? `https://lm-passo-production.up.railway.app${userRow.avatar}`
+                        : userRow.avatar;
+                }
                 broadcast(newMsg);
-                res.json({ success: true, message: newMsg });
             });
         }
     );
