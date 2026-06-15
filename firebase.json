@@ -30,11 +30,56 @@
         ]
       },
       {
-        "source": "**/*.js",
+        "source": "/js/components/**",
         "headers": [
           {
             "key": "Cache-Control",
             "value": "no-store, no-cache, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "/libs/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=3600, stale-while-revalidate=86400"
+          }
+        ]
+      },
+      {
+        "source": "/fonts/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=86400"
+          }
+        ]
+      },
+      {
+        "source": "/css/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-store, no-cache, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "*.ico",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=86400"
+          }
+        ]
+      },
+      {
+        "source": "*.png",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=86400"
           }
         ]
       },
