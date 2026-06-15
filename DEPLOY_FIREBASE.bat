@@ -70,9 +70,9 @@ call gcloud run deploy %SERVICE_NAME% ^
     --region %REGION% ^
     --platform managed ^
     --allow-unauthenticated ^
-    --min-instances 1 ^
-    --max-instances 5 ^
-    --memory 1Gi ^
+    --min-instances 0 ^
+    --max-instances 3 ^
+    --memory 512Mi ^
     --cpu 1 ^
     --timeout 60 ^
     --set-env-vars "NODE_ENV=production,USE_FIREBASE_STORAGE=true,USE_SQLITE=false,GEMINI_API_KEY=AIzaSyBb2G6FBdckww5a2hVWa-E6uOlaz3_jYBc" ^

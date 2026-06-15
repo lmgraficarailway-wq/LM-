@@ -1,0 +1,34 @@
+================================================================================
+  LM PASSO - CONFIGURACOES FIXAS DO FIREBASE (NAO ALTERAR NUNCA)
+================================================================================
+
+  CLOUD RUN - lm-passo-api
+  ─────────────────────────────────────────────────────────────────────────────
+  min-instances : 0        ← NAO MUDAR (app dorme quando nao usado = gratis)
+  max-instances : 3        ← NAO MUDAR (3 e suficiente)
+  memory        : 512Mi    ← NAO MUDAR (Node.js leve nao precisa de mais)
+  cpu           : 1
+  region        : southamerica-east1
+  project       : lm-passo
+
+  FIREBASE HOSTING
+  ─────────────────────────────────────────────────────────────────────────────
+  libs/fonts/imagens : cache 1h   ← economiza dados transferidos
+  js/components      : sem cache  ← sempre atualizado
+  css                : sem cache  ← sempre atualizado
+  api/**             : sem cache  ← sempre atualizado
+
+  POR QUE ESTAS CONFIGURACOES?
+  ─────────────────────────────────────────────────────────────────────────────
+  Com min-instances=1 o custo era ~R$120/mes (instancia sempre ligada).
+  Com min-instances=0 o custo e ~R$10-30/mes (so paga quando alguem usa).
+  O app "acorda" em ~2 segundos quando alguem acessa — completamente aceitavel.
+
+  DEPLOY CORRETO
+  ─────────────────────────────────────────────────────────────────────────────
+  Usar sempre: ATUALIZAR_FIREBASE.bat
+  Nunca usar:  ATUALIZAR_RENDER.bat  (obsoleto)
+               DEPLOY.bat            (obsoleto)
+
+  Configurado em: 15/06/2026
+================================================================================
