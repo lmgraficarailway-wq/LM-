@@ -1,0 +1,631 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quem Somos &mdash; Milk Road | Nossa Hist&oacute;ria e Prop&oacute;sito</title>
+  <meta name="description" content="Conhe&ccedil;a a Milk Road: nascemos para encurtar a dist&acirc;ncia entre quem produz e quem precisa. Nossa miss&atilde;o &eacute; democratizar o mercado e valorizar a produ&ccedil;&atilde;o brasileira." />
+  <meta property="og:title" content="Quem Somos &mdash; Milk Road" />
+  <meta property="og:description" content="Nossa hist&oacute;ria, miss&atilde;o e os pilares que guiam a Milk Road no agroneg&oacute;cio brasileiro." />
+  <meta property="og:type" content="website" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* ===============================================
+       QUEM SOMOS — Estilos adicionais desta pagina
+       =============================================== */
+
+    /* ── HERO INTERNO ── */
+    .inner-hero {
+      position: relative;
+      padding: calc(var(--navbar-height) + 5rem) 0 5rem;
+      background: linear-gradient(135deg, #2D70B6 0%, #1a8fd1 55%, #00AFEF 100%);
+      overflow: hidden;
+    }
+    .inner-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 60% at 10% 90%, rgba(0,0,0,0.12) 0%, transparent 60%);
+    }
+    .inner-hero__shapes { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .inner-hero__shape  { position: absolute; border-radius: 50%; opacity: 0.1; }
+    .inner-hero__shape--1 { width: 520px; height: 520px; background: #FEFEFE; top: -200px; right: -150px; }
+    .inner-hero__shape--2 { width: 280px; height: 280px; background: #FAF1D0; bottom: -80px; left: -60px; }
+    .inner-hero__shape--3 { width: 180px; height: 180px; background: #00AFEF; top: 50%; left: 40%; opacity: 0.15; }
+    .inner-hero__inner  { position: relative; z-index: 1; text-align: center; max-width: 760px; margin: 0 auto; }
+
+    /* Breadcrumb */
+    .breadcrumb { display: inline-flex; align-items: center; gap: .5rem; font-size: .85rem; color: rgba(255,255,255,.75); margin-bottom: 1.5rem; font-family: var(--font-body); }
+    .breadcrumb a { color: rgba(255,255,255,.75); transition: color var(--transition-fast); }
+    .breadcrumb a:hover { color: #FEFEFE; }
+    .breadcrumb__sep { color: rgba(255,255,255,.4); font-size: .75rem; }
+    .breadcrumb__current { color: #FEFEFE; font-weight: 600; }
+
+    .inner-hero__eyebrow {
+      display: inline-flex; align-items: center; gap: .5rem;
+      background: rgba(255,255,255,.15); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,.25); border-radius: var(--radius-full);
+      padding: .4rem 1rem; font-size: .825rem; font-weight: 600;
+      color: #FAF1D0; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1.5rem;
+    }
+    .inner-hero__title {
+      font-family: var(--font-heading); font-size: clamp(2rem,5vw,3.5rem);
+      font-weight: 800; color: #FEFEFE; line-height: 1.15; margin-bottom: 1.25rem;
+    }
+    .inner-hero__title span {
+      background: linear-gradient(90deg,#FAF1D0,#FEFEFE);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .inner-hero__subtitle {
+      font-size: clamp(1rem,2.2vw,1.2rem); color: rgba(255,255,255,.88);
+      max-width: 600px; margin: 0 auto; line-height: 1.7;
+    }
+
+    /* ── MISSAO ── */
+    .mission-section { padding: var(--space-2xl) 0; background: var(--color-white); }
+    .mission-grid { display: grid; grid-template-columns: 1fr; gap: 3rem; align-items: center; }
+    @media (min-width:900px) { .mission-grid { grid-template-columns: 1fr 1fr; gap: 5rem; } }
+    .mission-content .section-eyebrow { margin-bottom: 1rem; }
+    .mission-impact {
+      font-family: var(--font-heading); font-size: clamp(1.5rem,3vw,2.2rem); font-weight: 800;
+      color: var(--color-dark); line-height: 1.25; margin-bottom: 1.5rem;
+      position: relative; padding-left: 1.5rem;
+    }
+    .mission-impact::before {
+      content: ''; position: absolute; left: 0; top: .15em; width: 4px;
+      height: calc(100% - .3em); background: linear-gradient(180deg,var(--color-primary),var(--color-secondary));
+      border-radius: var(--radius-full);
+    }
+    .mission-impact em { font-style: normal; color: var(--color-primary); }
+    .mission-text { color: var(--color-muted); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem; }
+    .mission-highlights { display: flex; flex-direction: column; gap: .75rem; }
+    .mission-highlight-item { display: flex; align-items: center; gap: .75rem; font-size: .95rem; font-weight: 500; color: var(--color-dark); }
+    .mission-highlight-item i { font-size: 1.25rem; color: var(--color-secondary); flex-shrink: 0; }
+
+    /* Card visual */
+    .mission-visual { position: relative; }
+    .mission-card {
+      background: linear-gradient(135deg,#2D70B6 0%,#00AFEF 100%); border-radius: var(--radius-lg);
+      padding: 2.5rem; color: #FEFEFE; box-shadow: var(--shadow-xl); position: relative; overflow: hidden;
+    }
+    .mission-card::before { content: ''; position: absolute; top: -60px; right: -60px; width: 200px; height: 200px; background: rgba(255,255,255,.1); border-radius: 50%; }
+    .mission-card::after  { content: ''; position: absolute; bottom: -40px; left: -40px; width: 150px; height: 150px; background: rgba(255,255,255,.06); border-radius: 50%; }
+    .mission-card__icon  { font-size: 3rem; margin-bottom: 1.25rem; position: relative; z-index: 1; }
+    .mission-card__quote {
+      font-family: var(--font-heading); font-size: 1.35rem; font-weight: 700; line-height: 1.4;
+      margin-bottom: 1.5rem; position: relative; z-index: 1;
+    }
+    .mission-card__quote::before {
+      content: '\201C'; font-size: 5rem; line-height: 0; vertical-align: -2rem;
+      color: rgba(255,255,255,.2); font-family: Georgia,serif; margin-right: .25rem;
+    }
+    .mission-card__stats { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; position: relative; z-index: 1; }
+    .mission-card__stat  { background: rgba(255,255,255,.15); backdrop-filter: blur(4px); border-radius: var(--radius-sm); padding: 1rem; text-align: center; }
+    .mission-card__stat-num   { display: block; font-family: var(--font-heading); font-size: 1.75rem; font-weight: 800; color: #FAF1D0; }
+    .mission-card__stat-label { display: block; font-size: .78rem; color: rgba(255,255,255,.8); margin-top: .15rem; }
+    .mission-visual__deco {
+      position: absolute; top: -20px; right: -20px; width: 80px; height: 80px;
+      background: #FAF1D0; border-radius: 50%; display: flex; align-items: center;
+      justify-content: center; font-size: 2rem; box-shadow: var(--shadow-md);
+      animation: floatDeco 4s ease-in-out infinite;
+    }
+    @keyframes floatDeco { 0%,100%{transform:translateY(0) rotate(0deg);} 50%{transform:translateY(-10px) rotate(5deg);} }
+
+    /* ── 4 PILARES ── */
+    .pillars-page-section { padding: var(--space-2xl) 0; background: linear-gradient(180deg,#f5f9ff 0%,#FEFEFE 100%); }
+    .pillars-page-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 3rem; }
+    @media (min-width:640px)  { .pillars-page-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (min-width:1024px) { .pillars-page-grid { grid-template-columns: repeat(4,1fr); } }
+    .pillar-page-card {
+      background: var(--color-white); border: 1px solid var(--color-border); border-radius: var(--radius-md);
+      padding: 2rem; position: relative; overflow: hidden;
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal), border-color var(--transition-normal);
+    }
+    .pillar-page-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg,var(--color-primary),var(--color-secondary));
+      transform: scaleX(0); transform-origin: left; transition: transform var(--transition-normal);
+    }
+    .pillar-page-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); border-color: rgba(45,112,182,.25); }
+    .pillar-page-card:hover::before { transform: scaleX(1); }
+    .pillar-page-card__num {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      font-family: var(--font-heading); font-size: 3rem; font-weight: 800;
+      color: rgba(45,112,182,.06); line-height: 1; user-select: none;
+    }
+    .pillar-page-card__icon {
+      width: 64px; height: 64px; border-radius: var(--radius-md);
+      background: linear-gradient(135deg,rgba(45,112,182,.1),rgba(0,175,239,.1));
+      display: flex; align-items: center; justify-content: center; font-size: 1.75rem;
+      color: var(--color-primary); margin-bottom: 1.25rem;
+      transition: background var(--transition-normal), color var(--transition-normal), transform var(--transition-normal);
+    }
+    .pillar-page-card:hover .pillar-page-card__icon {
+      background: linear-gradient(135deg,var(--color-primary),var(--color-secondary));
+      color: #FEFEFE; transform: scale(1.05);
+    }
+    .pillar-page-card__title { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; color: var(--color-dark); margin-bottom: .75rem; }
+    .pillar-page-card__desc  { font-size: .925rem; color: var(--color-muted); line-height: 1.7; }
+
+    /* ── NUMEROS ── */
+    .numbers-section {
+      padding: var(--space-2xl) 0;
+      background: linear-gradient(135deg,#1a3a5c 0%,#2D70B6 50%,#00AFEF 100%);
+      position: relative; overflow: hidden;
+    }
+    .numbers-section::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at 20% 80%,rgba(255,255,255,.04) 0%,transparent 50%),
+                  radial-gradient(circle at 80% 20%,rgba(255,255,255,.04) 0%,transparent 50%);
+    }
+    .numbers-section__inner { position: relative; z-index: 1; text-align: center; }
+    .numbers-section .section-eyebrow { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); color: #FAF1D0; }
+    .numbers-section .section-title { color: #FEFEFE; margin-bottom: 3.5rem; }
+    .numbers-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 2rem; }
+    @media (min-width:768px) { .numbers-grid { grid-template-columns: repeat(4,1fr); } }
+    .number-card {
+      background: rgba(255,255,255,.1); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.2); border-radius: var(--radius-lg);
+      padding: 2rem 1.5rem; text-align: center;
+      transition: transform var(--transition-normal), background var(--transition-normal);
+    }
+    .number-card:hover { transform: translateY(-4px); background: rgba(255,255,255,.18); }
+    .number-card__icon  { font-size: 2rem; color: #FAF1D0; margin-bottom: .75rem; display: block; }
+    .number-card__value {
+      display: block; font-family: var(--font-heading); font-size: clamp(2.5rem,5vw,3.5rem);
+      font-weight: 800; color: #FEFEFE; line-height: 1; margin-bottom: .5rem;
+    }
+    .number-card__label { display: block; font-size: .9rem; color: rgba(255,255,255,.75); font-weight: 500; text-transform: uppercase; letter-spacing: .06em; }
+
+    /* ── VALORES ── */
+    .values-section { padding: var(--space-2xl) 0; background: var(--color-white); }
+    .values-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; margin-top: 3rem; }
+    @media (min-width:640px) { .values-grid { grid-template-columns: repeat(3,1fr); } }
+    .value-card {
+      background: linear-gradient(145deg,#f8fbff 0%,#FEFEFE 100%);
+      border: 1px solid var(--color-border); border-radius: var(--radius-lg);
+      padding: 2.5rem 2rem; text-align: center; position: relative; overflow: hidden;
+      transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    }
+    .value-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 4px;
+      border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      transition: opacity var(--transition-normal); opacity: 0;
+    }
+    .value-card--transparency::after { background: linear-gradient(90deg,#2D70B6,#00AFEF); }
+    .value-card--connection::after   { background: linear-gradient(90deg,#00AFEF,#2D70B6); }
+    .value-card--impact::after       { background: linear-gradient(90deg,#2D70B6,#1a8fd1); }
+    .value-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+    .value-card:hover::after { opacity: 1; }
+    .value-card__icon-wrap {
+      width: 76px; height: 76px; border-radius: 50%; margin: 0 auto 1.5rem;
+      display: flex; align-items: center; justify-content: center; font-size: 2rem;
+      transition: transform var(--transition-normal);
+    }
+    .value-card--transparency .value-card__icon-wrap { background: linear-gradient(135deg,rgba(45,112,182,.12),rgba(0,175,239,.12)); color: var(--color-primary); }
+    .value-card--connection   .value-card__icon-wrap { background: linear-gradient(135deg,rgba(0,175,239,.12),rgba(45,112,182,.12)); color: var(--color-secondary); }
+    .value-card--impact       .value-card__icon-wrap { background: linear-gradient(135deg,rgba(45,112,182,.12),rgba(26,143,209,.12)); color: var(--color-primary); }
+    .value-card:hover .value-card__icon-wrap { transform: scale(1.1) rotate(5deg); }
+    .value-card__title { font-family: var(--font-heading); font-size: 1.3rem; font-weight: 700; color: var(--color-dark); margin-bottom: .75rem; }
+    .value-card__desc  { font-size: .925rem; color: var(--color-muted); line-height: 1.7; }
+    .value-card__tag {
+      display: inline-block; margin-top: 1.25rem; padding: .3rem .85rem;
+      border-radius: var(--radius-full); font-size: .78rem; font-weight: 600;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+    .value-card--transparency .value-card__tag { background: rgba(45,112,182,.1); color: var(--color-primary); }
+    .value-card--connection   .value-card__tag { background: rgba(0,175,239,.1);  color: var(--color-secondary); }
+    .value-card--impact       .value-card__tag { background: rgba(45,112,182,.1); color: var(--color-primary); }
+
+    /* ── CTA FINAL ── */
+    .page-cta-section {
+      padding: var(--space-2xl) 0;
+      background: linear-gradient(135deg,#2D70B6 0%,#00AFEF 100%);
+      position: relative; overflow: hidden; text-align: center;
+    }
+    .page-cta-section::before { content:''; position:absolute; top:-100px; left:-100px; width:400px; height:400px; background:rgba(255,255,255,.06); border-radius:50%; }
+    .page-cta-section::after  { content:''; position:absolute; bottom:-80px; right:-80px; width:320px; height:320px; background:rgba(0,0,0,.08); border-radius:50%; }
+    .page-cta-section__inner { position: relative; z-index: 1; }
+    .page-cta-section .section-eyebrow { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); color: #FAF1D0; margin-bottom: 1.25rem; }
+    .page-cta-section__title {
+      font-family: var(--font-heading); font-size: clamp(2rem,4vw,3rem);
+      font-weight: 800; color: #FEFEFE; line-height: 1.2; margin-bottom: 1rem;
+    }
+    .page-cta-section__subtitle {
+      font-size: 1.1rem; color: rgba(255,255,255,.85);
+      margin-bottom: 2.5rem; max-width: 500px; margin-left: auto; margin-right: auto;
+    }
+    .page-cta-section__btns { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+    .btn--outline-white-solid {
+      background: rgba(255,255,255,.12); border: 2px solid rgba(255,255,255,.6);
+      color: #FEFEFE; backdrop-filter: blur(4px); padding: .9rem 2rem;
+      border-radius: var(--radius-full); font-family: var(--font-heading);
+      font-weight: 700; font-size: 1rem; display: inline-flex; align-items: center; gap: .5rem;
+      transition: background var(--transition-normal), border-color var(--transition-normal), transform var(--transition-fast);
+      text-decoration: none;
+    }
+    .btn--outline-white-solid:hover { background: rgba(255,255,255,.22); border-color: rgba(255,255,255,.9); transform: translateY(-2px); }
+
+    /* ── NAVBAR ACTIVE LINK ── */
+    .navbar__link--active { color: var(--color-primary) !important; font-weight: 600; }
+    .navbar__link--active::after { width: 100% !important; }
+    .navbar--scrolled .navbar__link--active { color: var(--color-primary) !important; }
+
+    /* ── ANIMACOES ── */
+    [data-animate] { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    [data-animate].animated { opacity: 1; transform: none; }
+    [data-animate="fade-left"]  { transform: translateX(24px); }
+    [data-animate="fade-right"] { transform: translateX(-24px); }
+    [data-animate="fade-left"].animated,
+    [data-animate="fade-right"].animated { transform: none; }
+
+    @media (max-width:639px) { .numbers-grid { grid-template-columns: repeat(2,1fr); gap: 1rem; } }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================
+       NAVBAR — identica ao index.html
+       ============================================ -->
+  <header class="navbar" id="navbar">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="Milk Road &mdash; Pagina Inicial">
+        <img src="logo-colorida.jpg" alt="Milk Road" class="navbar__logo-img" />
+      </a>
+
+      <nav class="navbar__menu" id="navMenu" role="navigation" aria-label="Menu principal">
+        <a href="index.html"      class="navbar__link">Início</a>
+        <a href="quem-somos.html" class="navbar__link navbar__link--active" aria-current="page">Quem Somos</a>
+        <a href="produtor.html"   class="navbar__link">Para Produtores</a>
+        <a href="comprador.html"  class="navbar__link">Para Compradores</a>
+        <a href="contato.html"    class="navbar__link">Contato</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <a href="contato.html" class="btn btn--ghost btn--sm">Entrar</a>
+        <a href="contato.html" class="btn btn--primary btn--sm">Cadastre-se &rarr;</a>
+      </div>
+
+      <button class="navbar__hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false" aria-controls="navMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main-content">
+
+    <!-- ============================================
+         HERO INTERNO
+         ============================================ -->
+    <section class="inner-hero" id="hero" aria-labelledby="inner-hero-title">
+      <div class="inner-hero__shapes" aria-hidden="true">
+        <div class="inner-hero__shape inner-hero__shape--1"></div>
+        <div class="inner-hero__shape inner-hero__shape--2"></div>
+        <div class="inner-hero__shape inner-hero__shape--3"></div>
+      </div>
+      <div class="container">
+        <div class="inner-hero__inner" data-animate="fade-up">
+          <nav class="breadcrumb" aria-label="Localizacao na pagina">
+            <a href="index.html">Inicio</a>
+            <span class="breadcrumb__sep" aria-hidden="true">&rsaquo;</span>
+            <span class="breadcrumb__current" aria-current="page">Quem Somos</span>
+          </nav>
+
+          <div class="inner-hero__eyebrow">
+            <i class="ph ph-heart" aria-hidden="true"></i>
+            Nossa historia &amp; proposito
+          </div>
+
+          <h1 class="inner-hero__title" id="inner-hero-title">
+            Nossa historia <span>come&ccedil;a no campo.</span>
+          </h1>
+
+          <p class="inner-hero__subtitle">
+            Nascemos com um prop&oacute;sito claro: democratizar o mercado do agroneg&oacute;cio brasileiro, aproximando quem produz com dedica&ccedil;&atilde;o de quem precisa de qualidade e confian&ccedil;a.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         SECAO MISSAO
+         ============================================ -->
+    <section class="mission-section" id="missao" aria-labelledby="mission-title">
+      <div class="container">
+        <div class="mission-grid">
+
+          <!-- Coluna texto -->
+          <div class="mission-content" data-animate="fade-right">
+            <span class="section-eyebrow">Nossa miss&atilde;o</span>
+            <p class="mission-impact" id="mission-title">
+              Nascemos para <em>encurtar a dist&acirc;ncia</em> entre quem produz e quem precisa.
+            </p>
+            <p class="mission-text">
+              A Milk Road surgiu da observa&ccedil;&atilde;o de uma contradi&ccedil;&atilde;o persistente no agroneg&oacute;cio brasileiro: produtores talentosos sem acesso ao mercado certo, enquanto compradores qualificados encontravam barreiras para localizar fornecedores confi&aacute;veis. Criamos a ponte que faltava.
+            </p>
+            <p class="mission-text">
+              Nossa plataforma &eacute; constru&iacute;da sobre tecnologia, transpar&ecirc;ncia e respeito pelo trabalho rural. Acreditamos que cada litro produzido com dedica&ccedil;&atilde;o merece um comprador &agrave; altura &mdash; e cada empresa merece encontrar a mat&eacute;ria-prima que precisa, sem intermedi&aacute;rios que encarecem e complicam a cadeia.
+            </p>
+            <div class="mission-highlights" role="list" aria-label="Destaques da nossa missao">
+              <div class="mission-highlight-item" role="listitem">
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <span>Conex&atilde;o direta, sem burocracia</span>
+              </div>
+              <div class="mission-highlight-item" role="listitem">
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <span>Valoriza&ccedil;&atilde;o do produtor brasileiro</span>
+              </div>
+              <div class="mission-highlight-item" role="listitem">
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <span>Transpar&ecirc;ncia em cada negocia&ccedil;&atilde;o</span>
+              </div>
+              <div class="mission-highlight-item" role="listitem">
+                <i class="ph ph-check-circle" aria-hidden="true"></i>
+                <span>Tecnologia a servi&ccedil;o do campo</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coluna card visual -->
+          <div class="mission-visual" data-animate="fade-left" data-delay="150">
+            <div class="mission-visual__deco" aria-hidden="true">&#x1F404;</div>
+            <div class="mission-card" role="complementary" aria-label="Estatisticas da missao Milk Road">
+              <div class="mission-card__icon" aria-hidden="true">
+                <i class="ph ph-path" style="color:#FAF1D0;"></i>
+              </div>
+              <p class="mission-card__quote">
+                Cada produtor que se cadastra abre uma rota nova para o mercado.
+              </p>
+              <div class="mission-card__stats" role="list" aria-label="Numeros de impacto">
+                <div class="mission-card__stat" role="listitem">
+                  <strong class="mission-card__stat-num">+1.200</strong>
+                  <span class="mission-card__stat-label">Produtores</span>
+                </div>
+                <div class="mission-card__stat" role="listitem">
+                  <strong class="mission-card__stat-num">+480</strong>
+                  <span class="mission-card__stat-label">Compradores</span>
+                </div>
+                <div class="mission-card__stat" role="listitem">
+                  <strong class="mission-card__stat-num">+350</strong>
+                  <span class="mission-card__stat-label">Neg&oacute;cios</span>
+                </div>
+                <div class="mission-card__stat" role="listitem">
+                  <strong class="mission-card__stat-num">26</strong>
+                  <span class="mission-card__stat-label">Estados</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         4 PILARES
+         ============================================ -->
+    <section class="pillars-page-section" id="pilares" aria-labelledby="pillars-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">O que nos guia</span>
+          <h2 class="section-title" id="pillars-title">Os 4 pilares da Milk Road</h2>
+          <p class="section-subtitle">Princ&iacute;pios que moldam cada decis&atilde;o que tomamos e cada funcionalidade que constru&iacute;mos.</p>
+        </div>
+
+        <div class="pillars-page-grid" role="list">
+
+          <article class="pillar-page-card" role="listitem" data-animate="fade-up" data-delay="0">
+            <span class="pillar-page-card__num" aria-hidden="true">01</span>
+            <div class="pillar-page-card__icon" aria-hidden="true"><i class="ph ph-arrows-in-simple"></i></div>
+            <h3 class="pillar-page-card__title">Reduzir dist&acirc;ncias</h3>
+            <p class="pillar-page-card__desc">Encurtamos o caminho entre o campo e o mercado, eliminando barreiras geogr&aacute;ficas e burocr&aacute;ticas que prejudicam produtores de todos os portes.</p>
+          </article>
+
+          <article class="pillar-page-card" role="listitem" data-animate="fade-up" data-delay="100">
+            <span class="pillar-page-card__num" aria-hidden="true">02</span>
+            <div class="pillar-page-card__icon" aria-hidden="true"><i class="ph ph-trophy"></i></div>
+            <h3 class="pillar-page-card__title">Valorizar o local</h3>
+            <p class="pillar-page-card__desc">Destacamos a produ&ccedil;&atilde;o regional e damos visibilidade nacional a produtores de todos os tamanhos e biomas do Brasil.</p>
+          </article>
+
+          <article class="pillar-page-card" role="listitem" data-animate="fade-up" data-delay="200">
+            <span class="pillar-page-card__num" aria-hidden="true">03</span>
+            <div class="pillar-page-card__icon" aria-hidden="true"><i class="ph ph-handshake"></i></div>
+            <h3 class="pillar-page-card__title">Negociar com transpar&ecirc;ncia</h3>
+            <p class="pillar-page-card__desc">Facilitamos negocia&ccedil;&otilde;es diretas, sem intermedi&aacute;rios que encarecem a cadeia e reduzem a margem de quem realmente produz.</p>
+          </article>
+
+          <article class="pillar-page-card" role="listitem" data-animate="fade-up" data-delay="300">
+            <span class="pillar-page-card__num" aria-hidden="true">04</span>
+            <div class="pillar-page-card__icon" aria-hidden="true"><i class="ph ph-leaf"></i></div>
+            <h3 class="pillar-page-card__title">Crescer de forma sustent&aacute;vel</h3>
+            <p class="pillar-page-card__desc">Promovemos o agroneg&oacute;cio respons&aacute;vel, com foco no desenvolvimento de longo prazo das comunidades rurais.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         SECAO NUMEROS
+         ============================================ -->
+    <section class="numbers-section" id="numeros" aria-labelledby="numbers-title">
+      <div class="container numbers-section__inner">
+        <div data-animate="fade-up">
+          <span class="section-eyebrow">Nosso impacto at&eacute; hoje</span>
+          <h2 class="section-title" id="numbers-title">N&uacute;meros que contam nossa hist&oacute;ria</h2>
+        </div>
+        <div class="numbers-grid" role="list">
+          <div class="number-card" role="listitem" data-animate="fade-up" data-delay="0">
+            <i class="ph ph-cow number-card__icon" aria-hidden="true"></i>
+            <strong class="number-card__value">+1.200</strong>
+            <span class="number-card__label">Produtores</span>
+          </div>
+          <div class="number-card" role="listitem" data-animate="fade-up" data-delay="100">
+            <i class="ph ph-buildings number-card__icon" aria-hidden="true"></i>
+            <strong class="number-card__value">+480</strong>
+            <span class="number-card__label">Compradores</span>
+          </div>
+          <div class="number-card" role="listitem" data-animate="fade-up" data-delay="200">
+            <i class="ph ph-map-pin number-card__icon" aria-hidden="true"></i>
+            <strong class="number-card__value">+26</strong>
+            <span class="number-card__label">Estados</span>
+          </div>
+          <div class="number-card" role="listitem" data-animate="fade-up" data-delay="300">
+            <i class="ph ph-handshake number-card__icon" aria-hidden="true"></i>
+            <strong class="number-card__value">+350</strong>
+            <span class="number-card__label">Neg&oacute;cios Fechados</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         SECAO VALORES
+         ============================================ -->
+    <section class="values-section" id="valores" aria-labelledby="values-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Nossa ess&ecirc;ncia</span>
+          <h2 class="section-title" id="values-title">Os valores que nos definem</h2>
+          <p class="section-subtitle">Mais do que uma plataforma &mdash; somos um compromisso com o campo brasileiro.</p>
+        </div>
+
+        <div class="values-grid" role="list">
+
+          <article class="value-card value-card--transparency" role="listitem" data-animate="fade-up" data-delay="0">
+            <div class="value-card__icon-wrap" aria-hidden="true"><i class="ph ph-eye"></i></div>
+            <h3 class="value-card__title">Transpar&ecirc;ncia</h3>
+            <p class="value-card__desc">Acreditamos que neg&oacute;cios saud&aacute;veis nascem da clareza. Cada dado, cada negocia&ccedil;&atilde;o e cada perfil na Milk Road &eacute; honesto e verific&aacute;vel.</p>
+            <span class="value-card__tag">Nosso fundamento</span>
+          </article>
+
+          <article class="value-card value-card--connection" role="listitem" data-animate="fade-up" data-delay="150">
+            <div class="value-card__icon-wrap" aria-hidden="true"><i class="ph ph-graph"></i></div>
+            <h3 class="value-card__title">Conex&atilde;o</h3>
+            <p class="value-card__desc">Unimos pessoas, regi&otilde;es e hist&oacute;rias. A for&ccedil;a da Milk Road est&aacute; na comunidade que constru&iacute;mos entre produtores e compradores de todo o Brasil.</p>
+            <span class="value-card__tag">Nossa for&ccedil;a</span>
+          </article>
+
+          <article class="value-card value-card--impact" role="listitem" data-animate="fade-up" data-delay="300">
+            <div class="value-card__icon-wrap" aria-hidden="true"><i class="ph ph-lightning"></i></div>
+            <h3 class="value-card__title">Impacto</h3>
+            <p class="value-card__desc">Cada neg&oacute;cio fechado na plataforma representa renda, desenvolvimento e reconhecimento para fam&iacute;lias rurais. Esse &eacute; o impacto que buscamos todos os dias.</p>
+            <span class="value-card__tag">Nossa motiva&ccedil;&atilde;o</span>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================
+         CTA FINAL
+         ============================================ -->
+    <section class="page-cta-section" id="cta-final" aria-labelledby="cta-final-title">
+      <div class="container page-cta-section__inner">
+        <div data-animate="fade-up">
+          <span class="section-eyebrow">Pronto para come&ccedil;ar?</span>
+          <h2 class="page-cta-section__title" id="cta-final-title">
+            Fa&ccedil;a parte da Milk Road
+          </h2>
+          <p class="page-cta-section__subtitle">
+            Junte-se a mais de 1.600 produtores e compradores que j&aacute; est&atilde;o encurtando dist&acirc;ncias e fechando neg&oacute;cios com prop&oacute;sito.
+          </p>
+          <div class="page-cta-section__btns">
+            <a href="index.html#cadastro-produtor" class="btn btn--cream btn--lg" id="btn-cta-produtor">
+              <i class="ph ph-cow" aria-hidden="true"></i>
+              Sou Produtor
+            </a>
+            <a href="index.html#cadastro-comprador" class="btn--outline-white-solid" id="btn-cta-comprador">
+              <i class="ph ph-buildings" aria-hidden="true"></i>
+              Sou Comprador
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================
+       FOOTER — identico ao index.html
+       ============================================ -->
+  <footer class="footer" id="contato" role="contentinfo">
+    <div class="container footer__inner">
+
+      <div class="footer__brand">
+        <img src="logo-branca.jpg" alt="Milk Road" class="footer__logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span class="footer__logo-text" style="display:none;">MILK ROAD</span>
+        <p class="footer__tagline">Conectando o campo ao mercado.</p>
+        <div class="footer__socials" role="list" aria-label="Redes sociais">
+          <a href="#" class="footer__social-link" role="listitem" aria-label="Instagram da Milk Road"><i class="ph ph-instagram-logo" aria-hidden="true"></i></a>
+          <a href="#" class="footer__social-link" role="listitem" aria-label="LinkedIn da Milk Road"><i class="ph ph-linkedin-logo" aria-hidden="true"></i></a>
+          <a href="#" class="footer__social-link" role="listitem" aria-label="WhatsApp da Milk Road"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <nav class="footer__nav" aria-label="Navegacao do rodape">
+        <div class="footer__col">
+          <h4 class="footer__col-title">Navega&ccedil;&atilde;o</h4>
+          <ul role="list">
+            <li><a href="index.html">In&iacute;cio</a></li>
+            <li><a href="quem-somos.html" aria-current="page">Quem Somos</a></li>
+            <li><a href="index.html#produtores">Produtores</a></li>
+            <li><a href="index.html#contato">Contato</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Para Voc&ecirc;</h4>
+          <ul role="list">
+            <li><a href="index.html#cadastro-produtor">Para Produtores</a></li>
+            <li><a href="index.html#cadastro-comprador">Para Compradores</a></li>
+            <li><a href="#">Cadastro</a></li>
+            <li><a href="#">FAQ</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Legal</h4>
+          <ul role="list">
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="#">Privacidade</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+        <div class="footer__col">
+          <h4 class="footer__col-title">Contato</h4>
+          <ul role="list">
+            <li><a href="mailto:contato@milkroad.com.br"><i class="ph ph-envelope" aria-hidden="true"></i> contato@milkroad.com.br</a></li>
+            <li><a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer"><i class="ph ph-whatsapp-logo" aria-hidden="true"></i> WhatsApp</a></li>
+          </ul>
+        </div>
+      </nav>
+
+    </div>
+    <div class="footer__bottom">
+      <div class="container footer__bottom-inner">
+        <p>&copy; 2025 Milk Road. Todos os direitos reservados.</p>
+        <p>Feito com &#10084;&#65039; para o agroneg&oacute;cio brasileiro</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Botao Flutuante WhatsApp -->
+  <a href="https://wa.me/5500000000000" class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Fale conosco pelo WhatsApp">
+    <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+  </a>
+
+  <script src="script.js"></script>
+</body>
+</html>
+

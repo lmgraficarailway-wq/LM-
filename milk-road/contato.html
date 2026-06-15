@@ -1,0 +1,1994 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contato e Suporte — Milk Road | Fale Conosco</title>
+  <meta name="description" content="Entre em contato com a Milk Road. Atendimento via WhatsApp, e-mail ou formulário. Estamos aqui para ajudar produtores e compradores." />
+  <meta property="og:title" content="Contato e Suporte — Milk Road" />
+  <meta property="og:description" content="Fale com a equipe Milk Road. Respondemos em até 2 horas no WhatsApp e até 24h por e-mail." />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://milkroad.com.br/contato" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* ═══════════════════════════════════════════════
+       CONTATO PAGE — ESTILOS ESPECÍFICOS
+    ═══════════════════════════════════════════════ */
+
+    /* ── Navbar link ativo ── */
+    .navbar__link--active {
+      color: var(--color-primary) !important;
+      font-weight: 600;
+    }
+    .navbar__link--active::after { width: 100% !important; }
+    /* ── HERO INTERNO ── */
+    .page-hero {
+      background: linear-gradient(135deg, #2D70B6 0%, #1a4a80 60%, #0f2d52 100%);
+      padding: 140px 0 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 40%, rgba(0,175,239,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(45,112,182,0.25) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .page-hero__shapes {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .page-hero__shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.06;
+    }
+    .page-hero__shape--1 {
+      width: 500px; height: 500px;
+      background: #00AFEF;
+      top: -150px; right: -100px;
+    }
+    .page-hero__shape--2 {
+      width: 300px; height: 300px;
+      background: #FAF1D0;
+      bottom: -80px; left: -60px;
+    }
+    .page-hero__inner {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .page-hero__breadcrumb {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(250,241,208,0.7);
+      margin-bottom: 24px;
+      letter-spacing: 0.04em;
+    }
+    .page-hero__breadcrumb a {
+      color: rgba(250,241,208,0.7);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .page-hero__breadcrumb a:hover { color: #FAF1D0; }
+    .page-hero__breadcrumb i { font-size: 0.75rem; }
+    .page-hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,175,239,0.18);
+      border: 1px solid rgba(0,175,239,0.35);
+      color: #7ed8f7;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .page-hero__title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 800;
+      color: #FEFEFE;
+      line-height: 1.15;
+      margin-bottom: 18px;
+      letter-spacing: -0.02em;
+    }
+    .page-hero__title span {
+      background: linear-gradient(90deg, #00AFEF, #FAF1D0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .page-hero__subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: rgba(250,241,208,0.82);
+      max-width: 580px;
+      margin: 0 auto 32px;
+      line-height: 1.7;
+    }
+    .page-hero__scroll-hint {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      color: rgba(250,241,208,0.5);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+    }
+    .page-hero__scroll-hint i { animation: bounce 2s infinite; }
+
+    /* ── CANAIS DE ATENDIMENTO ── */
+    .channels-section {
+      padding: 90px 0 70px;
+      background: #f4f8fd;
+    }
+    .channels-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 52px;
+    }
+    .channel-card {
+      background: #FEFEFE;
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(45,112,182,0.08), 0 1px 4px rgba(0,0,0,0.04);
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .channel-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--channel-color, #2D70B6);
+      border-radius: 20px 20px 0 0;
+      transition: height 0.3s ease;
+    }
+    .channel-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 0 20px 60px rgba(45,112,182,0.15), 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .channel-card:hover::before { height: 6px; }
+    .channel-card--whatsapp { --channel-color: #25D366; }
+    .channel-card--email    { --channel-color: #2D70B6; }
+    .channel-card--help     { --channel-color: #00AFEF; }
+    .channel-card__icon-wrap {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 1.8rem;
+      background: var(--channel-bg, #e8f1fb);
+      color: var(--channel-color, #2D70B6);
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .channel-card--whatsapp .channel-card__icon-wrap {
+      background: #e6f9ee;
+      color: #1a9e4e;
+    }
+    .channel-card--email .channel-card__icon-wrap {
+      background: #e8f0fb;
+      color: #2D70B6;
+    }
+    .channel-card--help .channel-card__icon-wrap {
+      background: #e0f5fd;
+      color: #007ab8;
+    }
+    .channel-card:hover .channel-card__icon-wrap {
+      background: var(--channel-color, #2D70B6);
+      color: #fff;
+      transform: scale(1.1) rotate(-5deg);
+    }
+    .channel-card--whatsapp:hover .channel-card__icon-wrap { background: #25D366; }
+    .channel-card--email:hover .channel-card__icon-wrap    { background: #2D70B6; }
+    .channel-card--help:hover .channel-card__icon-wrap     { background: #00AFEF; }
+    .channel-card__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: #1a2a4a;
+      margin-bottom: 10px;
+    }
+    .channel-card__desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: #5a7080;
+      line-height: 1.65;
+      margin-bottom: 24px;
+    }
+    .channel-card__badge {
+      display: inline-block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      padding: 3px 10px;
+      border-radius: 100px;
+      margin-bottom: 20px;
+      background: var(--badge-bg, #e8f0fb);
+      color: var(--badge-color, #2D70B6);
+    }
+    .channel-card--whatsapp .channel-card__badge { background: #e6f9ee; color: #1a9e4e; }
+    .channel-card--email    .channel-card__badge { background: #e8f0fb; color: #2D70B6; }
+    .channel-card--help     .channel-card__badge { background: #e0f5fd; color: #007ab8; }
+    .channel-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 100px;
+      border: 2px solid var(--channel-color, #2D70B6);
+      color: var(--channel-color, #2D70B6);
+      text-decoration: none;
+      transition: all 0.25s ease;
+      background: transparent;
+      cursor: pointer;
+    }
+    .channel-btn:hover {
+      background: var(--channel-color, #2D70B6);
+      color: #fff;
+    }
+    .channel-card--whatsapp .channel-btn { --channel-color: #25D366; }
+    .channel-card--email    .channel-btn { --channel-color: #2D70B6; }
+    .channel-card--help     .channel-btn { --channel-color: #00AFEF; }
+
+    /* ── FORMULÁRIO DE CONTATO ── */
+    .contact-section {
+      padding: 90px 0;
+      background: #FEFEFE;
+    }
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 48px;
+      margin-top: 52px;
+      align-items: start;
+    }
+
+    /* Form Card */
+    .form-card {
+      background: #FEFEFE;
+      border-radius: 24px;
+      padding: 48px 44px;
+      box-shadow: 0 8px 48px rgba(45,112,182,0.12), 0 2px 8px rgba(0,0,0,0.04);
+      border: 1px solid rgba(45,112,182,0.08);
+    }
+    .form-card__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #1a2a4a;
+      margin-bottom: 6px;
+    }
+    .form-card__subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: #7a90a8;
+      margin-bottom: 36px;
+    }
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .form-group {
+      position: relative;
+    }
+    .form-group--full {
+      grid-column: 1 / -1;
+    }
+
+    /* Float Labels */
+    .form-group__label {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      color: #8a9eb5;
+      pointer-events: none;
+      transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+      background: transparent;
+      padding: 0 4px;
+      z-index: 1;
+    }
+    .form-group__label--select {
+      position: static;
+      display: block;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #8a9eb5;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .form-group__input:focus ~ .form-group__label,
+    .form-group__input:not(:placeholder-shown) ~ .form-group__label,
+    .form-group__input.has-value ~ .form-group__label {
+      top: -10px;
+      font-size: 0.72rem;
+      color: #2D70B6;
+      background: #FEFEFE;
+      font-weight: 600;
+    }
+    .form-group__input {
+      width: 100%;
+      padding: 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: #1a2a4a;
+      background: #f7fafd;
+      border: 2px solid #dde8f4;
+      border-radius: 12px;
+      outline: none;
+      transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+      box-sizing: border-box;
+    }
+    .form-group__input:focus {
+      border-color: #2D70B6;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(45,112,182,0.1);
+    }
+    .form-group__input.input-error {
+      border-color: #e85050;
+      box-shadow: 0 0 0 4px rgba(232,80,80,0.1);
+    }
+    .form-group__input.input-success {
+      border-color: #25D366;
+      box-shadow: 0 0 0 4px rgba(37,211,102,0.08);
+    }
+    .form-group__select {
+      width: 100%;
+      padding: 14px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: #1a2a4a;
+      background: #f7fafd url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 256 256'%3E%3Cpath fill='%232D70B6' d='m213.66 101.66-80 80a8 8 0 0 1-11.32 0l-80-80a8 8 0 0 1 11.32-11.32L128 164.69l74.34-74.35a8 8 0 0 1 11.32 11.32Z'/%3E%3C/svg%3E") no-repeat right 14px center;
+      border: 2px solid #dde8f4;
+      border-radius: 12px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      transition: border-color 0.22s ease, box-shadow 0.22s ease;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+    .form-group__select:focus {
+      border-color: #2D70B6;
+      background-color: #fff;
+      box-shadow: 0 0 0 4px rgba(45,112,182,0.1);
+    }
+    .form-group__select.input-error { border-color: #e85050; }
+    .form-group__textarea {
+      width: 100%;
+      padding: 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: #1a2a4a;
+      background: #f7fafd;
+      border: 2px solid #dde8f4;
+      border-radius: 12px;
+      outline: none;
+      resize: vertical;
+      min-height: 130px;
+      transition: border-color 0.22s ease, box-shadow 0.22s ease, background 0.22s ease;
+      box-sizing: border-box;
+      line-height: 1.6;
+    }
+    .form-group__textarea:focus {
+      border-color: #2D70B6;
+      background: #fff;
+      box-shadow: 0 0 0 4px rgba(45,112,182,0.1);
+    }
+    .form-group__textarea.input-error { border-color: #e85050; }
+    .char-counter {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .char-counter__label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      color: #8a9eb5;
+    }
+    .char-counter__count {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      color: #8a9eb5;
+      transition: color 0.2s;
+    }
+    .char-counter__count.warning { color: #f0a500; }
+    .char-counter__count.danger  { color: #e85050; font-weight: 600; }
+
+    /* Checkbox */
+    .form-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .form-checkbox__input {
+      width: 20px; height: 20px;
+      border: 2px solid #dde8f4;
+      border-radius: 6px;
+      appearance: none;
+      -webkit-appearance: none;
+      background: #f7fafd;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+      margin-top: 2px;
+      position: relative;
+    }
+    .form-checkbox__input:checked {
+      background: #2D70B6;
+      border-color: #2D70B6;
+    }
+    .form-checkbox__input:checked::after {
+      content: '';
+      position: absolute;
+      top: 2px; left: 6px;
+      width: 5px; height: 9px;
+      border: 2px solid #fff;
+      border-top: none; border-left: none;
+      transform: rotate(45deg);
+    }
+    .form-checkbox__input.input-error { border-color: #e85050; }
+    .form-checkbox__label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.84rem;
+      color: #5a7080;
+      line-height: 1.6;
+    }
+    .form-checkbox__label a {
+      color: #2D70B6;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .form-checkbox__label a:hover { text-decoration: underline; }
+
+    /* Error message */
+    .form-error {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      color: #e85050;
+      margin-top: 5px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .form-error.visible { display: flex; }
+
+    /* Submit button */
+    .btn-submit {
+      width: 100%;
+      padding: 16px 32px;
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #2D70B6, #1a4a80);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      letter-spacing: 0.01em;
+      box-shadow: 0 4px 20px rgba(45,112,182,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #00AFEF, #2D70B6);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(45,112,182,0.45); }
+    .btn-submit:hover::before { opacity: 1; }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit .btn-text,
+    .btn-submit .btn-loading { position: relative; z-index: 1; display: flex; align-items: center; gap: 10px; }
+    .btn-submit .btn-loading { display: none; }
+    .btn-submit.loading .btn-text    { display: none; }
+    .btn-submit.loading .btn-loading { display: flex; }
+    .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+    .spinner {
+      width: 18px; height: 18px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(5px); }
+    }
+
+    /* Success state */
+    .form-success {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 48px 32px;
+      animation: successIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    .form-success.visible { display: flex; }
+    @keyframes successIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .form-success__icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, #25D366, #1a9e4e);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem;
+      color: #fff;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 32px rgba(37,211,102,0.3);
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s backwards;
+    }
+    @keyframes popIn {
+      from { transform: scale(0); }
+      to   { transform: scale(1); }
+    }
+    .form-success__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #1a2a4a;
+      margin-bottom: 10px;
+    }
+    .form-success__desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: #5a7080;
+      max-width: 380px;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+
+    /* Info Lateral */
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: sticky;
+      top: 100px;
+    }
+    .info-card {
+      background: #FEFEFE;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 4px 24px rgba(45,112,182,0.08);
+      border: 1px solid rgba(45,112,182,0.08);
+    }
+    .info-card__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #1a2a4a;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-card__title i {
+      font-size: 1.1rem;
+      color: #2D70B6;
+    }
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .info-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.86rem;
+      color: #4a6070;
+      line-height: 1.5;
+    }
+    .info-list li i {
+      font-size: 1rem;
+      color: #2D70B6;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .info-list li strong {
+      color: #1a2a4a;
+      font-weight: 600;
+    }
+    .info-list li a {
+      color: #2D70B6;
+      text-decoration: none;
+    }
+    .info-list li a:hover { text-decoration: underline; }
+
+    /* Horário */
+    .schedule-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .schedule-item {
+      background: #f4f8fd;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+    }
+    .schedule-item__day {
+      color: #7a90a8;
+      display: block;
+      margin-bottom: 2px;
+    }
+    .schedule-item__time {
+      color: #1a2a4a;
+      font-weight: 600;
+    }
+    .schedule-item--closed .schedule-item__time { color: #b0bec5; }
+
+    /* Redes sociais */
+    .social-links {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+      flex-wrap: wrap;
+    }
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 1.5px solid;
+    }
+    .social-link--instagram {
+      border-color: #e1306c;
+      color: #e1306c;
+    }
+    .social-link--instagram:hover { background: #e1306c; color: #fff; }
+    .social-link--linkedin {
+      border-color: #0077b5;
+      color: #0077b5;
+    }
+    .social-link--linkedin:hover { background: #0077b5; color: #fff; }
+    .social-link--whatsapp {
+      border-color: #25D366;
+      color: #1a9e4e;
+    }
+    .social-link--whatsapp:hover { background: #25D366; color: #fff; }
+
+    /* Card produtor CTA */
+    .producer-cta-card {
+      background: linear-gradient(135deg, #2D70B6, #1a4a80);
+      border-radius: 20px;
+      padding: 28px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .producer-cta-card::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 120px; height: 120px;
+      background: rgba(0,175,239,0.2);
+      border-radius: 50%;
+    }
+    .producer-cta-card::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; left: -20px;
+      width: 80px; height: 80px;
+      background: rgba(250,241,208,0.1);
+      border-radius: 50%;
+    }
+    .producer-cta-card__emoji {
+      font-size: 2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .producer-cta-card__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .producer-cta-card__desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      opacity: 0.85;
+      line-height: 1.6;
+      margin-bottom: 18px;
+      position: relative;
+    }
+    .producer-cta-card .btn-cream-sm {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FAF1D0;
+      color: #1a2a4a;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 700;
+      padding: 10px 20px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.22s ease;
+      position: relative;
+    }
+    .producer-cta-card .btn-cream-sm:hover {
+      background: #fff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    }
+
+    /* ── FAQ RÁPIDO ── */
+    .faq-section {
+      padding: 90px 0;
+      background: #f4f8fd;
+    }
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-top: 52px;
+    }
+    .faq-card {
+      background: #FEFEFE;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 2px 16px rgba(45,112,182,0.06);
+      border: 1px solid rgba(45,112,182,0.07);
+      transition: all 0.3s ease;
+      display: flex;
+      gap: 16px;
+    }
+    .faq-card:hover {
+      box-shadow: 0 8px 32px rgba(45,112,182,0.13);
+      transform: translateY(-4px);
+      border-color: rgba(45,112,182,0.18);
+    }
+    .faq-card__icon {
+      width: 44px; height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #e8f0fb, #d0e3f7);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      color: #2D70B6;
+      flex-shrink: 0;
+    }
+    .faq-card__content { flex: 1; }
+    .faq-card__question {
+      font-family: 'Sora', sans-serif;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #1a2a4a;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .faq-card__answer {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.83rem;
+      color: #5a7080;
+      line-height: 1.65;
+    }
+
+    /* ── MAPA / LOCALIZAÇÃO ── */
+    .location-section {
+      padding: 90px 0;
+      background: #FEFEFE;
+    }
+    .location-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      margin-top: 52px;
+    }
+    .location-card {
+      background: linear-gradient(135deg, #1a2a4a 0%, #0f1e36 100%);
+      border-radius: 24px;
+      padding: 48px 40px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 16px 60px rgba(26,42,74,0.3);
+    }
+    .location-card::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 200px; height: 200px;
+      background: rgba(0,175,239,0.12);
+      border-radius: 50%;
+    }
+    .location-card::after {
+      content: '';
+      position: absolute;
+      bottom: -40px; left: -40px;
+      width: 150px; height: 150px;
+      background: rgba(45,112,182,0.15);
+      border-radius: 50%;
+    }
+    .location-card__eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #00AFEF;
+      margin-bottom: 16px;
+      position: relative;
+    }
+    .location-card__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      position: relative;
+    }
+    .location-card__subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      opacity: 0.7;
+      margin-bottom: 32px;
+      position: relative;
+    }
+    .location-details {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      margin-bottom: 32px;
+    }
+    .location-detail {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+    }
+    .location-detail__icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.1);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      color: #00AFEF;
+      flex-shrink: 0;
+    }
+    .location-detail__text { opacity: 0.9; }
+    .location-detail__text strong { display: block; opacity: 0.6; font-size: 0.72rem; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 2px; }
+    .btn-maps {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #00AFEF, #0090cc);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 100px;
+      text-decoration: none;
+      transition: all 0.25s ease;
+      position: relative;
+      box-shadow: 0 4px 20px rgba(0,175,239,0.35);
+    }
+    .btn-maps:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,175,239,0.45);
+    }
+    .location-visual {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .location-map-placeholder {
+      background: linear-gradient(135deg, #e8f0fb 0%, #d0e3f7 100%);
+      border-radius: 20px;
+      height: 280px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      border: 2px solid rgba(45,112,182,0.12);
+      position: relative;
+      overflow: hidden;
+    }
+    .location-map-placeholder::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(45,112,182,0.08) 0%, transparent 70%);
+    }
+    .map-pin-animated {
+      width: 60px; height: 60px;
+      background: linear-gradient(135deg, #2D70B6, #1a4a80);
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 8px 24px rgba(45,112,182,0.35);
+      position: relative;
+      animation: pinBounce 2.5s ease-in-out infinite;
+    }
+    .map-pin-animated i {
+      transform: rotate(45deg);
+      font-size: 1.3rem;
+      color: #fff;
+    }
+    @keyframes pinBounce {
+      0%, 100% { transform: rotate(-45deg) translateY(0); }
+      50% { transform: rotate(-45deg) translateY(-8px); }
+    }
+    .map-pin-shadow {
+      width: 30px; height: 8px;
+      background: rgba(45,112,182,0.2);
+      border-radius: 50%;
+      animation: shadowPulse 2.5s ease-in-out infinite;
+    }
+    @keyframes shadowPulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(0.8); opacity: 0.3; }
+    }
+    .map-placeholder-text {
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #2D70B6;
+    }
+    .map-placeholder-sub {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: #7a90a8;
+    }
+
+    /* Location stats */
+    .location-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .location-stat {
+      background: #f4f8fd;
+      border-radius: 14px;
+      padding: 18px 14px;
+      text-align: center;
+      border: 1px solid rgba(45,112,182,0.08);
+    }
+    .location-stat__number {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: #2D70B6;
+      display: block;
+    }
+    .location-stat__label {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      color: #7a90a8;
+      display: block;
+      margin-top: 4px;
+    }
+
+    /* ── RESPONSIVIDADE ── */
+    @media (max-width: 1024px) {
+      .channels-grid { grid-template-columns: 1fr 1fr; }
+      .contact-layout { grid-template-columns: 1fr; }
+      .contact-info { position: static; }
+      .location-inner { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .channels-grid { grid-template-columns: 1fr; }
+      .faq-grid { grid-template-columns: 1fr; }
+      .form-card { padding: 32px 24px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .location-card { padding: 32px 24px; }
+      .location-stats { grid-template-columns: 1fr 1fr; }
+      .page-hero { padding: 120px 0 60px; }
+      .schedule-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 480px) {
+      .location-stats { grid-template-columns: 1fr; }
+    }
+
+    /* ── ANIMAÇÕES DATA-ANIMATE ── */
+    [data-animate] {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.65s ease, transform 0.65s cubic-bezier(0.34,1,0.64,1);
+    }
+    [data-animate="fade-left"] {
+      transform: translateX(28px);
+    }
+    [data-animate="fade-right"] {
+      transform: translateX(-28px);
+    }
+    [data-animate].is-visible {
+      opacity: 1;
+      transform: translate(0);
+    }
+    [data-delay="100"] { transition-delay: 0.1s !important; }
+    [data-delay="200"] { transition-delay: 0.2s !important; }
+    [data-delay="300"] { transition-delay: 0.3s !important; }
+    [data-delay="400"] { transition-delay: 0.4s !important; }
+    [data-delay="500"] { transition-delay: 0.5s !important; }
+
+    /* Telefone opcional */
+    .optional-label {
+      font-size: 0.7rem;
+      color: #b0bec5;
+      margin-left: 4px;
+      font-weight: 400;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  TOPBAR / NAVEGAÇÃO (idêntica ao index.html) -->
+  <!-- ═══════════════════════════════════════════ -->
+  <header class="navbar" id="navbar">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="Milk Road — Página Inicial">
+        <img src="logo-colorida.jpg" alt="Milk Road" class="navbar__logo-img" />
+      </a>
+
+      <nav class="navbar__menu" id="navMenu" role="navigation" aria-label="Menu principal">
+        <a href="index.html"      class="navbar__link">Início</a>
+        <a href="quem-somos.html" class="navbar__link">Quem Somos</a>
+        <a href="produtor.html"   class="navbar__link">Para Produtores</a>
+        <a href="comprador.html"  class="navbar__link">Para Compradores</a>
+        <a href="contato.html"    class="navbar__link navbar__link--active" aria-current="page">Contato</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <a href="contato.html" class="btn btn--ghost btn--sm">Entrar</a>
+        <a href="contato.html" class="btn btn--primary btn--sm">Cadastre-se →</a>
+      </div>
+
+      <button class="navbar__hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false" aria-controls="navMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  HERO INTERNO                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="page-hero" aria-labelledby="hero-title">
+      <div class="page-hero__shapes" aria-hidden="true">
+        <div class="page-hero__shape page-hero__shape--1"></div>
+        <div class="page-hero__shape page-hero__shape--2"></div>
+      </div>
+
+      <div class="container page-hero__inner">
+        <!-- Breadcrumb -->
+        <nav class="page-hero__breadcrumb" aria-label="Caminho da página">
+          <a href="index.html">Início</a>
+          <i class="ph ph-caret-right" aria-hidden="true"></i>
+          <span aria-current="page">Contato</span>
+        </nav>
+
+        <span class="page-hero__badge" role="text">
+          <i class="ph ph-headset" aria-hidden="true"></i>
+          Suporte &amp; Atendimento
+        </span>
+
+        <h1 class="page-hero__title" id="hero-title">
+          Fale com a <span>Milk Road</span>
+        </h1>
+
+        <p class="page-hero__subtitle">
+          Estamos aqui para ajudar produtores e compradores.<br />
+          Escolha o melhor canal para você.
+        </p>
+
+        <div class="page-hero__scroll-hint" aria-hidden="true">
+          <i class="ph ph-arrow-down"></i>
+          Role para escolher o canal de atendimento
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 1 — CANAIS DE ATENDIMENTO            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="channels-section" id="canais" aria-labelledby="channels-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Fale conosco</span>
+          <h2 class="section-title" id="channels-title">Escolha seu canal de atendimento</h2>
+          <p class="section-subtitle">Respondemos rapidamente por qualquer canal.</p>
+        </div>
+
+        <div class="channels-grid" role="list">
+
+          <!-- WhatsApp -->
+          <div class="channel-card channel-card--whatsapp" role="listitem" data-animate="fade-up" data-delay="0">
+            <div class="channel-card__icon-wrap" aria-hidden="true">
+              <i class="ph ph-whatsapp-logo"></i>
+            </div>
+            <span class="channel-card__badge">⚡ Resposta em até 2h</span>
+            <h3 class="channel-card__title">WhatsApp</h3>
+            <p class="channel-card__desc">Atendimento rápido via WhatsApp. Respondemos em até 2 horas em dias úteis. A forma mais ágil de falar com a nossa equipe.</p>
+            <a href="https://wa.me/5500000000000?text=Ol%C3%A1%2C+gostaria+de+falar+com+a+Milk+Road" class="channel-btn" target="_blank" rel="noopener noreferrer" aria-label="Iniciar conversa pelo WhatsApp">
+              <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+              Iniciar conversa
+            </a>
+          </div>
+
+          <!-- E-mail -->
+          <div class="channel-card channel-card--email" role="listitem" data-animate="fade-up" data-delay="100">
+            <div class="channel-card__icon-wrap" aria-hidden="true">
+              <i class="ph ph-envelope"></i>
+            </div>
+            <span class="channel-card__badge">📬 Resposta em até 24h úteis</span>
+            <h3 class="channel-card__title">E-mail</h3>
+            <p class="channel-card__desc">contato@milkroad.com.br — Respondemos em até 24 horas úteis. Ideal para assuntos mais detalhados, documentos e parcerias.</p>
+            <a href="mailto:contato@milkroad.com.br" class="channel-btn" aria-label="Enviar e-mail para a Milk Road">
+              <i class="ph ph-envelope" aria-hidden="true"></i>
+              Enviar e-mail
+            </a>
+          </div>
+
+          <!-- Central de Ajuda -->
+          <div class="channel-card channel-card--help" role="listitem" data-animate="fade-up" data-delay="200">
+            <div class="channel-card__icon-wrap" aria-hidden="true">
+              <i class="ph ph-question"></i>
+            </div>
+            <span class="channel-card__badge">📚 Resposta imediata</span>
+            <h3 class="channel-card__title">Central de Ajuda</h3>
+            <p class="channel-card__desc">Acesse nosso FAQ com as dúvidas mais frequentes. Encontre respostas rápidas sobre cadastro, plataforma e negociações.</p>
+            <a href="#faq" class="channel-btn" aria-label="Ver a central de ajuda com perguntas frequentes">
+              <i class="ph ph-question" aria-hidden="true"></i>
+              Ver FAQ
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 2 — FORMULÁRIO DE CONTATO            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="contact-section" id="formulario" aria-labelledby="form-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Envie sua mensagem</span>
+          <h2 class="section-title" id="form-title">Formulário de Contato</h2>
+          <p class="section-subtitle">Preencha o formulário e entraremos em contato em breve.</p>
+        </div>
+
+        <div class="contact-layout">
+
+          <!-- FORMULÁRIO -->
+          <div class="form-card" data-animate="fade-up">
+            <h3 class="form-card__title">Envie sua mensagem</h3>
+            <p class="form-card__subtitle">Todos os campos marcados com * são obrigatórios.</p>
+
+            <!-- Formulário -->
+            <form id="contactForm" novalidate aria-label="Formulário de contato Milk Road">
+              <div class="form-grid">
+
+                <!-- Nome -->
+                <div class="form-group">
+                  <input
+                    type="text"
+                    id="contact-name"
+                    name="nome"
+                    class="form-group__input"
+                    placeholder=" "
+                    required
+                    autocomplete="name"
+                    aria-required="true"
+                    aria-describedby="name-error"
+                  />
+                  <label for="contact-name" class="form-group__label">Nome completo *</label>
+                  <span class="form-error" id="name-error" role="alert" aria-live="polite">
+                    <i class="ph ph-warning-circle" aria-hidden="true"></i>
+                    Por favor, informe seu nome completo.
+                  </span>
+                </div>
+
+                <!-- E-mail -->
+                <div class="form-group">
+                  <input
+                    type="email"
+                    id="contact-email"
+                    name="email"
+                    class="form-group__input"
+                    placeholder=" "
+                    required
+                    autocomplete="email"
+                    aria-required="true"
+                    aria-describedby="email-error"
+                  />
+                  <label for="contact-email" class="form-group__label">E-mail *</label>
+                  <span class="form-error" id="email-error" role="alert" aria-live="polite">
+                    <i class="ph ph-warning-circle" aria-hidden="true"></i>
+                    Informe um e-mail válido.
+                  </span>
+                </div>
+
+                <!-- Telefone -->
+                <div class="form-group">
+                  <input
+                    type="tel"
+                    id="contact-phone"
+                    name="telefone"
+                    class="form-group__input"
+                    placeholder=" "
+                    autocomplete="tel"
+                    aria-describedby="phone-hint"
+                    inputmode="tel"
+                  />
+                  <label for="contact-phone" class="form-group__label">
+                    Telefone / WhatsApp
+                    <span class="optional-label">(opcional)</span>
+                  </label>
+                  <span class="form-error" id="phone-hint" style="display:none"></span>
+                </div>
+
+                <!-- Perfil -->
+                <div class="form-group">
+                  <label for="contact-perfil" class="form-group__label--select">Você é *</label>
+                  <select
+                    id="contact-perfil"
+                    name="perfil"
+                    class="form-group__select"
+                    required
+                    aria-required="true"
+                    aria-describedby="perfil-error"
+                  >
+                    <option value="">Selecione seu perfil…</option>
+                    <option value="produtor">Produtor Rural</option>
+                    <option value="comprador">Comprador</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                  <span class="form-error" id="perfil-error" role="alert" aria-live="polite">
+                    <i class="ph ph-warning-circle" aria-hidden="true"></i>
+                    Selecione seu perfil.
+                  </span>
+                </div>
+
+                <!-- Assunto -->
+                <div class="form-group form-group--full">
+                  <label for="contact-assunto" class="form-group__label--select">Assunto *</label>
+                  <select
+                    id="contact-assunto"
+                    name="assunto"
+                    class="form-group__select"
+                    required
+                    aria-required="true"
+                    aria-describedby="assunto-error"
+                  >
+                    <option value="">Selecione o assunto…</option>
+                    <option value="cadastro">Dúvida sobre cadastro</option>
+                    <option value="tecnico">Problema técnico</option>
+                    <option value="parceria">Parceria</option>
+                    <option value="imprensa">Imprensa</option>
+                    <option value="outro">Outro</option>
+                  </select>
+                  <span class="form-error" id="assunto-error" role="alert" aria-live="polite">
+                    <i class="ph ph-warning-circle" aria-hidden="true"></i>
+                    Selecione o assunto da mensagem.
+                  </span>
+                </div>
+
+                <!-- Mensagem -->
+                <div class="form-group form-group--full">
+                  <label for="contact-message" class="form-group__label--select">Mensagem *</label>
+                  <textarea
+                    id="contact-message"
+                    name="mensagem"
+                    class="form-group__textarea"
+                    rows="5"
+                    placeholder="Escreva sua mensagem aqui… Quanto mais detalhes, melhor podemos ajudar."
+                    required
+                    maxlength="1000"
+                    aria-required="true"
+                    aria-describedby="message-error message-counter"
+                  ></textarea>
+                  <div class="char-counter" id="message-counter">
+                    <span class="char-counter__label">Descreva sua dúvida ou solicitação</span>
+                    <span class="char-counter__count" id="charCount" aria-live="polite" aria-atomic="true">0 / 1000</span>
+                  </div>
+                  <span class="form-error" id="message-error" role="alert" aria-live="polite">
+                    <i class="ph ph-warning-circle" aria-hidden="true"></i>
+                    Escreva sua mensagem (mínimo 10 caracteres).
+                  </span>
+                </div>
+
+                <!-- Checkbox privacidade -->
+                <div class="form-group form-group--full">
+                  <label class="form-checkbox" id="privacy-label">
+                    <input
+                      type="checkbox"
+                      id="contact-privacy"
+                      name="privacidade"
+                      class="form-checkbox__input"
+                      required
+                      aria-required="true"
+                      aria-describedby="privacy-error"
+                    />
+                    <span class="form-checkbox__label">
+                      Aceito a <a href="#">Política de Privacidade</a> da Milk Road e concordo com o processamento dos meus dados para fins de atendimento. *
+                    </span>
+                  </label>
+                  <span class="form-error" id="privacy-error" role="alert" aria-live="polite">
+                    <i class="ph ph-warning-circle" aria-hidden="true"></i>
+                    Você precisa aceitar a Política de Privacidade.
+                  </span>
+                </div>
+
+                <!-- Botão submit -->
+                <div class="form-group form-group--full">
+                  <button type="submit" class="btn-submit" id="btn-contact-submit" aria-label="Enviar mensagem de contato">
+                    <span class="btn-text">
+                      <i class="ph ph-paper-plane-tilt" aria-hidden="true"></i>
+                      Enviar mensagem
+                    </span>
+                    <span class="btn-loading" aria-hidden="true">
+                      <span class="spinner"></span>
+                      Enviando…
+                    </span>
+                  </button>
+                </div>
+
+              </div>
+            </form>
+
+            <!-- Estado de Sucesso -->
+            <div class="form-success" id="formSuccess" role="alert" aria-live="polite" aria-atomic="true" hidden>
+              <div class="form-success__icon" aria-hidden="true">
+                <i class="ph ph-check"></i>
+              </div>
+              <h3 class="form-success__title">Mensagem enviada com sucesso! 🎉</h3>
+              <p class="form-success__desc">
+                Recebemos sua mensagem e entraremos em contato em breve.<br />
+                Verifique sua caixa de entrada (e spam) para nosso retorno.
+              </p>
+              <a href="#canais" class="btn btn--outline-blue btn--sm">
+                <i class="ph ph-arrow-left" aria-hidden="true"></i>
+                Voltar ao início
+              </a>
+            </div>
+          </div>
+
+          <!-- INFO LATERAL -->
+          <aside class="contact-info" aria-label="Informações de contato">
+
+            <!-- Horário -->
+            <div class="info-card" data-animate="fade-left">
+              <h3 class="info-card__title">
+                <i class="ph ph-clock" aria-hidden="true"></i>
+                Horário de Atendimento
+              </h3>
+              <div class="schedule-grid">
+                <div class="schedule-item">
+                  <span class="schedule-item__day">Segunda – Sexta</span>
+                  <span class="schedule-item__time">8h – 18h</span>
+                </div>
+                <div class="schedule-item schedule-item--closed">
+                  <span class="schedule-item__day">Sábado</span>
+                  <span class="schedule-item__time">Fechado</span>
+                </div>
+                <div class="schedule-item schedule-item--closed">
+                  <span class="schedule-item__day">Domingo</span>
+                  <span class="schedule-item__time">Fechado</span>
+                </div>
+                <div class="schedule-item">
+                  <span class="schedule-item__day">WhatsApp</span>
+                  <span class="schedule-item__time">Seg–Sex 8–18h</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contato Direto -->
+            <div class="info-card" data-animate="fade-left" data-delay="100">
+              <h3 class="info-card__title">
+                <i class="ph ph-map-pin" aria-hidden="true"></i>
+                Localização e Contato
+              </h3>
+              <ul class="info-list" role="list">
+                <li>
+                  <i class="ph ph-buildings" aria-hidden="true"></i>
+                  <span><strong>Endereço</strong>São Paulo, SP — Brasil</span>
+                </li>
+                <li>
+                  <i class="ph ph-envelope" aria-hidden="true"></i>
+                  <span>
+                    <strong>E-mail</strong>
+                    <a href="mailto:contato@milkroad.com.br" aria-label="Enviar e-mail para contato@milkroad.com.br">contato@milkroad.com.br</a>
+                  </span>
+                </li>
+                <li>
+                  <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+                  <span>
+                    <strong>WhatsApp</strong>
+                    <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp da Milk Road">(00) 00000-0000</a>
+                  </span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Redes sociais -->
+            <div class="info-card" data-animate="fade-left" data-delay="200">
+              <h3 class="info-card__title">
+                <i class="ph ph-share-network" aria-hidden="true"></i>
+                Redes Sociais
+              </h3>
+              <div class="social-links" role="list" aria-label="Siga a Milk Road nas redes sociais">
+                <a href="#" class="social-link social-link--instagram" role="listitem" aria-label="Instagram da Milk Road">
+                  <i class="ph ph-instagram-logo" aria-hidden="true"></i>
+                  Instagram
+                </a>
+                <a href="#" class="social-link social-link--linkedin" role="listitem" aria-label="LinkedIn da Milk Road">
+                  <i class="ph ph-linkedin-logo" aria-hidden="true"></i>
+                  LinkedIn
+                </a>
+                <a href="https://wa.me/5500000000000" class="social-link social-link--whatsapp" role="listitem" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp da Milk Road">
+                  <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+                  WhatsApp
+                </a>
+              </div>
+            </div>
+
+            <!-- CTA Produtor -->
+            <div class="producer-cta-card" data-animate="fade-left" data-delay="300">
+              <span class="producer-cta-card__emoji" aria-hidden="true">🐄</span>
+              <h3 class="producer-cta-card__title">Você é produtor?</h3>
+              <p class="producer-cta-card__desc">Cadastre-se gratuitamente e seja encontrado por compradores de todo o Brasil. Sem comissão, sem burocracia.</p>
+              <a href="index.html#cadastro-produtor" class="btn-cream-sm" aria-label="Cadastrar como produtor rural na Milk Road gratuitamente">
+                <i class="ph ph-user-plus" aria-hidden="true"></i>
+                Cadastre-se grátis →
+              </a>
+            </div>
+
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 3 — FAQ RÁPIDO                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="faq-section" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Perguntas frequentes</span>
+          <h2 class="section-title" id="faq-title">Dúvidas mais comuns</h2>
+          <p class="section-subtitle">Encontre respostas rápidas para as perguntas mais frequentes.</p>
+        </div>
+
+        <div class="faq-grid" role="list">
+
+          <!-- FAQ 1 -->
+          <article class="faq-card" role="listitem" data-animate="fade-up" data-delay="0">
+            <div class="faq-card__icon" aria-hidden="true">
+              <i class="ph ph-user-plus"></i>
+            </div>
+            <div class="faq-card__content">
+              <h3 class="faq-card__question">Como me cadastro como produtor?</h3>
+              <p class="faq-card__answer">Clique em "Cadastrar minha produção", preencha seu perfil com informações sobre sua produção e localização. O processo leva menos de 5 minutos e é 100% gratuito.</p>
+            </div>
+          </article>
+
+          <!-- FAQ 2 -->
+          <article class="faq-card" role="listitem" data-animate="fade-up" data-delay="100">
+            <div class="faq-card__icon" aria-hidden="true">
+              <i class="ph ph-currency-dollar"></i>
+            </div>
+            <div class="faq-card__content">
+              <h3 class="faq-card__question">Quanto custa usar a plataforma?</h3>
+              <p class="faq-card__answer">O cadastro e o uso da plataforma são gratuitos para produtores rurais. Compradores também têm acesso gratuito ao catálogo. Sem mensalidade, sem comissão por negócio.</p>
+            </div>
+          </article>
+
+          <!-- FAQ 3 -->
+          <article class="faq-card" role="listitem" data-animate="fade-up" data-delay="200">
+            <div class="faq-card__icon" aria-hidden="true">
+              <i class="ph ph-handshake"></i>
+            </div>
+            <div class="faq-card__content">
+              <h3 class="faq-card__question">Como funciona o contato com produtores?</h3>
+              <p class="faq-card__answer">Ao encontrar um produtor de interesse, você acessa suas informações de contato diretamente. A negociação acontece entre as partes sem intermediários da Milk Road.</p>
+            </div>
+          </article>
+
+          <!-- FAQ 4 -->
+          <article class="faq-card" role="listitem" data-animate="fade-up" data-delay="300">
+            <div class="faq-card__icon" aria-hidden="true">
+              <i class="ph ph-shield-check"></i>
+            </div>
+            <div class="faq-card__content">
+              <h3 class="faq-card__question">Meus dados estão seguros?</h3>
+              <p class="faq-card__answer">Sim. Seguimos as diretrizes da LGPD (Lei 13.709/2018). Seus dados são criptografados, nunca vendidos a terceiros e você pode solicitá-los ou removê-los a qualquer momento.</p>
+            </div>
+          </article>
+
+          <!-- FAQ 5 -->
+          <article class="faq-card" role="listitem" data-animate="fade-up" data-delay="400">
+            <div class="faq-card__icon" aria-hidden="true">
+              <i class="ph ph-pencil-simple"></i>
+            </div>
+            <div class="faq-card__content">
+              <h3 class="faq-card__question">Posso alterar meu cadastro?</h3>
+              <p class="faq-card__answer">Sim! Você pode editar todas as informações do seu perfil a qualquer momento pelo painel do usuário: produtos, localização, capacidade de produção e contatos.</p>
+            </div>
+          </article>
+
+          <!-- FAQ 6 -->
+          <article class="faq-card" role="listitem" data-animate="fade-up" data-delay="500">
+            <div class="faq-card__icon" aria-hidden="true">
+              <i class="ph ph-flag"></i>
+            </div>
+            <div class="faq-card__content">
+              <h3 class="faq-card__question">Como denunciar um perfil suspeito?</h3>
+              <p class="faq-card__answer">No perfil do usuário suspeito, clique em "Denunciar". Nossa equipe analisa todas as denúncias em até 48h. Você também pode nos contatar diretamente pelo WhatsApp ou e-mail.</p>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 4 — LOCALIZAÇÃO                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="location-section" id="localizacao" aria-labelledby="location-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Onde estamos</span>
+          <h2 class="section-title" id="location-title">Nossa Localização</h2>
+          <p class="section-subtitle">Sediados em São Paulo, atendemos todo o Brasil.</p>
+        </div>
+
+        <div class="location-inner">
+
+          <!-- Card de localização -->
+          <div class="location-card" data-animate="fade-right" aria-label="Informações de localização da Milk Road">
+            <p class="location-card__eyebrow">🇧🇷 Sede Milk Road</p>
+            <h3 class="location-card__title">São Paulo, SP</h3>
+            <p class="location-card__subtitle">O coração do agronegócio conectado</p>
+
+            <div class="location-details">
+              <div class="location-detail">
+                <div class="location-detail__icon" aria-hidden="true">
+                  <i class="ph ph-map-pin"></i>
+                </div>
+                <div class="location-detail__text">
+                  <strong>Endereço</strong>
+                  São Paulo, SP — Brasil
+                </div>
+              </div>
+              <div class="location-detail">
+                <div class="location-detail__icon" aria-hidden="true">
+                  <i class="ph ph-envelope"></i>
+                </div>
+                <div class="location-detail__text">
+                  <strong>E-mail</strong>
+                  <a href="mailto:contato@milkroad.com.br" style="color:#7ed8f7">contato@milkroad.com.br</a>
+                </div>
+              </div>
+              <div class="location-detail">
+                <div class="location-detail__icon" aria-hidden="true">
+                  <i class="ph ph-clock"></i>
+                </div>
+                <div class="location-detail__text">
+                  <strong>Horário</strong>
+                  Segunda a Sexta, 8h às 18h (BRT)
+                </div>
+              </div>
+              <div class="location-detail">
+                <div class="location-detail__icon" aria-hidden="true">
+                  <i class="ph ph-globe"></i>
+                </div>
+                <div class="location-detail__text">
+                  <strong>Cobertura</strong>
+                  Nacional — todos os estados do Brasil
+                </div>
+              </div>
+            </div>
+
+            <a
+              href="https://maps.google.com/?q=São+Paulo,SP,Brasil"
+              class="btn-maps"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Abrir São Paulo no Google Maps"
+            >
+              <i class="ph ph-map-trifold" aria-hidden="true"></i>
+              Ver no Google Maps
+            </a>
+          </div>
+
+          <!-- Visual -->
+          <div class="location-visual" data-animate="fade-left">
+            <div class="location-map-placeholder" aria-label="Representação de localização em São Paulo, Brasil">
+              <div class="map-pin-animated" aria-hidden="true">
+                <i class="ph ph-map-pin"></i>
+              </div>
+              <div class="map-pin-shadow" aria-hidden="true"></div>
+              <p class="map-placeholder-text">São Paulo, Brasil</p>
+              <p class="map-placeholder-sub">Latitude: -23.55° · Longitude: -46.63°</p>
+            </div>
+
+            <div class="location-stats" role="list" aria-label="Estatísticas de alcance nacional">
+              <div class="location-stat" role="listitem">
+                <strong class="location-stat__number">26+</strong>
+                <span class="location-stat__label">Estados cobertos</span>
+              </div>
+              <div class="location-stat" role="listitem">
+                <strong class="location-stat__number">1.2k+</strong>
+                <span class="location-stat__label">Produtores ativos</span>
+              </div>
+              <div class="location-stat" role="listitem">
+                <strong class="location-stat__number">350+</strong>
+                <span class="location-stat__label">Negócios fechados</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  FOOTER (idêntico ao index.html)            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer class="footer" id="footer" role="contentinfo">
+    <div class="container footer__inner">
+
+      <div class="footer__brand">
+        <img src="logo-branca.jpg" alt="Milk Road" class="footer__logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span class="footer__logo-text" style="display:none;">MILK ROAD</span>
+        <p class="footer__tagline">Conectando o campo ao mercado.</p>
+        <div class="footer__socials" role="list" aria-label="Redes sociais">
+          <a href="#" class="footer__social-link" role="listitem" aria-label="Instagram da Milk Road">
+            <i class="ph ph-instagram-logo" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="footer__social-link" role="listitem" aria-label="LinkedIn da Milk Road">
+            <i class="ph ph-linkedin-logo" aria-hidden="true"></i>
+          </a>
+          <a href="https://wa.me/5500000000000" class="footer__social-link" role="listitem" aria-label="WhatsApp da Milk Road" target="_blank" rel="noopener noreferrer">
+            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+
+      <nav class="footer__nav" aria-label="Navegação do rodapé">
+        <div class="footer__col">
+          <h4 class="footer__col-title">Navegação</h4>
+          <ul role="list">
+            <li><a href="index.html#hero">Início</a></li>
+            <li><a href="index.html#quem-somos">Quem Somos</a></li>
+            <li><a href="index.html#produtores">Produtores</a></li>
+            <li><a href="contato.html" aria-current="page">Contato</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Para Você</h4>
+          <ul role="list">
+            <li><a href="index.html#cadastro-produtor">Para Produtores</a></li>
+            <li><a href="index.html#cadastro-comprador">Para Compradores</a></li>
+            <li><a href="index.html#cadastro">Cadastro</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Legal</h4>
+          <ul role="list">
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="#">Privacidade</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Contato</h4>
+          <ul role="list">
+            <li>
+              <a href="mailto:contato@milkroad.com.br">
+                <i class="ph ph-envelope" aria-hidden="true"></i>
+                contato@milkroad.com.br
+              </a>
+            </li>
+            <li>
+              <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer">
+                <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+                WhatsApp
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    </div>
+
+    <div class="footer__bottom">
+      <div class="container footer__bottom-inner">
+        <p>© 2025 Milk Road. Todos os direitos reservados.</p>
+        <p>Feito com ❤️ para o agronegócio brasileiro</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Botão Flutuante WhatsApp -->
+  <a href="https://wa.me/5500000000000?text=Ol%C3%A1%2C+gostaria+de+falar+com+a+Milk+Road" class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Fale conosco pelo WhatsApp">
+    <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+  </a>
+
+  <script src="script.js"></script>
+
+  <script>
+    /* ═══════════════════════════════════════════════
+       CONTATO PAGE — SCRIPTS INLINE
+    ═══════════════════════════════════════════════ */
+
+    (function () {
+      'use strict';
+
+      /* ── 1. IntersectionObserver para data-animate ── */
+      const animEls = document.querySelectorAll('[data-animate]');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+        );
+        animEls.forEach((el) => observer.observe(el));
+      } else {
+        animEls.forEach((el) => el.classList.add('is-visible'));
+      }
+
+      /* ── 2. Contador de caracteres do textarea ── */
+      const textarea  = document.getElementById('contact-message');
+      const charCount = document.getElementById('charCount');
+      const MAX_CHARS = 1000;
+
+      if (textarea && charCount) {
+        textarea.addEventListener('input', () => {
+          const len = textarea.value.length;
+          charCount.textContent = `${len} / ${MAX_CHARS}`;
+          charCount.classList.remove('warning', 'danger');
+          if (len >= MAX_CHARS * 0.9) charCount.classList.add('danger');
+          else if (len >= MAX_CHARS * 0.75) charCount.classList.add('warning');
+        });
+      }
+
+      /* ── 3. Float label — forçar estado com valor ── */
+      const inputs = document.querySelectorAll('.form-group__input');
+      inputs.forEach((input) => {
+        const update = () => {
+          if (input.value.trim() !== '') input.classList.add('has-value');
+          else input.classList.remove('has-value');
+        };
+        input.addEventListener('input', update);
+        input.addEventListener('change', update);
+        update();
+      });
+
+      /* ── 4. Helpers de validação ── */
+      function showError(inputEl, errorEl) {
+        inputEl.classList.add('input-error');
+        inputEl.classList.remove('input-success');
+        if (errorEl) errorEl.classList.add('visible');
+        inputEl.setAttribute('aria-invalid', 'true');
+      }
+      function clearError(inputEl, errorEl) {
+        inputEl.classList.remove('input-error');
+        if (errorEl) errorEl.classList.remove('visible');
+        inputEl.removeAttribute('aria-invalid');
+      }
+      function markSuccess(inputEl) {
+        inputEl.classList.remove('input-error');
+        inputEl.classList.add('input-success');
+      }
+      function isValidEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      /* ── 5. Validação em tempo real ── */
+      const nameInput    = document.getElementById('contact-name');
+      const emailInput   = document.getElementById('contact-email');
+      const perfilSelect = document.getElementById('contact-perfil');
+      const assuntoSel   = document.getElementById('contact-assunto');
+      const privCheck    = document.getElementById('contact-privacy');
+
+      function attachRealtime(el, validate) {
+        if (!el) return;
+        el.addEventListener('blur', validate);
+        el.addEventListener('input', validate);
+        el.addEventListener('change', validate);
+      }
+
+      attachRealtime(nameInput, () => {
+        const err = document.getElementById('name-error');
+        if (nameInput.value.trim().length >= 2) { clearError(nameInput, err); markSuccess(nameInput); }
+        else showError(nameInput, err);
+      });
+
+      attachRealtime(emailInput, () => {
+        const err = document.getElementById('email-error');
+        if (isValidEmail(emailInput.value.trim())) { clearError(emailInput, err); markSuccess(emailInput); }
+        else showError(emailInput, err);
+      });
+
+      attachRealtime(perfilSelect, () => {
+        const err = document.getElementById('perfil-error');
+        if (perfilSelect.value) { clearError(perfilSelect, err); markSuccess(perfilSelect); }
+        else showError(perfilSelect, err);
+      });
+
+      attachRealtime(assuntoSel, () => {
+        const err = document.getElementById('assunto-error');
+        if (assuntoSel.value) { clearError(assuntoSel, err); markSuccess(assuntoSel); }
+        else showError(assuntoSel, err);
+      });
+
+      attachRealtime(textarea, () => {
+        const err = document.getElementById('message-error');
+        if (textarea.value.trim().length >= 10) { clearError(textarea, err); markSuccess(textarea); }
+        else showError(textarea, err);
+      });
+
+      attachRealtime(privCheck, () => {
+        const err = document.getElementById('privacy-error');
+        if (privCheck.checked) { clearError(privCheck, err); }
+        else showError(privCheck, err);
+      });
+
+      /* ── 6. Submit principal ── */
+      const contactForm  = document.getElementById('contactForm');
+      const submitBtn    = document.getElementById('btn-contact-submit');
+      const formSuccess  = document.getElementById('formSuccess');
+
+      if (contactForm) {
+        contactForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          let valid = true;
+
+          // Validar nome
+          const nameErr = document.getElementById('name-error');
+          if (!nameInput || nameInput.value.trim().length < 2) {
+            showError(nameInput, nameErr); valid = false;
+          } else { clearError(nameInput, nameErr); markSuccess(nameInput); }
+
+          // Validar email
+          const emailErr = document.getElementById('email-error');
+          if (!emailInput || !isValidEmail(emailInput.value.trim())) {
+            showError(emailInput, emailErr); valid = false;
+          } else { clearError(emailInput, emailErr); markSuccess(emailInput); }
+
+          // Validar perfil
+          const perfilErr = document.getElementById('perfil-error');
+          if (!perfilSelect || !perfilSelect.value) {
+            showError(perfilSelect, perfilErr); valid = false;
+          } else { clearError(perfilSelect, perfilErr); markSuccess(perfilSelect); }
+
+          // Validar assunto
+          const assuntoErr = document.getElementById('assunto-error');
+          if (!assuntoSel || !assuntoSel.value) {
+            showError(assuntoSel, assuntoErr); valid = false;
+          } else { clearError(assuntoSel, assuntoErr); markSuccess(assuntoSel); }
+
+          // Validar mensagem
+          const msgErr = document.getElementById('message-error');
+          if (!textarea || textarea.value.trim().length < 10) {
+            showError(textarea, msgErr); valid = false;
+          } else { clearError(textarea, msgErr); markSuccess(textarea); }
+
+          // Validar privacidade
+          const privErr = document.getElementById('privacy-error');
+          if (!privCheck || !privCheck.checked) {
+            showError(privCheck, privErr); valid = false;
+          } else { clearError(privCheck, privErr); }
+
+          if (!valid) {
+            // Focar no primeiro campo com erro
+            const firstErr = contactForm.querySelector('.input-error');
+            if (firstErr) { firstErr.focus(); firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+            return;
+          }
+
+          // Estado de loading
+          submitBtn.classList.add('loading');
+          submitBtn.disabled = true;
+
+          // Simular envio (substitua por fetch real)
+          setTimeout(() => {
+            contactForm.style.display = 'none';
+            formSuccess.hidden = false;
+            formSuccess.classList.add('visible');
+            formSuccess.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+          }, 1800);
+        });
+      }
+
+      /* ── 7. Navbar active link ── */
+      const navLinks = document.querySelectorAll('.navbar__link');
+      navLinks.forEach((link) => {
+        if (link.href === window.location.href) {
+          link.classList.add('navbar__link--active');
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>
+
+

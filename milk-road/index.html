@@ -1,0 +1,737 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Milk Road — Conectando o Campo ao Mercado</title>
+  <meta name="description" content="A plataforma que aproxima produtores rurais de compradores qualificados. Transparência, agilidade e valorização da produção brasileira." />
+  <meta property="og:title" content="Milk Road — Conectando o Campo ao Mercado" />
+  <meta property="og:description" content="Encontre produtores ou compradores em todo o Brasil. Simples, direto e sem intermediários." />
+  <meta property="og:type" content="website" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  TOPBAR / NAVEGAÇÃO                         -->
+  <!-- ═══════════════════════════════════════════ -->
+  <header class="navbar" id="navbar">
+    <div class="container navbar__inner">
+      <a href="#" class="navbar__logo" aria-label="Milk Road — Página Inicial">
+        <img src="logo-colorida.jpg" alt="Milk Road" class="navbar__logo-img" />
+      </a>
+
+      <nav class="navbar__menu" id="navMenu" role="navigation" aria-label="Menu principal">
+        <a href="index.html"       class="navbar__link">Início</a>
+        <a href="quem-somos.html"  class="navbar__link">Quem Somos</a>
+        <a href="produtor.html"    class="navbar__link">Para Produtores</a>
+        <a href="comprador.html"   class="navbar__link">Para Compradores</a>
+        <a href="contato.html"     class="navbar__link">Contato</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <a href="#cadastro" class="btn btn--ghost btn--sm">Entrar</a>
+        <a href="#cadastro" class="btn btn--primary btn--sm">Cadastre-se →</a>
+      </div>
+
+      <button class="navbar__hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false" aria-controls="navMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 1 — HERO                             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="hero" id="hero">
+      <div class="hero__bg-shapes" aria-hidden="true">
+        <div class="hero__shape hero__shape--1"></div>
+        <div class="hero__shape hero__shape--2"></div>
+        <div class="hero__shape hero__shape--3"></div>
+      </div>
+
+      <div class="container hero__inner">
+        <div class="hero__content" data-animate="fade-up">
+          <span class="badge badge--light" role="text">
+            <i class="ph ph-plant" aria-hidden="true"></i>
+            Agronegócio Inteligente
+          </span>
+
+          <h1 class="hero__headline">
+            O campo produz.<br/>
+            O mercado aguarda.<br/>
+            <span class="hero__headline--accent">A Milk Road conecta.</span>
+          </h1>
+
+          <p class="hero__subheadline">
+            A plataforma que aproxima produtores rurais de compradores qualificados — com transparência, agilidade e valorização da produção brasileira.
+          </p>
+
+          <div class="hero__ctas">
+            <a href="#cadastro-produtor" class="btn btn--cream btn--lg" id="cta-produtor-hero">
+              <i class="ph ph-cow" aria-hidden="true"></i>
+              Sou Produtor — Quero ser encontrado
+            </a>
+            <a href="#cadastro-comprador" class="btn btn--outline-white btn--lg" id="cta-comprador-hero">
+              <i class="ph ph-buildings" aria-hidden="true"></i>
+              Sou Comprador — Buscar fornecedores
+            </a>
+          </div>
+        </div>
+
+        <div class="hero__visual" data-animate="fade-left">
+          <div class="hero__image-wrapper">
+            <img src="hero-illustration.png" alt="Produtor rural conectado ao mercado pela Milk Road" class="hero__image" loading="eager" />
+            <div class="hero__image-glow" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Proof Bar -->
+      <div class="hero__stats" data-animate="fade-up" data-delay="300">
+        <div class="container hero__stats-inner">
+          <div class="hero__stat">
+            <strong class="hero__stat-number" data-count="1200">0</strong>
+            <span class="hero__stat-label">Produtores</span>
+          </div>
+          <div class="hero__stat-divider" aria-hidden="true"></div>
+          <div class="hero__stat">
+            <strong class="hero__stat-number" data-count="480">0</strong>
+            <span class="hero__stat-label">Compradores</span>
+          </div>
+          <div class="hero__stat-divider" aria-hidden="true"></div>
+          <div class="hero__stat">
+            <strong class="hero__stat-number" data-count="26">0</strong>
+            <span class="hero__stat-label">Estados</span>
+          </div>
+          <div class="hero__stat-divider" aria-hidden="true"></div>
+          <div class="hero__stat">
+            <strong class="hero__stat-number" data-count="350">0</strong>
+            <span class="hero__stat-label">Negócios Fechados</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 2 — MOTOR DE BUSCA                   -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="search-section" id="busca" aria-labelledby="search-title">
+      <div class="container">
+        <p class="search-section__eyebrow" id="search-title">
+          <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+          Encontre produtores na sua região
+        </p>
+
+        <div class="search-card" role="search" data-animate="fade-up">
+          <div class="search-card__fields">
+            <div class="search-card__field">
+              <label for="select-estado" class="search-card__label">Estado / Região</label>
+              <select id="select-estado" class="search-card__select">
+                <option value="">Todos os estados</option>
+                <option>Minas Gerais</option>
+                <option>São Paulo</option>
+                <option>Rio Grande do Sul</option>
+                <option>Goiás</option>
+                <option>Mato Grosso</option>
+                <option>Paraná</option>
+                <option>Bahia</option>
+                <option>Santa Catarina</option>
+              </select>
+            </div>
+
+            <div class="search-card__field">
+              <label for="select-produto" class="search-card__label">Produto</label>
+              <select id="select-produto" class="search-card__select">
+                <option value="">Todos os produtos</option>
+                <option>Leite in natura</option>
+                <option>Queijo</option>
+                <option>Manteiga</option>
+                <option>Iogurte</option>
+                <option>Soro de leite</option>
+                <option>Creme de leite</option>
+                <option>Requeijão</option>
+              </select>
+            </div>
+
+            <div class="search-card__field">
+              <label for="select-porte" class="search-card__label">Porte do Produtor</label>
+              <select id="select-porte" class="search-card__select">
+                <option value="">Todos os portes</option>
+                <option>Pequeno produtor</option>
+                <option>Médio produtor</option>
+                <option>Grande produtor</option>
+                <option>Cooperativa</option>
+              </select>
+            </div>
+
+            <button class="btn btn--primary btn--search" id="btn-buscar" aria-label="Buscar produtores">
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+              Buscar
+            </button>
+          </div>
+
+          <div class="search-card__tags" role="group" aria-label="Filtros rápidos por produto">
+            <span class="search-card__tag-label">Filtros rápidos:</span>
+            <button class="tag" data-produto="Leite in natura">🥛 Leite in natura</button>
+            <button class="tag" data-produto="Queijo">🧀 Queijo</button>
+            <button class="tag" data-produto="Manteiga">🧈 Manteiga</button>
+            <button class="tag" data-produto="Iogurte">🫙 Iogurte</button>
+            <button class="tag" data-produto="Soro">💧 Soro</button>
+            <a href="#produtores" class="tag tag--link">Ver todos →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 3 — COMO FUNCIONA                    -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="how-section" id="como-funciona" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Simples por natureza</span>
+          <h2 class="section-title" id="how-title">Como a Milk Road funciona?</h2>
+          <p class="section-subtitle">A rota mais curta entre o campo e o mercado.</p>
+        </div>
+
+        <div class="how-grid" role="list">
+          <div class="how-card" role="listitem" data-animate="fade-up" data-delay="0">
+            <div class="how-card__number" aria-hidden="true">01</div>
+            <div class="how-card__icon" aria-hidden="true">
+              <i class="ph ph-user-plus"></i>
+            </div>
+            <h3 class="how-card__title">Cadastre-se em minutos</h3>
+            <p class="how-card__desc">Crie seu perfil como produtor ou comprador. É gratuito, rápido e sem burocracia.</p>
+          </div>
+
+          <div class="how-connector" aria-hidden="true">
+            <i class="ph ph-arrow-right"></i>
+          </div>
+
+          <div class="how-card" role="listitem" data-animate="fade-up" data-delay="100">
+            <div class="how-card__number" aria-hidden="true">02</div>
+            <div class="how-card__icon" aria-hidden="true">
+              <i class="ph ph-map-pin"></i>
+            </div>
+            <h3 class="how-card__title">Seja encontrado</h3>
+            <p class="how-card__desc">Sua produção aparece para compradores que buscam exatamente o que você oferece, na sua região.</p>
+          </div>
+
+          <div class="how-connector" aria-hidden="true">
+            <i class="ph ph-arrow-right"></i>
+          </div>
+
+          <div class="how-card" role="listitem" data-animate="fade-up" data-delay="200">
+            <div class="how-card__number" aria-hidden="true">03</div>
+            <div class="how-card__icon" aria-hidden="true">
+              <i class="ph ph-handshake"></i>
+            </div>
+            <h3 class="how-card__title">Negocie diretamente</h3>
+            <p class="how-card__desc">Entre em contato direto com produtores ou compradores. Sem intermediários, sem taxas ocultas.</p>
+          </div>
+        </div>
+
+        <div class="how-badges" data-animate="fade-up">
+          <div class="how-badge">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            Gratuito para o produtor
+          </div>
+          <div class="how-badge">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            Sem intermediários
+          </div>
+          <div class="how-badge">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            Negociação direta
+          </div>
+          <div class="how-badge">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            100% online
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 4 — PRODUTORES EM DESTAQUE           -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="featured-section" id="produtores" aria-labelledby="featured-title">
+      <div class="container">
+        <div class="featured-header" data-animate="fade-up">
+          <div>
+            <span class="section-eyebrow">Nossa rede</span>
+            <h2 class="section-title" id="featured-title">Produtores em Destaque</h2>
+            <p class="section-subtitle">Conheça quem já está na Milk Road</p>
+          </div>
+          <a href="#busca" class="btn btn--outline-blue btn--sm featured-header__link">Ver todos →</a>
+        </div>
+
+        <div class="producers-grid" role="list">
+
+          <article class="producer-card" role="listitem" data-animate="fade-up" data-delay="0">
+            <div class="producer-card__avatar" aria-hidden="true">
+              <span class="producer-card__avatar-initials">FB</span>
+            </div>
+            <div class="producer-card__badges">
+              <span class="badge badge--verified" role="text"><i class="ph ph-seal-check"></i> Verificado</span>
+            </div>
+            <h3 class="producer-card__name">Fazenda Boa Vista</h3>
+            <p class="producer-card__location"><i class="ph ph-map-pin" aria-hidden="true"></i> Uberlândia, MG</p>
+            <div class="producer-card__products" role="list" aria-label="Produtos">
+              <span class="tag tag--product" role="listitem">🥛 Leite in natura</span>
+              <span class="tag tag--product" role="listitem">🧈 Manteiga</span>
+            </div>
+            <div class="producer-card__info">
+              <span><i class="ph ph-cow" aria-hidden="true"></i> 450 cabeças</span>
+              <span><i class="ph ph-drop" aria-hidden="true"></i> 8.000 L/dia</span>
+            </div>
+            <a href="#" class="btn btn--outline-blue btn--sm producer-card__cta" aria-label="Ver perfil da Fazenda Boa Vista">Ver Perfil</a>
+          </article>
+
+          <article class="producer-card" role="listitem" data-animate="fade-up" data-delay="100">
+            <div class="producer-card__avatar producer-card__avatar--2" aria-hidden="true">
+              <span class="producer-card__avatar-initials">SJ</span>
+            </div>
+            <div class="producer-card__badges">
+              <span class="badge badge--verified" role="text"><i class="ph ph-seal-check"></i> Verificado</span>
+            </div>
+            <h3 class="producer-card__name">Sítio São João</h3>
+            <p class="producer-card__location"><i class="ph ph-map-pin" aria-hidden="true"></i> Campinas, SP</p>
+            <div class="producer-card__products" role="list" aria-label="Produtos">
+              <span class="tag tag--product" role="listitem">🧀 Queijos</span>
+              <span class="tag tag--product" role="listitem">🫙 Iogurte</span>
+            </div>
+            <div class="producer-card__info">
+              <span><i class="ph ph-cow" aria-hidden="true"></i> 120 cabeças</span>
+              <span><i class="ph ph-drop" aria-hidden="true"></i> 1.800 L/dia</span>
+            </div>
+            <a href="#" class="btn btn--outline-blue btn--sm producer-card__cta" aria-label="Ver perfil do Sítio São João">Ver Perfil</a>
+          </article>
+
+          <article class="producer-card" role="listitem" data-animate="fade-up" data-delay="200">
+            <div class="producer-card__avatar producer-card__avatar--3" aria-hidden="true">
+              <span class="producer-card__avatar-initials">VV</span>
+            </div>
+            <div class="producer-card__badges">
+              <span class="badge badge--new" role="text">🌿 Novo</span>
+            </div>
+            <h3 class="producer-card__name">Cooperativa Vale Verde</h3>
+            <p class="producer-card__location"><i class="ph ph-map-pin" aria-hidden="true"></i> Pelotas, RS</p>
+            <div class="producer-card__products" role="list" aria-label="Produtos">
+              <span class="tag tag--product" role="listitem">🥛 Leite in natura</span>
+              <span class="tag tag--product" role="listitem">💧 Soro</span>
+            </div>
+            <div class="producer-card__info">
+              <span><i class="ph ph-cow" aria-hidden="true"></i> 1.200 cabeças</span>
+              <span><i class="ph ph-drop" aria-hidden="true"></i> 22.000 L/dia</span>
+            </div>
+            <a href="#" class="btn btn--outline-blue btn--sm producer-card__cta" aria-label="Ver perfil da Cooperativa Vale Verde">Ver Perfil</a>
+          </article>
+
+          <article class="producer-card" role="listitem" data-animate="fade-up" data-delay="300">
+            <div class="producer-card__avatar producer-card__avatar--4" aria-hidden="true">
+              <span class="producer-card__avatar-initials">SF</span>
+            </div>
+            <div class="producer-card__badges">
+              <span class="badge badge--verified" role="text"><i class="ph ph-seal-check"></i> Verificado</span>
+            </div>
+            <h3 class="producer-card__name">Granja Santa Fé</h3>
+            <p class="producer-card__location"><i class="ph ph-map-pin" aria-hidden="true"></i> Maringá, PR</p>
+            <div class="producer-card__products" role="list" aria-label="Produtos">
+              <span class="tag tag--product" role="listitem">🧈 Manteiga</span>
+              <span class="tag tag--product" role="listitem">🧀 Requeijão</span>
+            </div>
+            <div class="producer-card__info">
+              <span><i class="ph ph-cow" aria-hidden="true"></i> 280 cabeças</span>
+              <span><i class="ph ph-drop" aria-hidden="true"></i> 4.500 L/dia</span>
+            </div>
+            <a href="#" class="btn btn--outline-blue btn--sm producer-card__cta" aria-label="Ver perfil da Granja Santa Fé">Ver Perfil</a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 5 — MAPA DE COBERTURA               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="map-section" id="cobertura" aria-labelledby="map-title">
+      <div class="container map-section__inner">
+
+        <div class="map-section__content" data-animate="fade-right">
+          <span class="section-eyebrow">Cobertura nacional</span>
+          <h2 class="section-title" id="map-title">De Norte a Sul do Brasil, a Milk Road chega até você.</h2>
+
+          <ul class="map-section__list" role="list">
+            <li><i class="ph ph-check-circle" aria-hidden="true"></i> Produtores em todos os biomas</li>
+            <li><i class="ph ph-check-circle" aria-hidden="true"></i> +26 estados e regiões mapeados</li>
+            <li><i class="ph ph-check-circle" aria-hidden="true"></i> Filtro por proximidade geográfica</li>
+            <li><i class="ph ph-check-circle" aria-hidden="true"></i> Dados atualizados em tempo real</li>
+          </ul>
+
+          <a href="#busca" class="btn btn--primary btn--lg" id="btn-minha-regiao">
+            <i class="ph ph-map-pin" aria-hidden="true"></i>
+            Buscar na minha região
+          </a>
+        </div>
+
+        <div class="map-section__map-wrapper" data-animate="fade-left" aria-label="Mapa do Brasil com presença de produtores">
+          <div class="brazil-map" id="brazilMap">
+            <!-- SVG do Brasil simplificado -->
+            <svg viewBox="0 0 400 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mapa do Brasil">
+              <title>Presença de produtores no Brasil</title>
+              <!-- Fundo do mapa -->
+              <rect width="400" height="440" fill="none"/>
+
+              <!-- Forma simplificada do Brasil -->
+              <path class="brazil-outline" d="M195,20 L240,18 L280,30 L310,45 L330,70 L340,100 L345,130 L340,160 L345,185 L360,200 L375,220 L380,245 L375,270 L360,290 L345,305 L330,315 L310,330 L295,345 L285,360 L275,375 L265,390 L255,400 L245,410 L235,415 L225,420 L210,415 L200,405 L190,395 L180,385 L168,375 L155,360 L145,345 L135,330 L125,315 L115,300 L108,285 L105,270 L108,255 L115,240 L120,225 L118,210 L110,195 L100,180 L90,165 L80,150 L70,138 L65,122 L68,105 L75,90 L85,75 L98,62 L115,50 L135,38 L158,26 Z" />
+
+              <!-- Pontos de produtores (simulados) -->
+              <g class="brazil-dots">
+                <!-- MG -->
+                <circle class="map-dot map-dot--large" cx="230" cy="250" r="14" data-estado="Minas Gerais" data-count="287"/>
+                <circle class="map-dot map-dot--pulse" cx="230" cy="250" r="14"/>
+                <!-- SP -->
+                <circle class="map-dot map-dot--large" cx="215" cy="285" r="12" data-estado="São Paulo" data-count="198"/>
+                <!-- RS -->
+                <circle class="map-dot map-dot--medium" cx="200" cy="375" r="10" data-estado="Rio Grande do Sul" data-count="145"/>
+                <!-- GO -->
+                <circle class="map-dot map-dot--medium" cx="218" cy="210" r="10" data-estado="Goiás" data-count="112"/>
+                <!-- PR -->
+                <circle class="map-dot map-dot--medium" cx="207" cy="328" r="9" data-estado="Paraná" data-count="98"/>
+                <!-- SC -->
+                <circle class="map-dot map-dot--small" cx="204" cy="352" r="7" data-estado="Santa Catarina" data-count="76"/>
+                <!-- MT -->
+                <circle class="map-dot map-dot--medium" cx="185" cy="175" r="9" data-estado="Mato Grosso" data-count="87"/>
+                <!-- BA -->
+                <circle class="map-dot map-dot--small" cx="280" cy="210" r="8" data-estado="Bahia" data-count="65"/>
+                <!-- CE -->
+                <circle class="map-dot map-dot--small" cx="295" cy="140" r="6" data-estado="Ceará" data-count="42"/>
+                <!-- PA -->
+                <circle class="map-dot map-dot--small" cx="200" cy="110" r="6" data-estado="Pará" data-count="35"/>
+                <!-- RO -->
+                <circle class="map-dot map-dot--small" cx="145" cy="175" r="6" data-estado="Rondônia" data-count="28"/>
+              </g>
+
+              <!-- Tooltip do mapa -->
+              <g class="map-tooltip" id="mapTooltip" style="display:none;">
+                <rect class="map-tooltip__bg" rx="8" ry="8" width="160" height="50"/>
+                <text class="map-tooltip__estado" x="10" y="20"></text>
+                <text class="map-tooltip__count" x="10" y="40"></text>
+              </g>
+            </svg>
+
+            <!-- Legenda -->
+            <div class="map-legend" role="note">
+              <span class="map-legend__item map-legend__item--large">Grande concentração</span>
+              <span class="map-legend__item map-legend__item--medium">Média concentração</span>
+              <span class="map-legend__item map-legend__item--small">Em crescimento</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 6 — DUPLO CTA                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="dual-cta-section" id="compradores" aria-labelledby="dual-cta-title">
+      <div class="dual-cta-section__bg" aria-hidden="true"></div>
+      <div class="container">
+        <div class="section-header section-header--light" data-animate="fade-up">
+          <h2 class="section-title section-title--white" id="dual-cta-title">Escolha o seu caminho na Milk Road</h2>
+          <p class="section-subtitle section-subtitle--light">Seja produtor ou comprador, temos a solução certa para você.</p>
+        </div>
+
+        <div class="dual-cta-grid">
+          <!-- Card Produtor -->
+          <div class="cta-card cta-card--producer" data-animate="fade-up" data-delay="0" id="cadastro-produtor">
+            <div class="cta-card__icon" aria-hidden="true">🐄</div>
+            <h3 class="cta-card__title">Sou Produtor</h3>
+            <p class="cta-card__desc">Quero cadastrar minha produção e ser encontrado por compradores de todo o Brasil.</p>
+            <ul class="cta-card__list" role="list">
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i> 100% Gratuito para o produtor</li>
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i> Zero comissão por negócio</li>
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i> Visibilidade nacional imediata</li>
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i> Cadastro em menos de 5 minutos</li>
+            </ul>
+            <a href="#" class="btn btn--cream btn--lg cta-card__btn" id="btn-cadastrar-produtor">
+              Cadastrar minha produção →
+            </a>
+          </div>
+
+          <!-- Card Comprador -->
+          <div class="cta-card cta-card--buyer" data-animate="fade-up" data-delay="150" id="cadastro-comprador">
+            <div class="cta-card__icon" aria-hidden="true">🏭</div>
+            <h3 class="cta-card__title">Sou Comprador</h3>
+            <p class="cta-card__desc">Quero encontrar fornecedores qualificados e negociar diretamente, sem intermediários.</p>
+            <ul class="cta-card__list" role="list">
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i> Acesso imediato ao catálogo</li>
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i> Produtores verificados</li>
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i> Filtros avançados por região</li>
+              <li><i class="ph ph-check-circle" aria-hidden="true"></i> Contato direto com o produtor</li>
+            </ul>
+            <a href="#" class="btn btn--white btn--lg cta-card__btn" id="btn-buscar-comprador">
+              Buscar fornecedores →
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 7 — DEPOIMENTOS                      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="testimonials-section" id="depoimentos" aria-labelledby="testimonials-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Histórias reais</span>
+          <h2 class="section-title" id="testimonials-title">O que dizem quem já usa a Milk Road</h2>
+        </div>
+
+        <div class="testimonials-slider" role="region" aria-label="Depoimentos de usuários">
+          <div class="testimonials-track" id="testimonialsTrack">
+
+            <blockquote class="testimonial-card" data-animate="fade-up" data-delay="0">
+              <div class="testimonial-card__quote" aria-hidden="true">"</div>
+              <p class="testimonial-card__text">Consegui fechar contrato com um laticínio de São Paulo em menos de duas semanas. Nunca imaginei que seria tão simples encontrar um comprador sério.</p>
+              <footer class="testimonial-card__author">
+                <div class="testimonial-card__avatar" aria-hidden="true">JS</div>
+                <div class="testimonial-card__info">
+                  <cite class="testimonial-card__name">João Souza</cite>
+                  <span class="testimonial-card__role">Produtor · Uberlândia, MG</span>
+                </div>
+                <div class="testimonial-card__stars" aria-label="5 de 5 estrelas">★★★★★</div>
+              </footer>
+            </blockquote>
+
+            <blockquote class="testimonial-card" data-animate="fade-up" data-delay="100">
+              <div class="testimonial-card__quote" aria-hidden="true">"</div>
+              <p class="testimonial-card__text">Encontrei três novos fornecedores em menos de uma semana. A plataforma é intuitiva e os produtores são verificados. Excelente ferramenta!</p>
+              <footer class="testimonial-card__author">
+                <div class="testimonial-card__avatar testimonial-card__avatar--2" aria-hidden="true">MC</div>
+                <div class="testimonial-card__info">
+                  <cite class="testimonial-card__name">Mariana Costa</cite>
+                  <span class="testimonial-card__role">Diretora de Compras · Laticínio RS</span>
+                </div>
+                <div class="testimonial-card__stars" aria-label="5 de 5 estrelas">★★★★★</div>
+              </footer>
+            </blockquote>
+
+            <blockquote class="testimonial-card" data-animate="fade-up" data-delay="200">
+              <div class="testimonial-card__quote" aria-hidden="true">"</div>
+              <p class="testimonial-card__text">Como pequeno produtor, sempre tive dificuldade de competir com os grandes. A Milk Road me colocou no mesmo nível — minha produção agora tem visibilidade nacional.</p>
+              <footer class="testimonial-card__author">
+                <div class="testimonial-card__avatar testimonial-card__avatar--3" aria-hidden="true">PR</div>
+                <div class="testimonial-card__info">
+                  <cite class="testimonial-card__name">Pedro Rocha</cite>
+                  <span class="testimonial-card__role">Produtor · Caxias do Sul, RS</span>
+                </div>
+                <div class="testimonial-card__stars" aria-label="5 de 5 estrelas">★★★★★</div>
+              </footer>
+            </blockquote>
+
+          </div>
+
+          <div class="testimonials-dots" role="tablist" aria-label="Navegar entre depoimentos">
+            <button class="testimonials-dot testimonials-dot--active" role="tab" aria-selected="true" aria-label="Depoimento 1" data-index="0"></button>
+            <button class="testimonials-dot" role="tab" aria-selected="false" aria-label="Depoimento 2" data-index="1"></button>
+            <button class="testimonials-dot" role="tab" aria-selected="false" aria-label="Depoimento 3" data-index="2"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 8 — PILARES / QUEM SOMOS             -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="pillars-section" id="quem-somos" aria-labelledby="pillars-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Nosso propósito</span>
+          <h2 class="section-title" id="pillars-title">Por que a Milk Road existe?</h2>
+          <p class="section-subtitle">Nascemos para democratizar o acesso ao mercado e valorizar cada produtor brasileiro.</p>
+        </div>
+
+        <div class="pillars-grid" role="list">
+          <div class="pillar-card" role="listitem" data-animate="fade-up" data-delay="0">
+            <div class="pillar-card__icon" aria-hidden="true">
+              <i class="ph ph-arrows-in-simple"></i>
+            </div>
+            <h3 class="pillar-card__title">Reduza distâncias</h3>
+            <p class="pillar-card__desc">Encurtamos o caminho entre o campo e o mercado, eliminando barreiras geográficas e burocráticas.</p>
+          </div>
+          <div class="pillar-card" role="listitem" data-animate="fade-up" data-delay="100">
+            <div class="pillar-card__icon" aria-hidden="true">
+              <i class="ph ph-trophy"></i>
+            </div>
+            <h3 class="pillar-card__title">Valorize o local</h3>
+            <p class="pillar-card__desc">Destacamos a produção regional e damos visibilidade a produtores de todos os portes e biomas.</p>
+          </div>
+          <div class="pillar-card" role="listitem" data-animate="fade-up" data-delay="200">
+            <div class="pillar-card__icon" aria-hidden="true">
+              <i class="ph ph-handshake"></i>
+            </div>
+            <h3 class="pillar-card__title">Negocie com transparência</h3>
+            <p class="pillar-card__desc">Facilitamos negociações diretas e transparentes, sem intermediários que encarecem a cadeia produtiva.</p>
+          </div>
+          <div class="pillar-card" role="listitem" data-animate="fade-up" data-delay="300">
+            <div class="pillar-card__icon" aria-hidden="true">
+              <i class="ph ph-leaf"></i>
+            </div>
+            <h3 class="pillar-card__title">Cresça de forma sustentável</h3>
+            <p class="pillar-card__desc">Promovemos o crescimento sustentável do agronegócio, com foco no desenvolvimento de longo prazo.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO 9 — NEWSLETTER                       -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="newsletter-section" id="newsletter" aria-labelledby="newsletter-title">
+      <div class="container newsletter-section__inner" data-animate="fade-up">
+        <div class="newsletter-section__content">
+          <div class="newsletter-section__icon" aria-hidden="true">
+            <i class="ph ph-envelope-simple"></i>
+          </div>
+          <h2 class="newsletter-section__title" id="newsletter-title">Fique por dentro das novidades</h2>
+          <p class="newsletter-section__desc">Receba dicas para produtores, tendências do mercado e oportunidades de negócio direto no seu e-mail.</p>
+        </div>
+
+        <form class="newsletter-form" id="newsletterForm" novalidate aria-label="Formulário de newsletter">
+          <div class="newsletter-form__group">
+            <label for="newsletter-email" class="sr-only">Seu melhor e-mail</label>
+            <input
+              type="email"
+              id="newsletter-email"
+              name="email"
+              class="newsletter-form__input"
+              placeholder="Seu melhor e-mail"
+              required
+              autocomplete="email"
+              aria-required="true"
+            />
+            <button type="submit" class="btn btn--primary newsletter-form__btn" id="btn-newsletter">
+              Quero receber →
+            </button>
+          </div>
+          <p class="newsletter-form__disclaimer">
+            <i class="ph ph-lock-simple" aria-hidden="true"></i>
+            Sem spam. Você pode cancelar a qualquer momento.
+          </p>
+          <div class="newsletter-form__success" id="newsletterSuccess" role="alert" aria-live="polite" hidden>
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            Ótimo! Você está na lista. Em breve, novidades no seu e-mail.
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  FOOTER                                     -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer class="footer" id="contato" role="contentinfo">
+    <div class="container footer__inner">
+
+      <div class="footer__brand">
+        <img src="logo-branca.jpg" alt="Milk Road" class="footer__logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span class="footer__logo-text" style="display:none;">MILK ROAD</span>
+        <p class="footer__tagline">Conectando o campo ao mercado.</p>
+        <div class="footer__socials" role="list" aria-label="Redes sociais">
+          <a href="#" class="footer__social-link" role="listitem" aria-label="Instagram da Milk Road">
+            <i class="ph ph-instagram-logo" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="footer__social-link" role="listitem" aria-label="LinkedIn da Milk Road">
+            <i class="ph ph-linkedin-logo" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="footer__social-link" role="listitem" aria-label="WhatsApp da Milk Road">
+            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+
+      <nav class="footer__nav" aria-label="Navegação do rodapé">
+        <div class="footer__col">
+          <h4 class="footer__col-title">Navegação</h4>
+          <ul role="list">
+            <li><a href="index.html">Início</a></li>
+            <li><a href="quem-somos.html">Quem Somos</a></li>
+            <li><a href="produtor.html">Produtores</a></li>
+            <li><a href="contato.html">Contato</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Para Você</h4>
+          <ul role="list">
+            <li><a href="produtor.html">Para Produtores</a></li>
+            <li><a href="comprador.html">Para Compradores</a></li>
+            <li><a href="produtor.html#cadastro">Cadastro</a></li>
+            <li><a href="contato.html#faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Legal</h4>
+          <ul role="list">
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="#">Privacidade</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Contato</h4>
+          <ul role="list">
+            <li>
+              <a href="mailto:contato@milkroad.com.br">
+                <i class="ph ph-envelope" aria-hidden="true"></i>
+                contato@milkroad.com.br
+              </a>
+            </li>
+            <li>
+              <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer">
+                <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+                WhatsApp
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    </div>
+
+    <div class="footer__bottom">
+      <div class="container footer__bottom-inner">
+        <p>© 2025 Milk Road. Todos os direitos reservados.</p>
+        <p>Feito com ❤️ para o agronegócio brasileiro</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Botão Flutuante WhatsApp -->
+  <a href="https://wa.me/5500000000000" class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Fale conosco pelo WhatsApp">
+    <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+  </a>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+

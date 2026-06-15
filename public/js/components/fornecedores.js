@@ -165,7 +165,7 @@ export const render = () => {
                     ${s.phone ? (() => {
                     const digits = s.phone.replace(/\D/g, '');
                     const waNum = digits.startsWith('55') ? digits : '55' + digits;
-                    return `<a href="#" onclick="fetch('/api/open-edge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:'https://web.whatsapp.com/send?phone=${waNum}'})}).catch(()=>{}); return false;" title="Abrir no WhatsApp Web (Edge)"
+                    return `<a href="https://wa.me/${waNum}" target="_blank" rel="noopener noreferrer" title="Abrir no WhatsApp"
                             style="display:inline-flex; align-items:center; gap:0.3rem; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:20px; padding:3px 10px; font-size:0.8rem; color:#166534; text-decoration:none; cursor:pointer; transition:background 0.15s;"
                             onmouseenter="this.style.background='#dcfce7'" onmouseleave="this.style.background='#f0fdf4'">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" style="width:13px;height:13px;vertical-align:middle;" onerror="this.style.display='none'"> ${s.phone}

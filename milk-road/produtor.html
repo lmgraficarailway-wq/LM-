@@ -1,0 +1,1174 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Para o Produtor — Milk Road | Cadastre sua Produção Gratuitamente</title>
+  <meta name="description" content="Cadastre sua fazenda ou sítio gratuitamente na Milk Road e conecte-se a compradores qualificados em todo o Brasil. Zero comissão, zero burocracia." />
+  <meta name="keywords" content="produtor de leite, cadastrar produção, vender leite, fazenda leiteira, Milk Road produtor" />
+  <meta property="og:title" content="Para o Produtor — Milk Road" />
+  <meta property="og:description" content="Sua produção merece ser encontrada. Cadastre-se gratuitamente e conecte-se a compradores qualificados em todo o Brasil." />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://milkroad.com.br/produtor" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1/src/index.js" defer></script>
+
+  <link rel="stylesheet" href="style.css" />
+
+  <style>
+    /* ════════════════════════════════════════════
+       PRODUTOR.HTML — ESTILOS ESPECÍFICOS DA PÁGINA
+       ════════════════════════════════════════════ */
+
+    /* ── Navbar link ativo ── */
+    .navbar__link--active {
+      color: var(--color-primary) !important;
+      font-weight: 600;
+    }
+    .navbar__link--active::after { width: 100% !important; }
+    /* ── Hero Interno ── */
+    .page-hero {
+      background: linear-gradient(135deg, #1a5a9e 0%, #2D70B6 60%, #00AFEF 100%);
+      padding: 7rem 0 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 80% 50%, rgba(0,175,239,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 10% 80%, rgba(255,255,255,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .page-hero__inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 3rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-hero__breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      color: rgba(255,255,255,0.65);
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.03em;
+    }
+
+    .page-hero__breadcrumb a {
+      color: rgba(255,255,255,0.65);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .page-hero__breadcrumb a:hover { color: #FAF1D0; }
+    .page-hero__breadcrumb span { color: rgba(255,255,255,0.4); }
+
+    .page-hero__title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      font-weight: 800;
+      color: #FEFEFE;
+      line-height: 1.15;
+      margin: 0 0 1.1rem;
+    }
+
+    .page-hero__title em {
+      font-style: normal;
+      color: #FAF1D0;
+    }
+
+    .page-hero__subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.85);
+      line-height: 1.7;
+      max-width: 540px;
+      margin: 0 0 2rem;
+    }
+
+    .page-hero__icon-wrapper {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .page-hero__icon-blob {
+      width: 200px;
+      height: 200px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 50% 45% 55% 40% / 50% 55% 45% 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      animation: blobFloat 6s ease-in-out infinite;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    @keyframes blobFloat {
+      0%, 100% { transform: translateY(0) rotate(0deg); border-radius: 50% 45% 55% 40% / 50% 55% 45% 50%; }
+      33%       { transform: translateY(-12px) rotate(2deg); border-radius: 45% 55% 40% 55% / 55% 45% 55% 45%; }
+      66%       { transform: translateY(-6px) rotate(-1deg); border-radius: 55% 40% 50% 45% / 40% 55% 50% 55%; }
+    }
+
+    /* ── Benefits Grid ── */
+    .benefits-section {
+      padding: 5rem 0;
+      background: #FEFEFE;
+    }
+
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .benefit-card {
+      background: #fff;
+      border: 1px solid rgba(45,112,182,0.1);
+      border-radius: 16px;
+      padding: 2rem 1.75rem;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .benefit-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #2D70B6, #00AFEF);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .benefit-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 20px 50px rgba(45,112,182,0.12);
+      border-color: rgba(45,112,182,0.25);
+    }
+
+    .benefit-card:hover::before { opacity: 1; }
+
+    .benefit-card__icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(45,112,182,0.1), rgba(0,175,239,0.12));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      font-size: 1.6rem;
+      color: #2D70B6;
+      transition: background 0.3s ease, transform 0.3s ease;
+    }
+
+    .benefit-card:hover .benefit-card__icon {
+      background: linear-gradient(135deg, #2D70B6, #00AFEF);
+      color: #fff;
+      transform: scale(1.08);
+    }
+
+    .benefit-card__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #0f1f3d;
+      margin: 0 0 0.6rem;
+    }
+
+    .benefit-card__desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      color: #5a6a82;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* ── Timeline / Como Funciona ── */
+    .steps-section {
+      padding: 5rem 0;
+      background: linear-gradient(180deg, #f4f8ff 0%, #eef4fc 100%);
+    }
+
+    .timeline {
+      position: relative;
+      margin-top: 3.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 36px;
+      top: 36px;
+      bottom: 36px;
+      width: 2px;
+      background: linear-gradient(180deg, #2D70B6 0%, #00AFEF 100%);
+      z-index: 0;
+    }
+
+    .timeline-step {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 1.75rem;
+      align-items: flex-start;
+      padding: 1.5rem 0;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline-step__number {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #2D70B6, #00AFEF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: 'Sora', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(45,112,182,0.35);
+      position: relative;
+      z-index: 2;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .timeline-step:hover .timeline-step__number {
+      transform: scale(1.1);
+      box-shadow: 0 12px 36px rgba(45,112,182,0.45);
+    }
+
+    .timeline-step__icon-inner {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 22px;
+      height: 22px;
+      background: #FAF1D0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: #2D70B6;
+      border: 2px solid #fff;
+    }
+
+    .timeline-step__body {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      border: 1px solid rgba(45,112,182,0.1);
+      box-shadow: 0 4px 20px rgba(45,112,182,0.06);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .timeline-step:hover .timeline-step__body {
+      transform: translateX(6px);
+      box-shadow: 0 8px 32px rgba(45,112,182,0.12);
+    }
+
+    .timeline-step__header {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .timeline-step__ph-icon {
+      font-size: 1.5rem;
+      color: #00AFEF;
+      flex-shrink: 0;
+    }
+
+    .timeline-step__title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #0f1f3d;
+      margin: 0;
+    }
+
+    .timeline-step__desc {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.92rem;
+      color: #5a6a82;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* ── Depoimento Destaque ── */
+    .testimonial-highlight-section {
+      padding: 5rem 0;
+      background: linear-gradient(135deg, #1a5a9e 0%, #2D70B6 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .testimonial-highlight-section::before {
+      content: '"';
+      position: absolute;
+      top: -20px;
+      left: 5%;
+      font-size: 20rem;
+      font-family: 'Sora', serif;
+      color: rgba(255,255,255,0.04);
+      line-height: 1;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .testimonial-highlight-card {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .testimonial-highlight__quote-mark {
+      font-size: 5rem;
+      color: rgba(250,241,208,0.4);
+      line-height: 0.8;
+      font-family: 'Sora', serif;
+      display: block;
+      margin-bottom: 1rem;
+    }
+
+    .testimonial-highlight__text {
+      font-family: 'Inter', sans-serif;
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: rgba(255,255,255,0.95);
+      line-height: 1.75;
+      font-style: italic;
+      margin: 0 0 2.5rem;
+    }
+
+    .testimonial-highlight__author {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1.25rem;
+    }
+
+    .testimonial-highlight__avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FAF1D0, #f0e5b0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #2D70B6;
+      border: 3px solid rgba(255,255,255,0.3);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      flex-shrink: 0;
+    }
+
+    .testimonial-highlight__info { text-align: left; }
+
+    .testimonial-highlight__name {
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: #FAF1D0;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .testimonial-highlight__role {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.875rem;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .testimonial-highlight__stars {
+      color: #FAF1D0;
+      font-size: 1.25rem;
+      letter-spacing: 2px;
+      display: block;
+      margin-top: 0.35rem;
+    }
+
+    /* ── FAQ Accordion ── */
+    .faq-section {
+      padding: 5rem 0;
+      background: #FEFEFE;
+    }
+
+    .faq-list {
+      max-width: 760px;
+      margin: 3rem auto 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .faq-item {
+      border: 1px solid rgba(45,112,182,0.14);
+      border-radius: 14px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(45,112,182,0.05);
+      transition: border-color 0.25s, box-shadow 0.25s;
+    }
+
+    .faq-item.is-open {
+      border-color: rgba(45,112,182,0.3);
+      box-shadow: 0 4px 24px rgba(45,112,182,0.1);
+    }
+
+    .faq-item__trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.35rem 1.75rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font-family: 'Sora', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #0f1f3d;
+      transition: color 0.2s;
+    }
+
+    .faq-item.is-open .faq-item__trigger { color: #2D70B6; }
+
+    .faq-item__chevron {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(45,112,182,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #2D70B6;
+      flex-shrink: 0;
+      transition: background 0.25s, transform 0.35s ease;
+      font-size: 1rem;
+    }
+
+    .faq-item.is-open .faq-item__chevron {
+      background: #2D70B6;
+      color: #fff;
+      transform: rotate(180deg);
+    }
+
+    .faq-item__body {
+      overflow: hidden;
+      height: 0;
+      transition: height 0.35s ease;
+    }
+
+    .faq-item__content {
+      padding: 0 1.75rem 1.5rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.94rem;
+      color: #5a6a82;
+      line-height: 1.7;
+    }
+
+    /* ── Final CTA ── */
+    .final-cta-section {
+      padding: 6rem 0;
+      background: #FAF1D0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-cta-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 50% 60% at 20% 40%, rgba(45,112,182,0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 80% 70%, rgba(0,175,239,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .final-cta-section .container { position: relative; z-index: 1; }
+
+    .final-cta__eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #2D70B6;
+      margin-bottom: 1rem;
+    }
+
+    .final-cta__title {
+      font-family: 'Sora', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      font-weight: 800;
+      color: #0f1f3d;
+      line-height: 1.15;
+      margin: 0 auto 1.25rem;
+      max-width: 640px;
+    }
+
+    .final-cta__title span { color: #2D70B6; }
+
+    .final-cta__subtitle {
+      font-family: 'Inter', sans-serif;
+      font-size: 1.05rem;
+      color: #5a6a82;
+      margin: 0 auto 2.5rem;
+      max-width: 500px;
+      line-height: 1.65;
+    }
+
+    .final-cta__actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .final-cta__note {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.82rem;
+      color: #8a9ab5;
+      margin-top: 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    /* ── Responsividade ── */
+    @media (max-width: 900px) {
+      .page-hero__inner {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+      .page-hero__icon-wrapper { display: none; }
+      .page-hero__subtitle { margin-left: auto; margin-right: auto; }
+      .page-hero__breadcrumb { justify-content: center; }
+
+      .benefits-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .page-hero { padding: 5.5rem 0 3.5rem; }
+      .benefits-grid { grid-template-columns: 1fr; }
+
+      .timeline::before { left: 28px; top: 28px; bottom: 28px; }
+      .timeline-step { grid-template-columns: 56px 1fr; gap: 1rem; }
+      .timeline-step__number { width: 56px; height: 56px; font-size: 1.1rem; }
+
+      .testimonial-highlight__author { flex-direction: column; text-align: center; }
+      .testimonial-highlight__info { text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  TOPBAR / NAVEGAÇÃO (idêntico ao index.html) -->
+  <!-- ═══════════════════════════════════════════ -->
+  <header class="navbar" id="navbar">
+    <div class="container navbar__inner">
+      <a href="index.html" class="navbar__logo" aria-label="Milk Road — Página Inicial">
+        <img src="logo-colorida.jpg" alt="Milk Road" class="navbar__logo-img" />
+      </a>
+
+      <nav class="navbar__menu" id="navMenu" role="navigation" aria-label="Menu principal">
+        <a href="index.html"      class="navbar__link">Início</a>
+        <a href="quem-somos.html" class="navbar__link">Quem Somos</a>
+        <a href="produtor.html"   class="navbar__link navbar__link--active" aria-current="page">Para Produtores</a>
+        <a href="comprador.html"  class="navbar__link">Para Compradores</a>
+        <a href="contato.html"    class="navbar__link">Contato</a>
+      </nav>
+
+      <div class="navbar__actions">
+        <a href="contato.html" class="btn btn--ghost btn--sm">Entrar</a>
+        <a href="contato.html" class="btn btn--primary btn--sm">Cadastre-se →</a>
+      </div>
+
+      <button class="navbar__hamburger" id="hamburger" aria-label="Abrir menu" aria-expanded="false" aria-controls="navMenu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  HERO INTERNO                               -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="page-hero" id="hero" aria-labelledby="hero-title">
+      <div class="container page-hero__inner">
+
+        <div class="page-hero__content" data-animate="fade-up">
+          <!-- Breadcrumb -->
+          <nav class="page-hero__breadcrumb" aria-label="Breadcrumb">
+            <a href="index.html">Início</a>
+            <span aria-hidden="true">›</span>
+            <span aria-current="page">Para o Produtor</span>
+          </nav>
+
+          <!-- Badge -->
+          <span class="badge badge--light" role="text" style="margin-bottom: 1.25rem; display: inline-flex;">
+            <i class="ph ph-cow" aria-hidden="true"></i>
+            Para Produtores Rurais
+          </span>
+
+          <h1 class="page-hero__title" id="hero-title">
+            Sua produção merece<br/>
+            <em>ser encontrada.</em>
+          </h1>
+
+          <p class="page-hero__subtitle">
+            Cadastre-se gratuitamente e conecte-se a compradores qualificados em todo o Brasil. Sem taxas, sem intermediários, sem complicação.
+          </p>
+
+          <div class="hero__ctas">
+            <a href="#cadastro-final" class="btn btn--cream btn--lg" id="cta-hero-cadastrar">
+              <i class="ph ph-user-plus" aria-hidden="true"></i>
+              Cadastrar minha produção — é grátis
+            </a>
+            <a href="#beneficios" class="btn btn--outline-white btn--lg" id="cta-hero-saibamais">
+              <i class="ph ph-arrow-down" aria-hidden="true"></i>
+              Conhecer os benefícios
+            </a>
+          </div>
+        </div>
+
+        <!-- Ícone decorativo -->
+        <div class="page-hero__icon-wrapper" aria-hidden="true" data-animate="fade-left">
+          <div class="page-hero__icon-blob">🐄</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  SEÇÃO BENEFÍCIOS (grid 3 colunas)          -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="benefits-section" id="beneficios" aria-labelledby="benefits-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Por que a Milk Road?</span>
+          <h2 class="section-title" id="benefits-title">Tudo o que você precisa para crescer</h2>
+          <p class="section-subtitle">Construímos a plataforma pensando em você, produtor. Simples, justo e poderoso.</p>
+        </div>
+
+        <div class="benefits-grid" role="list">
+
+          <div class="benefit-card" role="listitem" data-animate="fade-up" data-delay="0">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <i class="ph ph-globe"></i>
+            </div>
+            <h3 class="benefit-card__title">Visibilidade Nacional</h3>
+            <p class="benefit-card__desc">Sua fazenda aparece para compradores de todo o Brasil que buscam exatamente o que você produz.</p>
+          </div>
+
+          <div class="benefit-card" role="listitem" data-animate="fade-up" data-delay="80">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <i class="ph ph-tag"></i>
+            </div>
+            <h3 class="benefit-card__title">100% Gratuito</h3>
+            <p class="benefit-card__desc">Nenhuma taxa de cadastro, nenhuma comissão por negócio. Seu lucro é inteiramente seu.</p>
+          </div>
+
+          <div class="benefit-card" role="listitem" data-animate="fade-up" data-delay="160">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <i class="ph ph-lightning"></i>
+            </div>
+            <h3 class="benefit-card__title">Sem Burocracia</h3>
+            <p class="benefit-card__desc">Cadastro rápido em menos de 5 minutos. Sem contratos, sem cláusulas complicadas.</p>
+          </div>
+
+          <div class="benefit-card" role="listitem" data-animate="fade-up" data-delay="240">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <i class="ph ph-handshake"></i>
+            </div>
+            <h3 class="benefit-card__title">Negociação Direta</h3>
+            <p class="benefit-card__desc">Fale diretamente com o comprador. Sem intermediários que encarecem e atrasam.</p>
+          </div>
+
+          <div class="benefit-card" role="listitem" data-animate="fade-up" data-delay="320">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <i class="ph ph-identification-card"></i>
+            </div>
+            <h3 class="benefit-card__title">Perfil Profissional</h3>
+            <p class="benefit-card__desc">Apresente sua produção com fotos, capacidade, localização e certificações.</p>
+          </div>
+
+          <div class="benefit-card" role="listitem" data-animate="fade-up" data-delay="400">
+            <div class="benefit-card__icon" aria-hidden="true">
+              <i class="ph ph-headset"></i>
+            </div>
+            <h3 class="benefit-card__title">Suporte Dedicado</h3>
+            <p class="benefit-card__desc">Nossa equipe está pronta para ajudar você a configurar seu perfil e tirar dúvidas.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  COMO FUNCIONA — Timeline Visual (1→4)      -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="steps-section" id="como-funciona" aria-labelledby="steps-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Passo a passo</span>
+          <h2 class="section-title" id="steps-title">Como funciona para o produtor?</h2>
+          <p class="section-subtitle">Da criação do perfil ao fechamento do negócio, em quatro etapas simples.</p>
+        </div>
+
+        <div class="timeline" role="list">
+
+          <!-- Passo 1 -->
+          <div class="timeline-step" role="listitem" data-animate="fade-right" data-delay="0">
+            <div class="timeline-step__number" aria-hidden="true">
+              1
+              <div class="timeline-step__icon-inner">
+                <i class="ph ph-check-fat"></i>
+              </div>
+            </div>
+            <div class="timeline-step__body">
+              <div class="timeline-step__header">
+                <i class="ph ph-user-plus timeline-step__ph-icon" aria-hidden="true"></i>
+                <h3 class="timeline-step__title">Crie seu cadastro gratuito</h3>
+              </div>
+              <p class="timeline-step__desc">Informe seus dados básicos, CPF ou CNPJ, e crie sua conta em menos de 5 minutos. Nenhuma cobrança, nenhuma burocracia.</p>
+            </div>
+          </div>
+
+          <!-- Passo 2 -->
+          <div class="timeline-step" role="listitem" data-animate="fade-right" data-delay="100">
+            <div class="timeline-step__number" aria-hidden="true">
+              2
+              <div class="timeline-step__icon-inner">
+                <i class="ph ph-check-fat"></i>
+              </div>
+            </div>
+            <div class="timeline-step__body">
+              <div class="timeline-step__header">
+                <i class="ph ph-note-pencil timeline-step__ph-icon" aria-hidden="true"></i>
+                <h3 class="timeline-step__title">Monte seu perfil de produtor</h3>
+              </div>
+              <p class="timeline-step__desc">Adicione fotos da propriedade, descreva seus produtos, capacidade de produção, localização e certificações. Quanto mais completo, mais credibilidade.</p>
+            </div>
+          </div>
+
+          <!-- Passo 3 -->
+          <div class="timeline-step" role="listitem" data-animate="fade-right" data-delay="200">
+            <div class="timeline-step__number" aria-hidden="true">
+              3
+              <div class="timeline-step__icon-inner">
+                <i class="ph ph-check-fat"></i>
+              </div>
+            </div>
+            <div class="timeline-step__body">
+              <div class="timeline-step__header">
+                <i class="ph ph-magnifying-glass timeline-step__ph-icon" aria-hidden="true"></i>
+                <h3 class="timeline-step__title">Seja encontrado por compradores</h3>
+              </div>
+              <p class="timeline-step__desc">Nosso motor de busca inteligente conecta compradores que procuram seu produto, na sua região, ao seu perfil. Sua fazenda vai aparecer para quem realmente importa.</p>
+            </div>
+          </div>
+
+          <!-- Passo 4 -->
+          <div class="timeline-step" role="listitem" data-animate="fade-right" data-delay="300">
+            <div class="timeline-step__number" aria-hidden="true">
+              4
+              <div class="timeline-step__icon-inner">
+                <i class="ph ph-check-fat"></i>
+              </div>
+            </div>
+            <div class="timeline-step__body">
+              <div class="timeline-step__header">
+                <i class="ph ph-handshake timeline-step__ph-icon" aria-hidden="true"></i>
+                <h3 class="timeline-step__title">Negocie diretamente e feche negócios</h3>
+              </div>
+              <p class="timeline-step__desc">Entre em contato diretamente com o comprador via WhatsApp ou e-mail. Sem plataforma de intermediação, sem taxa sobre a venda. O lucro é 100% seu.</p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Badges de destaque -->
+        <div class="how-badges" data-animate="fade-up" style="margin-top: 3rem;">
+          <div class="how-badge">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            100% gratuito
+          </div>
+          <div class="how-badge">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            Zero comissão
+          </div>
+          <div class="how-badge">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            Sem intermediários
+          </div>
+          <div class="how-badge">
+            <i class="ph ph-check-circle" aria-hidden="true"></i>
+            Negociação direta
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  DEPOIMENTO DESTAQUE                        -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="testimonial-highlight-section" aria-labelledby="depoimento-title">
+      <div class="container">
+        <div class="testimonial-highlight-card" data-animate="fade-up">
+
+          <div class="section-header section-header--light" style="margin-bottom: 3rem;">
+            <span class="section-eyebrow" style="color: rgba(250,241,208,0.7);">Histórias reais</span>
+            <h2 class="section-title section-title--white" id="depoimento-title">O que dizem quem já usa a Milk Road</h2>
+          </div>
+
+          <blockquote>
+            <span class="testimonial-highlight__quote-mark" aria-hidden="true">"</span>
+            <p class="testimonial-highlight__text">
+              "Há 12 anos na pecuária leiteira, nunca imaginei que fosse tão simples encontrar compradores sérios fora da minha região. Em menos de três semanas de cadastro, feché contrato com um laticínio de São Paulo que paga o melhor preço que já recebi. A Milk Road não cobra nada por isso — foi pura valorização da minha produção."
+            </p>
+
+            <footer class="testimonial-highlight__author">
+              <div class="testimonial-highlight__avatar" aria-hidden="true">JS</div>
+              <div class="testimonial-highlight__info">
+                <cite class="testimonial-highlight__name">João Souza</cite>
+                <span class="testimonial-highlight__role">Produtor Leiteiro · Uberlândia, MG</span>
+                <span class="testimonial-highlight__stars" aria-label="5 de 5 estrelas">★★★★★</span>
+              </div>
+            </footer>
+          </blockquote>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  FAQ — Accordion                            -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="faq-section" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section-header" data-animate="fade-up">
+          <span class="section-eyebrow">Perguntas Frequentes</span>
+          <h2 class="section-title" id="faq-title">Ficou com alguma dúvida?</h2>
+          <p class="section-subtitle">Respondemos as perguntas mais comuns dos produtores.</p>
+        </div>
+
+        <div class="faq-list" data-animate="fade-up" data-delay="100" role="list">
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-item__trigger"
+              aria-expanded="false"
+              aria-controls="faq-answer-1"
+              id="faq-btn-1"
+            >
+              O cadastro é realmente gratuito?
+              <span class="faq-item__chevron" aria-hidden="true">
+                <i class="ph ph-caret-down"></i>
+              </span>
+            </button>
+            <div class="faq-item__body" id="faq-answer-1" role="region" aria-labelledby="faq-btn-1">
+              <div class="faq-item__content">
+                Sim, 100% gratuito para produtores. Não há taxa de cadastro, mensalidade ou comissão sobre as negociações que você fechar pela plataforma. Seu lucro é 100% seu.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-item__trigger"
+              aria-expanded="false"
+              aria-controls="faq-answer-2"
+              id="faq-btn-2"
+            >
+              Quais produtos posso cadastrar?
+              <span class="faq-item__chevron" aria-hidden="true">
+                <i class="ph ph-caret-down"></i>
+              </span>
+            </button>
+            <div class="faq-item__body" id="faq-answer-2" role="region" aria-labelledby="faq-btn-2">
+              <div class="faq-item__content">
+                Você pode cadastrar leite in natura, queijos (de todos os tipos), manteiga, iogurte, soro de leite, requeijão, creme de leite e outros derivados lácteos. Se você produz algo não listado, entre em contato — estamos sempre expandindo o catálogo.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-item__trigger"
+              aria-expanded="false"
+              aria-controls="faq-answer-3"
+              id="faq-btn-3"
+            >
+              Preciso ter CNPJ para me cadastrar?
+              <span class="faq-item__chevron" aria-hidden="true">
+                <i class="ph ph-caret-down"></i>
+              </span>
+            </button>
+            <div class="faq-item__body" id="faq-answer-3" role="region" aria-labelledby="faq-btn-3">
+              <div class="faq-item__content">
+                Não. A Milk Road aceita produtores tanto pessoa física (CPF) quanto jurídica (CNPJ). Pequenos produtores, agricultores familiares e sítios são igualmente bem-vindos.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-item__trigger"
+              aria-expanded="false"
+              aria-controls="faq-answer-4"
+              id="faq-btn-4"
+            >
+              Como os compradores me encontram?
+              <span class="faq-item__chevron" aria-hidden="true">
+                <i class="ph ph-caret-down"></i>
+              </span>
+            </button>
+            <div class="faq-item__body" id="faq-answer-4" role="region" aria-labelledby="faq-btn-4">
+              <div class="faq-item__content">
+                Através do nosso motor de busca inteligente, os compradores filtram por produto, região e porte do produtor. Seu perfil aparece automaticamente nos resultados relevantes. Quanto mais completo seu perfil, melhor a visibilidade.
+              </div>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-item__trigger"
+              aria-expanded="false"
+              aria-controls="faq-answer-5"
+              id="faq-btn-5"
+            >
+              Posso desativar meu perfil a qualquer momento?
+              <span class="faq-item__chevron" aria-hidden="true">
+                <i class="ph ph-caret-down"></i>
+              </span>
+            </button>
+            <div class="faq-item__body" id="faq-answer-5" role="region" aria-labelledby="faq-btn-5">
+              <div class="faq-item__content">
+                Sim, você tem total controle. A qualquer momento pode pausar temporariamente seu perfil (ele fica oculto para compradores mas os dados são preservados) ou encerrar definitivamente seu cadastro. Sem aviso prévio, sem multa.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════ -->
+    <!--  CTA FINAL                                  -->
+    <!-- ═══════════════════════════════════════════ -->
+    <section class="final-cta-section" id="cadastro-final" aria-labelledby="cta-title">
+      <div class="container">
+        <div data-animate="fade-up">
+          <p class="final-cta__eyebrow">Comece agora mesmo</p>
+          <h2 class="final-cta__title" id="cta-title">
+            Sua fazenda está pronta.<br/>
+            <span>O mercado também está.</span>
+          </h2>
+          <p class="final-cta__subtitle">
+            Junte-se a mais de 1.200 produtores que já conectam sua produção ao mercado pelo Milk Road.
+          </p>
+
+          <div class="final-cta__actions">
+            <a href="#" class="btn btn--primary btn--lg" id="btn-final-cta">
+              <i class="ph ph-user-plus" aria-hidden="true"></i>
+              Cadastrar minha produção agora
+            </a>
+            <a href="index.html#busca" class="btn btn--outline-blue btn--lg" id="btn-final-explorar">
+              <i class="ph ph-magnifying-glass" aria-hidden="true"></i>
+              Explorar a plataforma
+            </a>
+          </div>
+
+          <p class="final-cta__note">
+            <i class="ph ph-lock-simple" aria-hidden="true"></i>
+            Cadastro gratuito · Sem cartão de crédito · Cancele quando quiser
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════ -->
+  <!--  FOOTER (idêntico ao index.html)            -->
+  <!-- ═══════════════════════════════════════════ -->
+  <footer class="footer" id="contato" role="contentinfo">
+    <div class="container footer__inner">
+
+      <div class="footer__brand">
+        <img src="logo-branca.jpg" alt="Milk Road" class="footer__logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+        <span class="footer__logo-text" style="display:none;">MILK ROAD</span>
+        <p class="footer__tagline">Conectando o campo ao mercado.</p>
+        <div class="footer__socials" role="list" aria-label="Redes sociais">
+          <a href="#" class="footer__social-link" role="listitem" aria-label="Instagram da Milk Road">
+            <i class="ph ph-instagram-logo" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="footer__social-link" role="listitem" aria-label="LinkedIn da Milk Road">
+            <i class="ph ph-linkedin-logo" aria-hidden="true"></i>
+          </a>
+          <a href="#" class="footer__social-link" role="listitem" aria-label="WhatsApp da Milk Road">
+            <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+
+      <nav class="footer__nav" aria-label="Navegação do rodapé">
+        <div class="footer__col">
+          <h4 class="footer__col-title">Navegação</h4>
+          <ul role="list">
+            <li><a href="index.html#hero">Início</a></li>
+            <li><a href="index.html#quem-somos">Quem Somos</a></li>
+            <li><a href="index.html#produtores">Produtores</a></li>
+            <li><a href="index.html#contato">Contato</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Para Você</h4>
+          <ul role="list">
+            <li><a href="produtor.html">Para Produtores</a></li>
+            <li><a href="index.html#cadastro-comprador">Para Compradores</a></li>
+            <li><a href="#cadastro-final">Cadastro</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Legal</h4>
+          <ul role="list">
+            <li><a href="#">Termos de Uso</a></li>
+            <li><a href="#">Privacidade</a></li>
+            <li><a href="#">Cookies</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4 class="footer__col-title">Contato</h4>
+          <ul role="list">
+            <li>
+              <a href="mailto:contato@milkroad.com.br">
+                <i class="ph ph-envelope" aria-hidden="true"></i>
+                contato@milkroad.com.br
+              </a>
+            </li>
+            <li>
+              <a href="https://wa.me/5500000000000" target="_blank" rel="noopener noreferrer">
+                <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+                WhatsApp
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    </div>
+
+    <div class="footer__bottom">
+      <div class="container footer__bottom-inner">
+        <p>© 2025 Milk Road. Todos os direitos reservados.</p>
+        <p>Feito com ❤️ para o agronegócio brasileiro</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Botão Flutuante WhatsApp -->
+  <a href="https://wa.me/5500000000000" class="whatsapp-fab" target="_blank" rel="noopener noreferrer" aria-label="Fale conosco pelo WhatsApp">
+    <i class="ph ph-whatsapp-logo" aria-hidden="true"></i>
+  </a>
+
+  <script src="script.js"></script>
+
+  <!-- FAQ Accordion — lógica inline -->
+  <script>
+    (function () {
+      'use strict';
+
+      /**
+       * FAQ Accordion com animação de altura real (max-height trick)
+       */
+      var faqItems = document.querySelectorAll('.faq-item');
+
+      faqItems.forEach(function (item) {
+        var trigger = item.querySelector('.faq-item__trigger');
+        var body    = item.querySelector('.faq-item__body');
+        var content = item.querySelector('.faq-item__content');
+
+        if (!trigger || !body || !content) return;
+
+        trigger.addEventListener('click', function () {
+          var isOpen = item.classList.contains('is-open');
+
+          // Fecha todos os outros
+          faqItems.forEach(function (otherItem) {
+            if (otherItem !== item && otherItem.classList.contains('is-open')) {
+              otherItem.classList.remove('is-open');
+              otherItem.querySelector('.faq-item__trigger').setAttribute('aria-expanded', 'false');
+              otherItem.querySelector('.faq-item__body').style.height = '0';
+            }
+          });
+
+          // Alterna o item clicado
+          if (isOpen) {
+            item.classList.remove('is-open');
+            trigger.setAttribute('aria-expanded', 'false');
+            body.style.height = '0';
+          } else {
+            item.classList.add('is-open');
+            trigger.setAttribute('aria-expanded', 'true');
+            body.style.height = content.scrollHeight + 'px';
+          }
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>
+
+
