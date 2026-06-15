@@ -199,7 +199,7 @@ export const render = () => {
                         <button class="btn btn-secondary cat-link-btn" data-id="${item.id}" title="Copiar Link" style="flex: 1; min-width: 40%; padding: 0.6rem;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="vertical-align:text-bottom; flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg> Link
                         </button>
-                        <button class="btn btn-secondary cat-copy-btn" data-img="${images[0] || ''}" data-desc="${encodeURIComponent(safeDesc)}" style="flex: 1; min-width: 40%; display:flex; align-items:center; gap:6px; justify-content:center; padding: 0.6rem;">
+                        <button class="btn btn-secondary cat-copy-btn" data-img="${images[0] || ''}" data-desc="${encodeURIComponent(safeDesc)}" data-title="${safeTitle}" style="flex: 1; min-width: 40%; display:flex; align-items:center; gap:6px; justify-content:center; padding: 0.6rem;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" /></svg>
                             Copiar
                         </button>
@@ -286,8 +286,9 @@ export const render = () => {
             });
         }
 
-        // Helper function to reliably copy image + text
-        const copyToClipboard = async (imgUrl, textDesc) => {
+        // ── Gera imagem composta: foto + painel de informações e copia para clipboard ──
+        const copyToClipboard = async (imgUrl, textDesc, itemTitle) => {
+            // 1. Carrega a imagem do produto
             const img = new Image();
             img.crossOrigin = 'Anonymous';
             img.src = imgUrl.startsWith('http') ? imgUrl : (window.location.origin + imgUrl);
@@ -297,23 +298,117 @@ export const render = () => {
                 img.onerror = reject;
             });
 
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width;
-            canvas.height = img.height;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0);
+            // 2. Define dimensões do canvas
+            const W = Math.max(img.width, 800);
+            const scale = W / img.width;
+            const imgH = Math.round(img.height * scale);
 
+            // 3. Calcula espaço para o painel de texto
+            const PADDING = 32;
+            const FONT_TITLE = Math.round(W * 0.038);
+            const FONT_DESC  = Math.round(W * 0.026);
+            const FONT_FOOTER = Math.round(W * 0.022);
+            const LINE_H_DESC = FONT_DESC * 1.55;
+            const MAX_CHARS_PER_LINE = Math.floor((W - PADDING * 2) / (FONT_DESC * 0.55));
+
+            // Quebra o texto em linhas respeitando a largura
+            const wrapText = (text, maxChars) => {
+                const words = text.split(' ');
+                const lines = [];
+                let current = '';
+                for (const word of words) {
+                    if ((current + ' ' + word).trim().length > maxChars) {
+                        if (current) lines.push(current.trim());
+                        current = word;
+                    } else {
+                        current = (current + ' ' + word).trim();
+                    }
+                }
+                if (current) lines.push(current.trim());
+                return lines;
+            };
+
+            // Remove o link do final para não poluir visualmente
+            const descClean = textDesc.replace(/\n\nhttps?:\/\/\S+/g, '').trim();
+            const descLines = wrapText(descClean, MAX_CHARS_PER_LINE);
+            const MAX_DESC_LINES = 10;
+            const shownLines = descLines.slice(0, MAX_DESC_LINES);
+            const hasMore = descLines.length > MAX_DESC_LINES;
+
+            const titleH = FONT_TITLE * 1.6;
+            const panelH = PADDING + titleH + (shownLines.length * LINE_H_DESC) + (hasMore ? LINE_H_DESC : 0) + PADDING * 1.5 + FONT_FOOTER * 1.6 + PADDING;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = W;
+            canvas.height = imgH + panelH;
+            const ctx = canvas.getContext('2d');
+
+            // 4. Fundo branco total
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, W, canvas.height);
+
+            // 5. Desenha a imagem do produto (ocupando a parte superior)
+            ctx.drawImage(img, 0, 0, W, imgH);
+
+            // 6. Painel de informações na parte inferior
+            // Gradiente sutil de fundo
+            const panelGrad = ctx.createLinearGradient(0, imgH, 0, canvas.height);
+            panelGrad.addColorStop(0, '#faf5ff');
+            panelGrad.addColorStop(1, '#f3f0fa');
+            ctx.fillStyle = panelGrad;
+            ctx.fillRect(0, imgH, W, panelH);
+
+            // Linha de separação roxa
+            ctx.fillStyle = '#7c3aed';
+            ctx.fillRect(0, imgH, W, 5);
+
+            // Barra lateral roxa decorativa
+            ctx.fillStyle = '#7c3aed';
+            ctx.fillRect(PADDING - 12, imgH + PADDING, 5, titleH + shownLines.length * LINE_H_DESC + PADDING * 0.5);
+
+            // 7. Título do produto
+            ctx.font = `900 ${FONT_TITLE}px Inter, Arial, sans-serif`;
+            ctx.fillStyle = '#2e1065';
+            ctx.textBaseline = 'top';
+            const titleText = (itemTitle || '').toUpperCase();
+            ctx.fillText(titleText, PADDING + 8, imgH + PADDING, W - PADDING * 2);
+
+            // 8. Linhas da descrição
+            ctx.font = `500 ${FONT_DESC}px Inter, Arial, sans-serif`;
+            ctx.fillStyle = '#374151';
+            let yText = imgH + PADDING + titleH;
+            for (const line of shownLines) {
+                ctx.fillText(line, PADDING + 8, yText, W - PADDING * 2);
+                yText += LINE_H_DESC;
+            }
+            if (hasMore) {
+                ctx.font = `italic ${FONT_DESC * 0.9}px Inter, Arial, sans-serif`;
+                ctx.fillStyle = '#9ca3af';
+                ctx.fillText('...', PADDING + 8, yText);
+                yText += LINE_H_DESC;
+            }
+
+            // 9. Rodapé com marca LM GRÁFICA
+            const footerY = canvas.height - PADDING - FONT_FOOTER;
+            ctx.fillStyle = '#ede9fe';
+            ctx.fillRect(0, footerY - PADDING * 0.6, W, FONT_FOOTER * 1.6 + PADDING * 1.2);
+
+            ctx.font = `700 ${FONT_FOOTER}px Inter, Arial, sans-serif`;
+            ctx.fillStyle = '#7c3aed';
+            ctx.textAlign = 'center';
+            ctx.fillText('✦  LM GRÁFICA  ✦', W / 2, footerY);
+            ctx.textAlign = 'left';
+
+            // 10. Converte para PNG e copia para clipboard
             const pngBlob = await new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
 
             if (navigator.clipboard && window.ClipboardItem) {
-                const item = new ClipboardItem({
-                    'image/png': pngBlob,
-                    'text/plain': new Blob([textDesc], { type: 'text/plain' })
-                });
-                await navigator.clipboard.write([item]);
+                await navigator.clipboard.write([
+                    new ClipboardItem({ 'image/png': pngBlob })
+                ]);
                 return true;
             } else {
-                throw new Error('Clipboard API avançada ausente no navegador.');
+                throw new Error('Clipboard API não suportada neste navegador.');
             }
         };
 
@@ -341,6 +436,7 @@ export const render = () => {
             btn.onclick = async (e) => {
                 const imgUrl = e.currentTarget.dataset.img;
                 const desc = decodeURIComponent(e.currentTarget.dataset.desc);
+                const itemTitle = decodeURIComponent(e.currentTarget.dataset.title || '');
                 
                 // Extrair ID para montar o link
                 const id = e.currentTarget.parentElement.querySelector('.cat-link-btn').dataset.id;
@@ -349,17 +445,17 @@ export const render = () => {
                 
                 const originalText = btn.innerHTML;
                 
-                btn.innerHTML = '<ion-icon name="sync-outline"></ion-icon> Copiando...';
+                btn.innerHTML = '<ion-icon name="sync-outline"></ion-icon> Gerando...';
                 
                 try {
-                    await copyToClipboard(imgUrl, descWithLink);
+                    await copyToClipboard(imgUrl, descWithLink, itemTitle);
                     btn.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon> Copiado!';
-                    if (window.showToastAlert) window.showToastAlert('Imagem copiada! Ao colar (CTRL+V) nos chats que suportam, o texto pode ir junto.', 'green');
+                    if (window.showToastAlert) window.showToastAlert('🖼️ Imagem com informações copiada! Cole no WhatsApp ou onde quiser (CTRL+V).', 'green');
                 } catch (err) {
                     console.warn('Fallback copy error:', err);
                     if (navigator.clipboard) window.copyTextToClipboard(descWithLink);
                     btn.innerHTML = '<ion-icon name="checkmark-outline"></ion-icon> Texto Copiado';
-                    if (window.showToastAlert) window.showToastAlert('Apenas o texto + link foram copiados.', 'orange');
+                    if (window.showToastAlert) window.showToastAlert('Apenas o texto + link foram copiados (navegador não suporta imagem).', 'orange');
                 }
 
                 setTimeout(() => { btn.innerHTML = originalText; }, 3000);

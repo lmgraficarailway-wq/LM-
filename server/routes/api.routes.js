@@ -87,9 +87,13 @@ router.post('/clients/:id/ack-tier', clientController.ackTierNotification);
 router.get('/reports/sales', orderController.getSalesReport);
 router.get('/reports/client-orders/:clientId', orderController.getClientOrders);
 router.get('/reports/client-financial/:clientId', orderController.getClientFinancial);
+router.get('/reports/arena-financial', orderController.getArenaFinancial);
 router.post('/reports/core-entry', orderController.createCoreEntry);
 router.put('/reports/entry/:id', orderController.editFinancialEntry);
 router.put('/orders/:id/launch-core', orderController.launchToCore);
+router.put('/orders/:id/launch-warlen', orderController.launchToWarlen);
+router.put('/orders/:id/launch-emanuel', orderController.launchToEmanuel);
+router.put('/orders/:id/financial-edit', orderController.financialEdit);
 router.put('/orders/:id/file-path', orderController.updateFilePath);
 router.post('/orders/open-folder', orderController.openFolder);
 // Material costs report
@@ -112,6 +116,7 @@ router.put('/dispatch-costs/:id/launch-core', orderController.launchDispatchToCo
 const stockController = require('../controllers/stock_controller');
 router.get('/stock', stockController.getStockOverview);
 router.post('/stock/adjust', stockController.adjustStock);
+router.put('/stock/set/:id', stockController.setStock);
 router.get('/stock/movements', stockController.getStockMovements);
 router.put('/stock/min/:id', stockController.updateMinStock);
 

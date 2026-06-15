@@ -105,8 +105,15 @@ app.use('/api/auth', authRoutes);
 let _syncDb = null;
 const { startAutoSync, syncRailwayToFirestore } = require('./server/utils/railwaySync');
 
-// Inicializa o sync assim que o Firebase estiver pronto
+// Inicializa o sync APENAS quando NÃO está em modo SQLite local.
+// Em modo local, o sync não faz sentido (o banco é SQLite, não Firestore).
+const useLocalSqlite = process.env.USE_SQLITE === 'true' || !!process.env.RAILWAY_ENVIRONMENT_NAME || !!process.env.RAILWAY_SERVICE_ID;
+
 function initSync() {
+    if (useLocalSqlite) {
+        // Em modo local, não tenta conectar ao Firebase para sync
+        return;
+    }
     try {
         const admin = require('firebase-admin');
         if (admin.apps.length > 0) {
@@ -122,7 +129,9 @@ function initSync() {
         setTimeout(initSync, 10000);
     }
 }
-setTimeout(initSync, 2000);
+if (!useLocalSqlite) {
+    setTimeout(initSync, 2000);
+}
 
 // ── Rota legada /api/orders/stream — retorna resposta simples (SSE removido para economizar custo) ──
 app.get('/api/orders/stream', (req, res) => {

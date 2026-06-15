@@ -103,9 +103,9 @@ export const render = () => {
                         </div>
                     </div>
                     <div class="form-group" style="display:flex; gap:1rem; align-items:end">
-                        <div style="flex:1" id="stock-field">
-                            <label>Quantidade em Estoque</label>
-                            <input type="number" name="stock" id="product-stock" value="0" min="0" required>
+                        <div style="flex:1; background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:0.6rem 0.85rem; display:flex; align-items:center; gap:0.5rem;">
+                            <span style="font-size:1rem;">📦</span>
+                            <span style="font-size:0.82rem; color:#1d4ed8; line-height:1.35;">O estoque é gerenciado pela aba <b>Estoque</b> e não pode ser alterado aqui.</span>
                         </div>
                         <div style="flex:1">
                             <label id="time-label">Tempo de Produção (min)</label>
@@ -265,7 +265,6 @@ export const render = () => {
     const closeModal = () => modal.classList.remove('open');
 
     const updateTerceirizadoUI = (checked) => {
-        container.querySelector('#stock-field').style.display = checked ? 'none' : '';
         container.querySelector('#time-label').textContent = checked ? 'Prazo de Entrega (dias)' : 'Tempo de Produção (min)';
     };
     container.querySelector('#product-terceirizado').addEventListener('change', function () { updateTerceirizadoUI(this.checked); });
@@ -428,10 +427,10 @@ export const render = () => {
         `).join('');
 
         colorList.querySelectorAll('.color-row-name').forEach((inp, i) => {
-            inp.oninput = () => { colorRows[i].color = inp.value; };
+            inp.oninput = inp.onchange = () => { colorRows[i].color = inp.value; };
         });
         colorList.querySelectorAll('.color-row-qty').forEach((inp, i) => {
-            inp.oninput = () => { colorRows[i].quantity = parseInt(inp.value) || 0; };
+            inp.oninput = inp.onchange = () => { colorRows[i].quantity = parseInt(inp.value) || 0; };
         });
         colorList.querySelectorAll('.remove-color-row').forEach(btn => {
             btn.onclick = () => {
@@ -474,7 +473,6 @@ export const render = () => {
         
         container.querySelector('#product-type').closest('.form-group').style.display = isKit ? 'none' : 'flex';
         toggleDisplay('#product-unit-cost', isKit ? 'none' : 'block');
-        toggleDisplay('#product-stock', isKit ? 'none' : 'block');
         toggleDisplay('#product-time', isKit ? 'none' : 'block');
         toggleDisplay('#product-price-1', isKit ? 'none' : 'block');
         toggleDisplay('#product-price-3', isKit ? 'none' : 'block');
@@ -486,7 +484,6 @@ export const render = () => {
     const openModal = () => {
         form.reset();
         container.querySelector('#product-id').value = '';
-        container.querySelector('#product-stock').value = '0';
         container.querySelector('#product-terceirizado').checked = false;
         updateTerceirizadoUI(false);
         container.querySelector('#modal-title').innerText = 'Adicionar Produto';
@@ -508,7 +505,6 @@ export const render = () => {
         container.querySelector('#product-price-3').value = p.price_3_days || p.price || 0;
         container.querySelector('#product-price-1').value = p.price_1_day || 0;
         container.querySelector('#product-unit-cost').value = p.unit_cost || 0;
-        container.querySelector('#product-stock').value = p.stock || 0;
         container.querySelector('#product-time').value = p.production_time || 0;
         container.querySelector('#product-terceirizado').checked = !!p.terceirizado;
         updateTerceirizadoUI(!!p.terceirizado);
@@ -651,12 +647,28 @@ export const render = () => {
         const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         const json = await res.json();
 
-        // Save color variants if bracelet type
+        // Save color variants if bracelet type and color section is visible
         const productId = id || json.id;
         const typeVal = container.querySelector('#product-type').value;
         const nameVal = container.querySelector('#product-name').value;
-        if (productId && (isBraceletType(typeVal) || isBraceletType(nameVal)) && colorRows.length > 0) {
-            const variants = colorRows.filter(r => r.color.trim());
+        const colorSectionVisible = colorSection.style.display !== 'none';
+        if (productId && (isBraceletType(typeVal) || isBraceletType(nameVal) || colorSectionVisible)) {
+            // Always read fresh values directly from the DOM to avoid stale oninput state
+            const domRows = [];
+            colorList.querySelectorAll('[data-row]').forEach(row => {
+                const nameInp = row.querySelector('.color-row-name');
+                const qtyInp  = row.querySelector('.color-row-qty');
+                if (nameInp && qtyInp) {
+                    domRows.push({
+                        color: nameInp.value.trim(),
+                        quantity: parseInt(qtyInp.value) || 0
+                    });
+                }
+            });
+            // Also sync back to colorRows for consistency
+            domRows.forEach((r, i) => { if (colorRows[i]) colorRows[i] = r; });
+
+            const variants = domRows.filter(r => r.color);
             await fetch(`/api/products/${productId}/colors`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },

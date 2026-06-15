@@ -1,5 +1,25 @@
 const db = require('../database/db');
 
+// Helper: acessa o Firestore diretamente (bypassa emulação SQL)
+// Retorna null em modo SQLite (local)
+async function getFirestoreDb() {
+    if (!db._getNextId) return null; // modo SQLite: não tem _getNextId
+    // aguarda init assíncrono do Firestore se necessário
+    if (db._db) return db._db;
+    // Fallback: espera até 3s pelo _db ficar disponível
+    for (let i = 0; i < 30; i++) {
+        await new Promise(r => setTimeout(r, 100));
+        if (db._db) return db._db;
+    }
+    return db._db || null;
+}
+
+// Normaliza product_id para número (Firestore é strictly-typed)
+function numId(id) {
+    const n = parseInt(id);
+    return isNaN(n) ? id : n;
+}
+
 exports.getAllProducts = (req, res) => {
     const sql = `SELECT * FROM products ORDER BY name ASC`;
     db.all(sql, [], async (err, rows) => {
@@ -48,72 +68,44 @@ exports.createProduct = (req, res) => {
 };
 
 exports.updateProduct = (req, res) => {
-    let { name, type, production_time, price, stock, price_1_day, price_3_days, terceirizado, unit_cost } = req.body;
+    let { name, type, production_time, price, price_1_day, price_3_days, terceirizado, unit_cost } = req.body;
     const productId = req.params.id;
 
     // Normalize type
     const normalizedType = type ? type.trim() : '';
 
-    db.serialize(() => {
-        // First, get the current product to see if type is changing
-        db.get("SELECT type, stock FROM products WHERE id = ?", [productId], (err, currentProduct) => {
-            if (err) return res.status(500).json({ error: err.message });
+    const safePrice = price !== undefined ? price : (price_3_days || 0);
 
-            const currentNormalizedType = currentProduct && currentProduct.type ? currentProduct.type.trim() : '';
-            const typeChanged = currentNormalizedType.toUpperCase() !== normalizedType.toUpperCase();
+    // IMPORTANT: We do NOT update 'stock' here.
+    // Stock is managed exclusively by the Stock tab (/api/stock/adjust and /api/stock/set/:id).
+    // This prevents accidental stock resets when editing product details.
+    const sql = "UPDATE products SET name = ?, type = ?, production_time = ?, price = ?, price_1_day = ?, price_3_days = ?, terceirizado = ?, unit_cost = ? WHERE id = ?";
+    const params = [name, normalizedType, production_time || '', safePrice, price_1_day || 0, price_3_days || 0, terceirizado ? 1 : 0, unit_cost || 0, productId];
 
-            console.log(`[Sync] Updating Prod ${productId}. Type: '${currentNormalizedType}' -> '${normalizedType}'. Stock Input: ${stock}`);
+    console.log(`[Product] Updating Prod ${productId}. Type: '${normalizedType}'. Stock NOT modified.`);
 
-            if (normalizedType !== '') {
-                // Find stock of existing products of the NEW type if type was changed
-                db.get("SELECT stock FROM products WHERE UPPER(TRIM(type)) = UPPER(?) AND id != ? LIMIT 1", [normalizedType, productId], (err, row) => {
-                    let syncedStock = stock !== undefined && stock !== "" ? stock : 0;
-                    if (typeChanged && row && row.stock !== undefined) {
-                        syncedStock = row.stock;
-                        console.log(`[Sync] Type changed to existing type. Adopting stock: ${syncedStock}`);
-                    }
-
-                    const safePrice = price !== undefined ? price : (price_3_days || 0);
-                    // Update target product
-                    const sql = "UPDATE products SET name = ?, type = ?, production_time = ?, price = ?, stock = ?, price_1_day = ?, price_3_days = ?, terceirizado = ?, unit_cost = ? WHERE id = ?";
-                    const params = [name, normalizedType, production_time || '', safePrice, syncedStock, price_1_day || 0, price_3_days || 0, terceirizado ? 1 : 0, unit_cost || 0, productId];
-
-                    db.run(sql, params, function (err) {
-                        if (err) return res.status(500).json({ error: err.message });
-
-                        // Skip stock sync for pulseira types — stock is managed by color variants
-                        const isPulseira = normalizedType.toLowerCase().includes('pulseira');
-                        if (!isPulseira) {
-                            const syncSql = "UPDATE products SET stock = ? WHERE UPPER(TRIM(type)) = UPPER(?) AND type != ''";
-                            db.run(syncSql, [syncedStock, normalizedType], function (err) {
-                                if (err) return res.status(500).json({ error: err.message });
-                                console.log(`[Sync] Synchronized ${this.changes} products of type '${normalizedType}' to stock ${syncedStock}`);
-                                res.json({ message: 'Produto atualizado e estoque sincronizado', changes: this.changes });
-                            });
-                        } else {
-                            console.log(`[Pulseira] Skipping stock sync for '${normalizedType}' — managed by color variants`);
-                            res.json({ message: 'Produto atualizado', changes: this.changes });
-                        }
-                    });
-                });
-            } else {
-                const safePrice = price !== undefined ? price : (price_3_days || 0);
-                const safeStock = stock !== undefined && stock !== "" ? stock : 0;
-                // No type or empty type - update individual product only
-                const sql = "UPDATE products SET name = ?, type = ?, production_time = ?, price = ?, stock = ?, price_1_day = ?, price_3_days = ?, terceirizado = ?, unit_cost = ? WHERE id = ?";
-                const params = [name, normalizedType, production_time || '', safePrice, safeStock, price_1_day || 0, price_3_days || 0, terceirizado ? 1 : 0, unit_cost || 0, productId];
-                db.run(sql, params, function (err) {
-                    if (err) return res.status(500).json({ error: err.message });
-                    res.json({ message: 'Produto atualizado', changes: this.changes });
-                });
-            }
-        });
+    db.run(sql, params, function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ message: 'Produto atualizado com sucesso', changes: this.changes });
     });
 };
 
-exports.deleteProduct = (req, res) => {
+exports.deleteProduct = async (req, res) => {
     const id = req.params.id;
-    db.run("DELETE FROM product_color_variants WHERE product_id = ?", [id]);
+    // Delete color variants first
+    const fdb = await getFirestoreDb();
+    if (fdb) {
+        try {
+            // Delete all color variants for this product from Firestore directly
+            const snap = await fdb.collection('product_color_variants')
+                .where('product_id', '==', numId(id)).get();
+            const batch = fdb.batch();
+            snap.docs.forEach(d => batch.delete(d.ref));
+            if (!snap.empty) await batch.commit();
+        } catch (e) { console.error('[deleteProduct] variants cleanup error:', e.message); }
+    } else {
+        db.run("DELETE FROM product_color_variants WHERE product_id = ?", [id]);
+    }
     db.run("DELETE FROM products WHERE id = ?", id, function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Produto removido', changes: this.changes });
@@ -121,42 +113,145 @@ exports.deleteProduct = (req, res) => {
 };
 
 // ── Color Variants ─────────────────────────────────────────────────────────
-exports.getColorVariants = (req, res) => {
+exports.getColorVariants = async (req, res) => {
+    const productId = req.params.id;
+    const fdb = await getFirestoreDb();
+
+    if (fdb) {
+        // Usa Firestore diretamente — busca por número E string para garantir compatibilidade
+        try {
+            let snap = await fdb.collection('product_color_variants')
+                .where('product_id', '==', numId(productId)).get();
+            // Fallback: busca como string caso dados antigos usem string
+            if (snap.empty) {
+                snap = await fdb.collection('product_color_variants')
+                    .where('product_id', '==', String(productId)).get();
+            }
+            const rows = snap.docs
+                .map(d => ({ id: parseInt(d.id), ...d.data() }))
+                .sort((a, b) => String(a.color).localeCompare(String(b.color)));
+            return res.json({ data: rows });
+        } catch (e) {
+            console.error('[getColorVariants] Firestore error:', e.message);
+            return res.status(500).json({ error: e.message });
+        }
+    }
+
+    // Modo SQLite (local)
     db.all("SELECT * FROM product_color_variants WHERE product_id = ? ORDER BY color ASC",
-        [req.params.id], (err, rows) => {
+        [productId], (err, rows) => {
             if (err) return res.status(500).json({ error: err.message });
             res.json({ data: rows });
         });
 };
 
 // Replace all color variants for a product (send full array)
-exports.saveColorVariants = (req, res) => {
+exports.saveColorVariants = async (req, res) => {
     const productId = req.params.id;
     const { variants } = req.body; // [{ color, quantity }]
     if (!Array.isArray(variants)) return res.status(400).json({ error: 'variants must be an array' });
 
-    db.serialize(() => {
-        db.run("DELETE FROM product_color_variants WHERE product_id = ?", [productId], (err) => {
-            if (err) return res.status(500).json({ error: err.message });
-            if (variants.length === 0) return res.json({ message: 'Cores salvas', data: [] });
+    const totalQty = variants.reduce((acc, v) => {
+        const qty = parseInt(v.quantity);
+        return acc + (isNaN(qty) ? 0 : qty);
+    }, 0);
 
-            const stmt = db.prepare("INSERT INTO product_color_variants (product_id, color, quantity) VALUES (?, ?, ?)");
-            let done = 0;
-            variants.forEach(v => {
-                stmt.run([productId, v.color || '', parseInt(v.quantity) || 0], () => {
-                    done++;
-                    if (done === variants.length) {
-                        stmt.finalize();
-                        // Update product stock = sum of all color quantities
-                        const totalQty = variants.reduce((acc, v) => acc + (parseInt(v.quantity) || 0), 0);
-                        db.run("UPDATE products SET stock = ? WHERE id = ?", [totalQty, productId], () => {
-                            res.json({ message: 'Cores salvas', count: done, total_stock: totalQty });
-                        });
-                    }
+    const fdb = await getFirestoreDb();
+
+    if (fdb) {
+        // ── Caminho Firestore: operações diretas, sem emulação SQL ──
+        try {
+            const pidNum = numId(productId);
+
+            // Step 1: Buscar e deletar TODAS as variantes existentes (por número E string)
+            const [snapNum, snapStr] = await Promise.all([
+                fdb.collection('product_color_variants').where('product_id', '==', pidNum).get(),
+                fdb.collection('product_color_variants').where('product_id', '==', String(productId)).get()
+            ]);
+
+            // Combinar IDs únicos para deletar
+            const toDelete = new Map();
+            [...snapNum.docs, ...snapStr.docs].forEach(d => toDelete.set(d.id, d.ref));
+
+            if (toDelete.size > 0) {
+                const batch = fdb.batch();
+                toDelete.forEach(ref => batch.delete(ref));
+                await batch.commit();
+                console.log(`[saveColorVariants] Deletadas ${toDelete.size} variantes antigas do produto ${productId}`);
+            }
+
+            if (variants.length === 0) {
+                // Zera o stock do produto
+                await fdb.collection('products').doc(String(pidNum)).update({ stock: 0 });
+                return res.json({ message: 'Cores salvas', data: [], total_stock: 0 });
+            }
+
+            // Step 2: Buscar próximo ID para cada variante
+            const { _getNextId } = require('../database/firestore');
+            const insertBatch = fdb.batch();
+            for (const v of variants) {
+                const qty = parseInt(v.quantity);
+                const safeQty = isNaN(qty) ? 0 : qty;
+                const newId = await _getNextId('product_color_variants');
+                const ref = fdb.collection('product_color_variants').doc(String(newId));
+                insertBatch.set(ref, {
+                    product_id: pidNum,   // ← sempre número
+                    color: v.color || '',
+                    quantity: safeQty,
+                    created_at: new Date().toISOString()
                 });
+            }
+            await insertBatch.commit();
+            console.log(`[saveColorVariants] Inseridas ${variants.length} variantes para produto ${productId}`);
+
+            // Step 3: Atualizar stock do produto
+            await fdb.collection('products').doc(String(pidNum)).update({ stock: totalQty });
+
+            return res.json({ message: 'Cores salvas', count: variants.length, total_stock: totalQty });
+
+        } catch (err) {
+            console.error('[saveColorVariants] Firestore error:', err.message);
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
+    // ── Caminho SQLite (local) ──
+    try {
+        await new Promise((resolve, reject) => {
+            db.run("DELETE FROM product_color_variants WHERE product_id = ?", [productId], function(err) {
+                if (err) reject(err); else resolve();
             });
         });
-    });
+
+        if (variants.length === 0) {
+            await new Promise((resolve) => {
+                db.run("UPDATE products SET stock = 0 WHERE id = ?", [productId], () => resolve());
+            });
+            return res.json({ message: 'Cores salvas', data: [], total_stock: 0 });
+        }
+
+        const stmt = db.prepare("INSERT INTO product_color_variants (product_id, color, quantity) VALUES (?, ?, ?)");
+        for (const v of variants) {
+            const qty = parseInt(v.quantity);
+            const safeQty = isNaN(qty) ? 0 : qty;
+            await new Promise((resolve, reject) => {
+                stmt.run([productId, v.color || '', safeQty], function(err) {
+                    if (err) reject(err); else resolve();
+                });
+            });
+        }
+        stmt.finalize();
+
+        await new Promise((resolve) => {
+            db.run("UPDATE products SET stock = ? WHERE id = ?", [totalQty, productId], () => resolve());
+        });
+
+        return res.json({ message: 'Cores salvas', count: variants.length, total_stock: totalQty });
+
+    } catch (err) {
+        console.error('[saveColorVariants] SQLite error:', err.message);
+        return res.status(500).json({ error: err.message });
+    }
 };
 
 // Debit usage from a specific color variant

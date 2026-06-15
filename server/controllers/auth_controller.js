@@ -35,6 +35,9 @@ exports.login = (req, res) => {
                     role: user.role,
                     name: user.name,
                     client_id: user.client_id || null,
+                    avatar: user.avatar && user.avatar.startsWith('/uploads/')
+                        ? `https://storage.googleapis.com/lm-passo-uploads${user.avatar}`
+                        : user.avatar || null,
                     loyalty_status: loyaltyStatus
                 }
             });
@@ -112,14 +115,34 @@ exports.deleteUser = (req, res) => {
     });
 };
 
-exports.uploadAvatar = (req, res) => {
+exports.uploadAvatar = async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ error: 'Nenhuma imagem enviada.' });
     }
-    const avatarUrl = `/uploads/${req.file.filename}`;
-    db.run("UPDATE users SET avatar = ? WHERE id = ?", [avatarUrl, req.params.id], function (err) {
-        if (err) return res.status(500).json({ error: err.message });
-        if (this.changes === 0) return res.status(404).json({ error: 'Usuário não encontrado' });
-        res.json({ message: 'Avatar atualizado com sucesso', avatar: avatarUrl });
-    });
+
+    let avatarUrl = '';
+    const USE_STORAGE = process.env.NODE_ENV === 'production' || process.env.USE_FIREBASE_STORAGE === 'true';
+
+    try {
+        if (USE_STORAGE || !req.file.filename) {
+            const { uploadFile } = require('../utils/firebaseStorage');
+            avatarUrl = await uploadFile(req.file.buffer, req.file.originalname, req.file.mimetype, 'uploads');
+        } else {
+            avatarUrl = `/uploads/${req.file.filename}`;
+        }
+
+        db.run("UPDATE users SET avatar = ? WHERE id = ?", [avatarUrl, req.params.id], function (err) {
+            if (err) return res.status(500).json({ error: err.message });
+            if (this.changes === 0) return res.status(404).json({ error: 'Usuário não encontrado' });
+            
+            const resolvedUrl = avatarUrl.startsWith('/uploads/')
+                ? `https://storage.googleapis.com/lm-passo-uploads${avatarUrl}`
+                : avatarUrl;
+                
+            res.json({ message: 'Avatar atualizado com sucesso', avatar: resolvedUrl });
+        });
+    } catch (e) {
+        console.error('[Upload Avatar] Erro:', e.message);
+        res.status(500).json({ error: 'Erro ao fazer upload do avatar' });
+    }
 };

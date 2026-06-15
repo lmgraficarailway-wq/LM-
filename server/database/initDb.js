@@ -309,6 +309,12 @@ function initDatabase(db) {
             db.run("ALTER TABLE menu_orders ADD COLUMN discount_on_close INTEGER DEFAULT 0", function(e) {
                 if (e && !e.message.includes('duplicate column')) console.error('Migration discount_on_close:', e.message);
             });
+            db.run("ALTER TABLE orders ADD COLUMN launched_to_warlen INTEGER DEFAULT 0", function(e) {
+                if (e && !e.message.includes('duplicate column')) console.error('Migration launched_to_warlen:', e.message);
+            });
+            db.run("ALTER TABLE orders ADD COLUMN launched_to_emanuel INTEGER DEFAULT 0", function(e) {
+                if (e && !e.message.includes('duplicate column')) console.error('Migration launched_to_emanuel:', e.message);
+            });
 
             // Verifica se há usuários (banco novo = sem usuários)
             db.get('SELECT COUNT(*) as count FROM users', [], (err, row) => {

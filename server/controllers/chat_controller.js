@@ -42,7 +42,7 @@ exports.getHistory = (req, res) => {
         const messages = (rows || []).reverse().map(m => ({
             ...m,
             author_avatar: m.author_avatar && m.author_avatar.startsWith('/uploads/')
-                ? `https://lm-passo-production.up.railway.app${m.author_avatar}`
+                ? `https://storage.googleapis.com/lm-passo-uploads${m.author_avatar}`
                 : m.author_avatar
         }));
         res.setHeader('Cache-Control', 'no-store, no-cache, private');
@@ -66,7 +66,7 @@ exports.getNewMessages = (req, res) => {
             const messages = (rows || []).map(m => ({
                 ...m,
                 author_avatar: m.author_avatar && m.author_avatar.startsWith('/uploads/')
-                    ? `https://lm-passo-production.up.railway.app${m.author_avatar}`
+                    ? `https://storage.googleapis.com/lm-passo-uploads${m.author_avatar}`
                     : m.author_avatar
             }));
             res.setHeader('Cache-Control', 'no-store, no-cache, private');
@@ -128,7 +128,7 @@ exports.sendMessage = (req, res) => {
             db.get('SELECT avatar FROM users WHERE id = ?', [user_id], (err2, userRow) => {
                 if (userRow && userRow.avatar) {
                     newMsg.author_avatar = userRow.avatar.startsWith('/uploads/')
-                        ? `https://lm-passo-production.up.railway.app${userRow.avatar}`
+                        ? `https://storage.googleapis.com/lm-passo-uploads${userRow.avatar}`
                         : userRow.avatar;
                 }
                 broadcast(newMsg);

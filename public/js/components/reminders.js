@@ -862,6 +862,75 @@ export const render = (user) => {
                 </button>
             </div>
             <div class="rm-modal-body">
+                <div class="rm-field">
+                    <label for="rm-inp-title">Título *</label>
+                    <input id="rm-inp-title" type="text" placeholder="Ex: Comprar papel A4, Ligar para fornecedor..." maxlength="200"/>
+                </div>
+                <div class="rm-field">
+                    <label for="rm-inp-desc">Descrição (opcional)</label>
+                    <textarea id="rm-inp-desc" rows="3" placeholder="Detalhes adicionais..."></textarea>
+                </div>
+                <div class="rm-field">
+                    <label>Prioridade</label>
+                    <div class="rm-priority-select" id="rm-priority-buttons">
+                        <button class="rm-prio-btn" data-prio="urgente">🔴 Urgente</button>
+                        <button class="rm-prio-btn active" data-prio="normal">🟡 Normal</button>
+                        <button class="rm-prio-btn" data-prio="baixo">🟢 Baixo</button>
+                    </div>
+                    <input type="hidden" id="rm-inp-priority" value="normal"/>
+                </div>
+            </div>
+            <div class="rm-modal-footer">
+                <button id="rm-btn-cancel" class="btn-cancel-rm">Cancelar</button>
+                <button id="rm-btn-save" class="btn-save-rm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    Salvar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Order Modal -->
+    <div id="menu-modal" class="rm-modal-overlay">
+        <div class="rm-modal rm-modal-wide">
+            <div class="rm-modal-header rm-modal-header-menu">
+                <h2 id="menu-modal-title-text">Novo Cardápio</h2>
+                <button id="menu-modal-close" class="rm-modal-close-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="rm-modal-body">
+                <div class="menu-modal-grid">
+                    <div class="rm-field">
+                        <label for="menu-inp-qty">Quantidade *</label>
+                        <input id="menu-inp-qty" type="number" min="1" value="1" placeholder="Ex: 500"/>
+                    </div>
+                    <div class="rm-field">
+                        <label for="menu-inp-print">Tipo de Impressão *</label>
+                        <select id="menu-inp-print" class="rm-select">
+                            <option value="frente">📄 Frente</option>
+                            <option value="frente_e_verso">📋 Frente e Verso</option>
+                            <option value="plastificado">✨ Plastificado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="rm-field">
+                    <label for="menu-inp-event">Nome do Evento *</label>
+                    <input id="menu-inp-event" type="text" placeholder="Ex: Casamento João e Maria, Festival de Verão..." maxlength="200"/>
+                </div>
+                <div class="rm-field">
+                    <label for="menu-inp-client">Cliente *</label>
+                    <input type="text" id="menu-inp-client-search" placeholder="🔍 Buscar cliente..." style="width: 100%; padding: 0.6rem 0.8rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.9rem; margin-bottom: 0.5rem; transition: border-color 0.2s; outline: none;" autocomplete="off" />
+                    <select id="menu-inp-client" class="rm-select">
+                        <option value="">Carregando clientes...</option>
+                    </select>
+                </div>
+                <div class="rm-field">
+                    <label for="menu-inp-price">Valor por Unidade (R$) *</label>
+                    <input id="menu-inp-price" type="number" min="0" step="0.01" placeholder="Ex: 1.50" style="font-size:1rem;"/>
+                    <small style="color:#6b7280; font-size:0.78rem;">Valor unitário da impressão. O total será calculado automaticamente.</small>
+                    <div id="menu-inp-price-hint" style="font-size:0.75rem; margin-top:2px;"></div>
+                </div>
                 <div class="rm-field" style="margin-top:0.5rem;">
                     <label for="menu-inp-discount-close" style="display:flex; align-items:flex-start; gap:0.75rem; cursor:pointer; user-select:none;">
                         <input id="menu-inp-discount-close" type="checkbox" style="width:16px; height:16px; accent-color:#7c3aed; cursor:pointer; flex-shrink:0; margin-top:2px;"/>
@@ -871,6 +940,7 @@ export const render = (user) => {
                         </div>
                     </label>
                 </div>
+            </div>
             <div class="rm-modal-footer">
                 <button id="menu-btn-cancel" class="btn-cancel-rm">Cancelar</button>
                 <button id="menu-btn-save" class="btn-save-rm btn-save-menu">

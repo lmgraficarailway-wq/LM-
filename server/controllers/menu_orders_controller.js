@@ -9,7 +9,7 @@ const getUserFromToken = (req) => {
     try { return jwt.verify(token, SECRET_KEY, { ignoreExpiration: true }); } catch { return null; }
 };
 
-// GET /api/menu-orders — lista todos os cardápios
+// GET /api/menu-orders â€” lista todos os cardápios
 const getAll = (req, res) => {
     const sql = `
         SELECT mo.*, u.name AS created_by_name, u.role AS created_by_role, c.name as client_name, c.core_discount AS core_discount,
@@ -31,7 +31,7 @@ const getAll = (req, res) => {
 };
 
 
-// POST /api/menu-orders — criar novo cardápio
+// POST /api/menu-orders â€” criar novo cardápio
 const create = (req, res) => {
     const { quantity, event_name, client_id, producer_name, print_type, unit_price, discount_on_close } = req.body;
 
@@ -78,7 +78,7 @@ const create = (req, res) => {
 };
 
 
-// PUT /api/menu-orders/:id — editar cardápio
+// PUT /api/menu-orders/:id â€” editar cardápio
 const update = (req, res) => {
     const { id } = req.params;
     const { quantity, event_name, client_id, producer_name, print_type, unit_price, discount_on_close } = req.body;
@@ -155,7 +155,7 @@ const revertOrderData = (row, userId, callback) => {
     }
 };
 
-// PUT /api/menu-orders/:id/launch-core — marcar como lançado no CORE e abater estoque
+// PUT /api/menu-orders/:id/launch-core â€” marcar como lançado no CORE e abater estoque
 const launchToCore = (req, res) => {
     const { id } = req.params;
     const userFromToken = getUserFromToken(req);
@@ -165,7 +165,7 @@ const launchToCore = (req, res) => {
         if (err) return res.status(500).json({ error: err.message });
         if (!row) return res.status(404).json({ error: 'Cardápio não encontrado.' });
 
-        const isUnlaunching = parseInt(row.launched_to_core) === 1 || row.launched_to_core == 1 || row.status === 'lan�ado';
+        const isUnlaunching = parseInt(row.launched_to_core) === 1 || row.launched_to_core == 1 || row.status === 'lançado';
 
         if (isUnlaunching) {
             revertOrderData(row, userId, () => {
@@ -195,7 +195,7 @@ const launchToCore = (req, res) => {
 
             const productName = product ? product.name : `Impressão A4 (${row.print_type})`;
             const discountNote = row.discount_on_close ? ' | DESCONTAR NO FECHAMENTO DO EVENTO' : '';
-            const description = `Card�pio Lan�ado - Evento: ${row.event_name}${discountNote}`;
+            const description = `Cardápio Lançado - Evento: ${row.event_name}${discountNote}`;
             const productsSummary = `${row.event_name} - ${row.quantity}x ${productName}`;
 
             // Create standard order. launched_to_core is 0 so the financial team can confer and launch it.
@@ -220,7 +220,7 @@ const launchToCore = (req, res) => {
                                     [productId, -row.quantity, `Cardápio (CORE) Pedido #${orderId}`, userId]);
 
                                 // Finally update the menu_order itself
-                                db.run(`UPDATE menu_orders SET launched_to_core = ?, status = 'lan�ado', order_id = ?, launched_at = CURRENT_TIMESTAMP WHERE id = ?`, [1, orderId, id], function(e) {
+                                db.run(`UPDATE menu_orders SET launched_to_core = ?, status = 'lançado', order_id = ?, launched_at = CURRENT_TIMESTAMP WHERE id = ?`, [1, orderId, id], function(e) {
                                     if (e) return res.status(500).json({ error: e.message });
                                     res.json({ success: true, launched_to_core: 1, order_id: orderId, launched_at: new Date().toISOString() });
                                 });
@@ -277,7 +277,7 @@ const updateOrder = (req, res) => {
     });
 };
 
-// GET /api/menu-orders/print-prices — retorna preços dos produtos por tipo de impressão
+// GET /api/menu-orders/print-prices â€” retorna preços dos produtos por tipo de impressão
 const getPrintPrices = (req, res) => {
     // IDs dos produtos de impressão A4:
     // 54 = Frente (simples), 94 = Frente e Verso, 95 = Plastificado (fallback 54)

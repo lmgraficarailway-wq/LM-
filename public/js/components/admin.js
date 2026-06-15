@@ -191,7 +191,7 @@ export const render = () => {
                 <tr>
                     <td style="text-align:center">
                         <div style="display:flex; flex-direction:column; align-items:center; gap:0.3rem;">
-                            ${u.avatar ? `<img src="${u.avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #cbd5e1;">` : `<div style="width:40px; height:40px; border-radius:50%; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#64748b; font-weight:bold; border:1px solid #cbd5e1;">${u.username[0].toUpperCase()}</div>`}
+                            ${u.avatar ? `<img src="${u.avatar}" style="width:40px; height:40px; border-radius:50%; object-fit:cover; border:1px solid #cbd5e1;" onerror="this.style.display='none'; const d=document.createElement('div'); d.style='width:40px; height:40px; border-radius:50%; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#64748b; font-weight:bold; border:1px solid #cbd5e1;'; d.textContent='${u.username[0].toUpperCase()}'; this.parentElement.appendChild(d); this.remove();">` : `<div style="width:40px; height:40px; border-radius:50%; background:#e2e8f0; display:flex; align-items:center; justify-content:center; color:#64748b; font-weight:bold; border:1px solid #cbd5e1;">${u.username[0].toUpperCase()}</div>`}
                             <label class="btn-sm" style="cursor:pointer; font-size:0.7rem; padding:2px 6px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:4px; color:#475569;" title="Trocar imagem">
                                 Mudar foto
                                 <input type="file" class="avatar-upload" data-id="${u.id}" accept="image/*" style="display:none;">

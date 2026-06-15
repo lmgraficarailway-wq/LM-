@@ -499,6 +499,20 @@ const renderDefault = () => {
                         <td style="padding:1.2rem 1.5rem; color:#475569; font-weight:600;">
                             <span style="background:#f1f5f9; padding:4px 10px; border-radius:8px;">${s.payment_method || '-'}</span>
                         </td>
+                        <td style="padding:1.2rem 1.5rem;">
+                            ${ (() => {
+                                const st = s.status || '';
+                                const badges = {
+                                    'producao':        ['#fff7ed','#c2410c','🛠️ Em Produção'],
+                                    'em_balcao':       ['#eff6ff','#1d4ed8','🏢 No Balão'],
+                                    'finalizado':      ['#f0fdf4','#15803d','✅ Finalizado'],
+                                    'arquivado':       ['#f8fafc','#64748b','🗂️ Arquivado'],
+                                    'aguardando_aceite':['#fefce8','#854d0e','⏳ Aguardando'],
+                                };
+                                const [bg, color, label] = badges[st] || ['#f1f5f9','#475569', st];
+                                return `<span style="background:${bg}; color:${color}; border-radius:8px; padding:4px 10px; font-size:0.8rem; font-weight:700; white-space:nowrap;">${label}</span>`;
+                            })() }
+                        </td>
                     </tr>`
                 ).join('');
 
@@ -571,6 +585,7 @@ const renderDefault = () => {
                                     <th style="padding:1.2rem 1.5rem; text-align:left; color:#64748b; font-weight:800; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em;">Valor</th>
                                     <th style="padding:1.2rem 1.5rem; text-align:left; color:#64748b; font-weight:800; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em;">Desconto</th>
                                     <th style="padding:1.2rem 1.5rem; text-align:left; color:#64748b; font-weight:800; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em;">Pagamento</th>
+                                    <th style="padding:1.2rem 1.5rem; text-align:left; color:#64748b; font-weight:800; font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em;">Status</th>
                                 </tr>
                             </thead>
                             <tbody>${rows}</tbody>
@@ -578,9 +593,9 @@ const renderDefault = () => {
                                 ${methodRows}
                                 ${eventRows}
                                 <tr style="background:#0f172a;">
-                                    <td colspan="3" style="text-align:right; font-size:1.15rem; color:#94a3b8; font-weight:700; padding:20px 24px;">${closingLabel}:</td>
+                                    <td colspan="4" style="text-align:right; font-size:1.15rem; color:#94a3b8; font-weight:700; padding:20px 24px;">${closingLabel}:</td>
                                     <td style="font-size:1.4rem; font-weight:900; color:#38bdf8; padding:20px 24px;">${formatCurrency(m.total)}</td>
-                                    <td colspan="2"></td>
+                                    <td colspan="3"></td>
                                 </tr>
                             </tfoot>
                         </table>
@@ -591,18 +606,9 @@ const renderDefault = () => {
     };
 
     const loadFinancial = async () => {
-        if (!clientId) {
-            container.querySelector('#cf-monthly-container').innerHTML = `
-                <div style="text-align:center; background:#fef2f2; border:1px dashed #fca5a5; border-radius:20px; padding:4rem 2rem;">
-                    <ion-icon name="warning" style="font-size:4rem; color:#ef4444; margin-bottom:1rem;"></ion-icon>
-                    <p style="color:#b91c1c; font-size:1.2rem; font-weight:700; margin:0;">Conta n├úo vinculada a um cliente.</p>
-                    <p style="color:#dc2626; margin-top:0.5rem;">Contate o administrador para acesso.</p>
-                </div>`;
-            return;
-        }
-
         try {
-            const res = await fetch(`/api/reports/client-financial/${clientId}`);
+            // Arena usa endpoint dedicado que busca por client_id=7 OU qualquer pedido com 'arena' no nome
+            const res = await fetch(`/api/reports/arena-financial`);
             const { data } = await res.json();
             allData = data || [];
 
@@ -622,15 +628,15 @@ const renderDefault = () => {
                     const [y, m] = key.split('-');
                     return `<option value="${key}" ${key === currentVal ? 'selected' : ''}>${monthNames[parseInt(m)]} ${y}</option>`;
                 }).join('');
-                
+
             const eventSelect = container.querySelector('#cf-filter-event');
             const currentEvent = eventSelect.value;
-            eventSelect.innerHTML = '<option value="">🏷️ Todos os Eventos</option>' + 
+            eventSelect.innerHTML = '<option value="">🏷️ Todos os Eventos</option>' +
                 [...eventSet].sort().map(e => `<option value="${e}" ${e === currentEvent ? 'selected' : ''}>${e}</option>`).join('');
 
             applyFilters();
         } catch (e) {
-            console.error('Erro ao carregar financeiro do cliente:', e);
+            console.error('Erro ao carregar financeiro Arena:', e);
             container.querySelector('#cf-monthly-container').innerHTML = `
                 <div style="text-align:center; background:#fef2f2; border:1px dashed #fca5a5; border-radius:20px; padding:4rem 2rem;">
                     <ion-icon name="alert-circle" style="font-size:4rem; color:#ef4444; margin-bottom:1rem;"></ion-icon>

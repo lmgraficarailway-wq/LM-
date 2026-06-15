@@ -49,20 +49,25 @@ exports.getStockOverview = (req, res) => {
     });
 };
 
-// POST /api/stock/adjust — Manual stock adjustment
+// POST /api/stock/adjust — Manual stock adjustment (relative: +/-)
 exports.adjustStock = (req, res) => {
     const { product_id, quantity_change, type, reason, user_id } = req.body;
 
-    if (!product_id || !quantity_change || !type) {
+    if (!product_id || quantity_change === undefined || quantity_change === null || !type) {
         return res.status(400).json({ error: 'Campos obrigatórios: product_id, quantity_change, type' });
+    }
+
+    const change = parseInt(quantity_change);
+    if (isNaN(change)) {
+        return res.status(400).json({ error: 'quantity_change deve ser um número inteiro' });
     }
 
     db.serialize(() => {
         db.run("BEGIN TRANSACTION");
 
-        // Update product stock
-        const updateSql = "UPDATE products SET stock = stock + ? WHERE id = ?";
-        db.run(updateSql, [quantity_change, product_id], function (err) {
+        // Update product stock (relative change)
+        const updateSql = "UPDATE products SET stock = MAX(0, stock + ?) WHERE id = ?";
+        db.run(updateSql, [change, product_id], function (err) {
             if (err) {
                 db.run("ROLLBACK");
                 return res.status(500).json({ error: err.message });
@@ -75,7 +80,7 @@ exports.adjustStock = (req, res) => {
 
             // Insert movement record
             const movSql = "INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, ?, ?, ?)";
-            db.run(movSql, [product_id, quantity_change, type, reason || '', user_id], function (err) {
+            db.run(movSql, [product_id, change, type, reason || '', user_id], function (err) {
                 if (err) {
                     db.run("ROLLBACK");
                     return res.status(500).json({ error: err.message });
@@ -83,6 +88,46 @@ exports.adjustStock = (req, res) => {
 
                 db.run("COMMIT");
                 res.json({ message: 'Estoque ajustado com sucesso', movement_id: this.lastID });
+            });
+        });
+    });
+};
+
+// PUT /api/stock/set/:id — Set stock to an absolute value (manual correction)
+exports.setStock = (req, res) => {
+    const { new_stock, reason, user_id } = req.body;
+    const productId = req.params.id;
+
+    if (new_stock === undefined || new_stock === null || new_stock === '') {
+        return res.status(400).json({ error: 'Campos obrigatórios: new_stock' });
+    }
+
+    const target = parseInt(new_stock);
+    if (isNaN(target) || target < 0) {
+        return res.status(400).json({ error: 'new_stock deve ser um número inteiro não negativo' });
+    }
+
+    db.serialize(() => {
+        db.run("BEGIN TRANSACTION");
+
+        // Get current stock to calculate change
+        db.get("SELECT stock FROM products WHERE id = ?", [productId], (err, row) => {
+            if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
+            if (!row) { db.run("ROLLBACK"); return res.status(404).json({ error: 'Produto não encontrado' }); }
+
+            const oldStock = row.stock || 0;
+            const change = target - oldStock;
+
+            db.run("UPDATE products SET stock = ? WHERE id = ?", [target, productId], function (err) {
+                if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
+
+                const movSql = "INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, 'ajuste_manual', ?, ?)";
+                db.run(movSql, [productId, change, reason || 'Ajuste manual direto', user_id || null], function (err) {
+                    if (err) { db.run("ROLLBACK"); return res.status(500).json({ error: err.message }); }
+
+                    db.run("COMMIT");
+                    res.json({ message: 'Estoque definido com sucesso', new_stock: target, change });
+                });
             });
         });
     });

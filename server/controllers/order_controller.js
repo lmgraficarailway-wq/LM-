@@ -694,10 +694,21 @@ exports.getComments = (req, res) => {
 };
 
 // Financial Report — all finalized orders with client details
+// Cache: evita bater no Firestore a cada clique no Financeiro
+let _salesReportCache = null;
+let _salesReportCacheTs = 0;
+const SALES_CACHE_TTL = 30 * 1000; // 30 segundos
+
 exports.getSalesReport = (req, res) => {
+    const now = Date.now();
+    if (_salesReportCache && (now - _salesReportCacheTs) < SALES_CACHE_TTL) {
+        return res.json(_salesReportCache);
+    }
+
     const sqlReal = `
         SELECT o.id, o.created_at, o.description, o.total_value, o.discount_value, o.payment_method,
-               o.products_summary, o.launched_to_core, o.is_internal, o.event_name,
+               o.products_summary, o.launched_to_core, o.launched_to_warlen, o.launched_to_emanuel,
+               o.is_internal, o.event_name,
                c.name as client_name, c.phone as client_phone
         FROM orders o
         LEFT JOIN clients c ON o.client_id = c.id
@@ -713,14 +724,25 @@ exports.getSalesReport = (req, res) => {
         WHERE o.status = 'aguardando_aceite' AND o.is_internal = 0
         ORDER BY o.created_at DESC
     `;
-    db.all(sqlReal, [], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        db.all(sqlReserved, [], (err2, reserved) => {
-            const totalReservado = (reserved || []).reduce((s, r) => s + (r.total_value || 0), 0);
-            res.json({ data: rows, reserved: reserved || [], total_reservado: totalReservado });
-        });
-    });
+
+    // Executa as duas queries em PARALELO (não em sequência)
+    Promise.all([
+        new Promise((resolve, reject) =>
+            db.all(sqlReal, [], (err, rows) => err ? reject(err) : resolve(rows || []))),
+        new Promise((resolve) =>
+            db.all(sqlReserved, [], (err, rows) => resolve(rows || [])))
+    ]).then(([rows, reserved]) => {
+        const totalReservado = reserved.reduce((s, r) => s + (r.total_value || 0), 0);
+        const result = { data: rows, reserved, total_reservado: totalReservado };
+        _salesReportCache = result;
+        _salesReportCacheTs = Date.now();
+        res.json(result);
+    }).catch(err => res.status(500).json({ error: err.message }));
 };
+
+// Invalida o cache do relatório financeiro (chamar após edições)
+exports.invalidateSalesCache = () => { _salesReportCache = null; };
+
 
 // Client Portal — orders filtered by client_id for tracking
 exports.getClientOrders = (req, res) => {
@@ -744,19 +766,42 @@ exports.getClientOrders = (req, res) => {
     });
 };
 
-// Client Financial — financial report filtered by client_id (read-only)
+// Client Financial — financial report filtered strictly by client_id (read-only)
 exports.getClientFinancial = (req, res) => {
     const clientId = req.params.clientId;
     const sql = `
-        SELECT o.id, o.created_at, o.description, o.total_value, o.discount_value, o.payment_method,
-               o.products_summary, o.event_name, o.payment_code
+        SELECT o.id, o.created_at, o.description, o.total_value, o.discount_value,
+               o.payment_method, o.products_summary, o.event_name, o.payment_code,
+               o.status, c.name AS client_name
         FROM orders o
+        LEFT JOIN clients c ON o.client_id = c.id
         WHERE o.client_id = ? AND o.status IN ('producao', 'em_balcao', 'finalizado', 'arquivado')
         ORDER BY o.created_at DESC
     `;
     db.all(sql, [clientId], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ data: rows });
+    });
+};
+
+// Arena Financial — report for Arena client (filtered strictly by client_id = 7)
+// Shows ALL relevant statuses so every Arena order appears as soon as it's created
+exports.getArenaFinancial = (req, res) => {
+    const ARENA_CLIENT_ID = 7;
+    const sql = `
+        SELECT o.id, o.created_at, o.description, o.total_value, o.discount_value,
+               o.payment_method, o.products_summary, o.event_name, o.payment_code,
+               o.status, o.launched_to_core,
+               c.name AS client_name
+        FROM orders o
+        LEFT JOIN clients c ON o.client_id = c.id
+        WHERE o.client_id = ?
+        AND o.status NOT IN ('rascunho', 'rejeitado', 'cancelado')
+        ORDER BY o.created_at DESC
+    `;
+    db.all(sql, [ARENA_CLIENT_ID], (err, rows) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json({ data: rows, total: rows.length });
     });
 };
 
@@ -794,6 +839,49 @@ exports.launchToCore = (req, res) => {
     db.run("UPDATE orders SET launched_to_core = ? WHERE id = ?", [launched ? 1 : 0, req.params.id], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Atualizado' });
+    });
+};
+
+exports.launchToWarlen = (req, res) => {
+    const { launched } = req.body;
+    db.run("UPDATE orders SET launched_to_warlen = ? WHERE id = ?", [launched ? 1 : 0, req.params.id], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        _salesReportCache = null;
+        res.json({ message: 'Atualizado (Warlen)' });
+    });
+};
+
+exports.launchToEmanuel = (req, res) => {
+    const { launched } = req.body;
+    db.run("UPDATE orders SET launched_to_emanuel = ? WHERE id = ?", [launched ? 1 : 0, req.params.id], function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        _salesReportCache = null;
+        res.json({ message: 'Atualizado (Emanuel)' });
+    });
+};
+
+// Edit financial fields of an order (product, value, discount, payment, description)
+exports.financialEdit = (req, res) => {
+    const id = req.params.id;
+    const { products_summary, total_value, discount_value, payment_method, description } = req.body;
+
+    const fields = [];
+    const params = [];
+
+    if (products_summary !== undefined) { fields.push('products_summary = ?'); params.push(products_summary); }
+    if (total_value      !== undefined) { fields.push('total_value = ?');      params.push(parseFloat(total_value) || 0); }
+    if (discount_value   !== undefined) { fields.push('discount_value = ?');   params.push(parseFloat(discount_value) || 0); }
+    if (payment_method   !== undefined) { fields.push('payment_method = ?');   params.push(payment_method); }
+    if (description      !== undefined) { fields.push('description = ?');      params.push(description); }
+
+    if (fields.length === 0) return res.status(400).json({ error: 'Nenhum campo para atualizar' });
+
+    params.push(id);
+    db.run(`UPDATE orders SET ${fields.join(', ')} WHERE id = ?`, params, function (err) {
+        if (err) return res.status(500).json({ error: err.message });
+        // Invalida cache para que o próximo carregamento reflita as mudanças
+        _salesReportCache = null;
+        res.json({ message: 'Pedido atualizado com sucesso', changes: this.changes });
     });
 };
 

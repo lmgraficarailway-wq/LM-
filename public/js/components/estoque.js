@@ -85,22 +85,38 @@ export const render = () => {
 
                     <!-- Seção para produtos normais -->
                     <div id="adjust-normal-section">
+                        <!-- Estoque atual -->
+                        <div style="background:#f1f5f9; border:1px solid #e2e8f0; border-radius:8px; padding:0.75rem 1rem; margin-bottom:0.75rem; display:flex; align-items:center; justify-content:space-between;">
+                            <span style="color:#64748b; font-size:0.9rem;">Estoque atual:</span>
+                            <span id="adjust-current-stock" style="font-size:1.4rem; font-weight:800; color:#334155;">-</span>
+                        </div>
+
+                        <!-- Modo de ajuste -->
                         <div class="form-group">
                             <label>Tipo de Ajuste</label>
-                            <select id="adjust-type">
-                                <option value="entrada">➕ Entrada (adicionar)</option>
-                                <option value="ajuste_manual">🔧 Ajuste Manual</option>
-                            </select>
+                            <div style="display:flex; gap:0.5rem; background:#f8fafc; padding:0.4rem; border-radius:10px; border:1px solid #e2e8f0;">
+                                <label id="mode-label-entrada" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.4rem; padding:0.55rem 0.75rem; flex:1; border-radius:7px; background:var(--primary); color:white; font-size:0.9rem; font-weight:700; transition:all 0.2s;">
+                                    <input type="radio" name="adjust_mode" value="entrada" checked style="display:none;">
+                                    ➕ Adicionar
+                                </label>
+                                <label id="mode-label-definir" style="cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.4rem; padding:0.55rem 0.75rem; flex:1; border-radius:7px; background:transparent; color:#475569; font-size:0.9rem; font-weight:700; transition:all 0.2s;">
+                                    <input type="radio" name="adjust_mode" value="definir" style="display:none;">
+                                    🎯 Definir Total
+                                </label>
+                            </div>
                         </div>
+
                         <div class="form-group">
-                            <label>Quantidade</label>
-                            <input type="number" id="adjust-qty" min="1" value="1">
+                            <label id="adjust-qty-label">Quantidade a Adicionar</label>
+                            <input type="number" id="adjust-qty" min="0" value="1"
+                                style="font-size:1.3rem; font-weight:bold; text-align:center; letter-spacing:0.05em;">
+                            <small id="adjust-qty-hint" style="color:#64748b; font-size:0.8rem;"></small>
                         </div>
                     </div>
 
                     <!-- Seção para pulseiras (cores) -->
                     <div id="adjust-colors-section" style="display:none">
-                        <p style="margin:0 0 0.75rem; font-size:0.85rem; color:#64748b">Informe a quantidade de entrada para cada cor:</p>
+                        <p style="margin:0 0 0.75rem; font-size:0.85rem; color:#64748b">Informe a quantidade atual (total) para cada cor:</p>
                         <div id="adjust-colors-list" style="display:flex; flex-direction:column; gap:0.5rem; max-height:260px; overflow-y:auto;"></div>
                     </div>
 
@@ -246,7 +262,7 @@ export const render = () => {
                         <td>${statusBadge}</td>
                         <td>
                             <div style="display:flex; gap:0.4rem; flex-wrap:wrap">
-                                <button class="btn btn-primary btn-sm adjust-btn" data-id="${p.id}" data-name="${p.name}" data-type="${p.type || ''}">Ajustar</button>
+                                <button class="btn btn-primary btn-sm adjust-btn" data-id="${p.id}" data-name="${p.name}" data-type="${p.type || ''}" data-stock="${p.stock || 0}">Ajustar</button>
                                 <button class="btn btn-secondary btn-sm history-btn" data-id="${p.id}" data-name="${p.name}">Histórico</button>
                                 <button class="btn btn-secondary btn-sm min-btn" data-id="${p.id}" data-name="${p.name}" data-min="${p.min_stock != null ? p.min_stock : 5}">Mín.</button>
                             </div>
@@ -257,7 +273,7 @@ export const render = () => {
 
             // Bind events
             tbody.querySelectorAll('.adjust-btn').forEach(btn => {
-                btn.onclick = () => openAdjustModal(btn.dataset.id, btn.dataset.name, isPulseira({ type: btn.dataset.type, name: btn.dataset.name }));
+                btn.onclick = () => openAdjustModal(btn.dataset.id, btn.dataset.name, isPulseira({ type: btn.dataset.type, name: btn.dataset.name }), btn.dataset.stock);
             });
             tbody.querySelectorAll('.history-btn').forEach(btn => {
                 btn.onclick = () => openHistoryModal(btn.dataset.id, btn.dataset.name);
@@ -271,14 +287,56 @@ export const render = () => {
         }
     };
 
-    // --- Adjust Modal ---
     const adjustModal = container.querySelector('#adjust-modal');
     const adjustForm = container.querySelector('#adjust-form');
 
     // Store current color variants for pulseira adjust
     let currentColorVariants = [];
+    let currentProductStock = 0;
 
-    const openAdjustModal = async (id, name, isPulseira) => {
+    // Mode toggle for normal products
+    const modeLabelEntrada = container.querySelector('#mode-label-entrada');
+    const modeLabelDefinir = container.querySelector('#mode-label-definir');
+    const adjustQtyLabel = container.querySelector('#adjust-qty-label');
+    const adjustQtyHint = container.querySelector('#adjust-qty-hint');
+    const adjustQtyInput = container.querySelector('#adjust-qty');
+
+    const updateModeUI = (mode) => {
+        if (mode === 'entrada') {
+            modeLabelEntrada.style.background = 'var(--primary)';
+            modeLabelEntrada.style.color = 'white';
+            modeLabelDefinir.style.background = 'transparent';
+            modeLabelDefinir.style.color = '#475569';
+            if (adjustQtyLabel) adjustQtyLabel.textContent = 'Quantidade a Adicionar';
+            if (adjustQtyInput) { adjustQtyInput.min = '0'; adjustQtyInput.value = 1; }
+            if (adjustQtyHint) adjustQtyHint.textContent = '';
+        } else {
+            modeLabelDefinir.style.background = 'var(--primary)';
+            modeLabelDefinir.style.color = 'white';
+            modeLabelEntrada.style.background = 'transparent';
+            modeLabelEntrada.style.color = '#475569';
+            if (adjustQtyLabel) adjustQtyLabel.textContent = 'Novo Total de Estoque';
+            if (adjustQtyInput) { adjustQtyInput.min = '0'; adjustQtyInput.value = currentProductStock; }
+            if (adjustQtyHint) adjustQtyHint.textContent = `Estoque atual: ${currentProductStock}. Digite o valor final desejado.`;
+        }
+    };
+
+    container.querySelectorAll('input[name="adjust_mode"]').forEach(radio => {
+        radio.onchange = () => updateModeUI(radio.value);
+    });
+
+    // Also clicking the label toggles the radio
+    if (modeLabelEntrada) modeLabelEntrada.onclick = () => {
+        container.querySelector('input[name="adjust_mode"][value="entrada"]').checked = true;
+        updateModeUI('entrada');
+    };
+    if (modeLabelDefinir) modeLabelDefinir.onclick = () => {
+        container.querySelector('input[name="adjust_mode"][value="definir"]').checked = true;
+        updateModeUI('definir');
+    };
+
+    const openAdjustModal = async (id, name, isPulseira, currentStock) => {
+        currentProductStock = parseInt(currentStock) || 0;
         container.querySelector('#adjust-product-id').value = id;
         container.querySelector('#adjust-product-name').value = name;
         container.querySelector('#adjust-reason').value = '';
@@ -287,6 +345,13 @@ export const render = () => {
         const normalSection = container.querySelector('#adjust-normal-section');
         const colorsSection = container.querySelector('#adjust-colors-section');
         const colorsList = container.querySelector('#adjust-colors-list');
+        const currentStockEl = container.querySelector('#adjust-current-stock');
+        if (currentStockEl) currentStockEl.textContent = currentProductStock;
+
+        // Reset mode to 'entrada'
+        const modeRadioEntrada = container.querySelector('input[name="adjust_mode"][value="entrada"]');
+        if (modeRadioEntrada) { modeRadioEntrada.checked = true; }
+        updateModeUI('entrada');
 
         if (isPulseira) {
             normalSection.style.display = 'none';
@@ -302,11 +367,11 @@ export const render = () => {
                     colorsList.innerHTML = '<p style="color:#ef4444">Nenhuma cor cadastrada para este produto. Cadastre as cores primeiro na área de Produtos.</p>';
                 } else {
                     colorsList.innerHTML = data.map(v => `
-                        <div style="display:grid; grid-template-columns:14px 1fr auto 80px; gap:8px; align-items:center; background:#f8fafc; padding:8px 10px; border-radius:8px; border:1px solid #e2e8f0;">
+                        <div style="display:grid; grid-template-columns:14px 1fr auto 90px; gap:8px; align-items:center; background:#f8fafc; padding:8px 10px; border-radius:8px; border:1px solid #e2e8f0;">
                             <span style="width:14px;height:14px;border-radius:50%;background:${v.color};border:1px solid rgba(0,0,0,0.15);display:inline-block;"></span>
                             <span style="font-weight:500">${v.color}</span>
                             <span style="font-size:0.8rem;color:#64748b">Atual: <b>${v.quantity}</b></span>
-                            <input type="number" class="color-qty-input" data-variant-id="${v.id}" data-original="${v.quantity}" min="0" value="${v.quantity}" placeholder="0" style="width:100%;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;text-align:center;font-weight:600;">
+                            <input type="number" class="color-qty-input" data-variant-id="${v.id}" data-color="${v.color}" data-original="${v.quantity}" min="0" value="${v.quantity}" placeholder="0" style="width:100%;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;text-align:center;font-weight:600;">
                         </div>
                     `).join('');
                 }
@@ -316,8 +381,6 @@ export const render = () => {
         } else {
             normalSection.style.display = 'block';
             colorsSection.style.display = 'none';
-            container.querySelector('#adjust-qty').value = 1;
-            container.querySelector('#adjust-type').value = 'entrada';
             currentColorVariants = [];
         }
 
@@ -334,12 +397,20 @@ export const render = () => {
         const reason = container.querySelector('#adjust-reason').value;
 
         if (isPulseira) {
-            // Build new variants array with updated quantities
+            // Lê DIRETAMENTE de cada input no DOM — valor sempre atualizado
             const inputs = container.querySelectorAll('.color-qty-input');
-            const variants = currentColorVariants.map(v => {
-                const input = [...inputs].find(i => i.dataset.variantId == v.id);
-                return { color: v.color, quantity: parseInt(input ? input.value : v.quantity) || 0 };
-            });
+
+            if (inputs.length === 0) {
+                alert('Nenhuma cor encontrada para atualizar.');
+                return;
+            }
+
+            const variants = [...inputs].map(inp => ({
+                color: inp.dataset.color,
+                quantity: parseInt(inp.value) >= 0 ? parseInt(inp.value) : parseInt(inp.dataset.original) || 0
+            })).filter(v => v.color);
+
+            console.log('[Estoque] Salvando cores:', variants);
 
             try {
                 const res = await fetch(`/api/products/${product_id}/colors`, {
@@ -357,24 +428,36 @@ export const render = () => {
             } catch (err) {
                 alert('Erro de conexão');
             }
+
         } else {
-            const type = container.querySelector('#adjust-type').value;
+            // Normal product adjust
+            const modeChecked = container.querySelector('input[name="adjust_mode"]:checked');
+            const mode = modeChecked ? modeChecked.value : 'entrada';
             const rawQty = parseInt(container.querySelector('#adjust-qty').value);
 
-            let quantity_change = rawQty;
-            if (type === 'ajuste_manual') {
-                const direction = prompt('Direção do ajuste:\n1 = Adicionar\n2 = Remover\n\nDigite 1 ou 2:');
-                if (direction === '2') quantity_change = -rawQty;
-                else if (direction !== '1') return;
+            if (isNaN(rawQty) || rawQty < 0) {
+                alert('Informe uma quantidade válida (0 ou mais).');
+                return;
             }
 
             try {
-                const res = await fetch('/api/stock/adjust', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ product_id, quantity_change, type, reason, user_id: user.id })
-                });
-                const result = await res.json();
+                let res, result;
+                if (mode === 'definir') {
+                    // Absolute set
+                    res = await fetch(`/api/stock/set/${product_id}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ new_stock: rawQty, reason, user_id: user.id })
+                    });
+                } else {
+                    // Relative: entrada
+                    res = await fetch('/api/stock/adjust', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product_id, quantity_change: rawQty, type: 'entrada', reason, user_id: user.id })
+                    });
+                }
+                result = await res.json();
                 if (!res.ok) {
                     alert(result.error || 'Erro ao ajustar estoque');
                     return;

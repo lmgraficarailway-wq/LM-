@@ -688,7 +688,11 @@ export const render = () => {
                 return matchType && matchName;
             });
             productSelect.innerHTML = filtered.length
-                ? '<option value="">Selecione...</option>' + filtered.map(p => `<option value="${p.id}">${p.name}</option>`).join('')
+                ? '<option value="">Selecione...</option>' + filtered.map(p => {
+                    const stockNum = parseInt(p.stock) || 0;
+                    const stockLabel = stockNum <= 0 ? ' ⚠️ Sem estoque' : ` (estoque: ${stockNum})`;
+                    return `<option value="${p.id}" data-stock="${stockNum}">${p.name}${stockLabel}</option>`;
+                }).join('')
                 : '<option value="">Nenhum produto encontrado</option>';
         };
 
@@ -2019,18 +2023,41 @@ export const render = () => {
     const isPulseiraProd = (product) => product && (product.type || '').toLowerCase().includes('pulseira');
 
     const productSelectEl = container.querySelector('#product-select');
+    const stockWarningEl = container.querySelector('#stock-warning');
+
+    // Helper to update stock warning for normal products
+    const updateStockWarning = (product, qty) => {
+        if (!stockWarningEl || !product || isPulseiraProd(product)) {
+            if (stockWarningEl) stockWarningEl.innerHTML = '';
+            return;
+        }
+        const stockNum = parseInt(product.stock) || 0;
+        if (stockNum <= 0) {
+            stockWarningEl.innerHTML = `<span style="color:#dc2626;">⚠️ Sem estoque disponível para este produto.</span>`;
+        } else if (qty && parseInt(qty) > stockNum) {
+            stockWarningEl.innerHTML = `<span style="color:#dc2626;">⚠️ Quantidade solicitada (${qty}) excede o estoque disponível (${stockNum}).</span>`;
+        } else {
+            stockWarningEl.innerHTML = `<span style="color:#059669;">✅ Estoque disponível: <b>${stockNum}</b> unidade${stockNum !== 1 ? 's' : ''}.</span>`;
+        }
+    };
+
     if (productSelectEl) productSelectEl.addEventListener('change', async (e) => {
         const pid = e.target.value;
         if (!pid) {
             colorSelectContainer.style.display = 'none';
+            if (stockWarningEl) stockWarningEl.innerHTML = '';
             return;
         }
         const product = loadedProducts.find(p => p.id == pid);
         if (!product || !isPulseiraProd(product)) {
             colorSelectContainer.style.display = 'none';
+            // Show stock info for normal products
+            const qtyInput = container.querySelector('#item-qty');
+            updateStockWarning(product, qtyInput ? qtyInput.value : 1);
             return;
         }
         // It's a pulseira — load colors
+        if (stockWarningEl) stockWarningEl.innerHTML = '';
         colorSelectContainer.style.display = 'block';
         // Reset the sem-personalizacao toggle
         const semPersToggle = container.querySelector('#sem-personalizacao');
@@ -2069,6 +2096,16 @@ export const render = () => {
         }
     });
 
+    // Update stock warning when quantity changes
+    const qtyInputEl = container.querySelector('#item-qty');
+    if (qtyInputEl) qtyInputEl.addEventListener('input', () => {
+        const pid = productSelectEl ? productSelectEl.value : null;
+        if (!pid) return;
+        const product = loadedProducts.find(p => p.id == pid);
+        updateStockWarning(product, qtyInputEl.value);
+    });
+
+
     // Add Item Logic
     const isKitTypeLocal = (val) => (val || '').toUpperCase().includes('KIT');
     const btnAddItem = container.querySelector('#btn-add-item');
@@ -2087,8 +2124,7 @@ export const render = () => {
 
         // Internal service: require unit_cost (except for Kits which unroll their children's costs)
         if (!isKitTypeLocal(product.name) && isInternalMode() && !(parseFloat(product.unit_cost) > 0)) {
-            warning.innerText = '⚠️ Este produto não tem valor de custo cadastrado. Vá em Produtos e adicione o custo antes de usar em Serviço Interno.';
-            warning.style.color = '#dc2626';
+            warning.innerHTML = '<span style="color:#dc2626;">⚠️ Este produto não tem valor de custo cadastrado. Vá em Produtos e adicione o custo antes de usar em Serviço Interno.</span>';
             return;
         }
 
@@ -2123,8 +2159,7 @@ export const render = () => {
         renderCart();
 
         qtyInput.value = 1;
-        warning.innerText = '';
-        warning.style.color = '';
+        warning.innerHTML = '';
     };
 
 

@@ -970,7 +970,7 @@ export const initChatWidget = (user, parentContainer) => {
         avatarNode.onmouseleave = () => { avatarNode.style.transform = 'scale(1)'; avatarNode.style.boxShadow = isMine ? '0 4px 10px var(--primary-glow)' : '0 3px 8px rgba(0,0,0,0.08)'; avatarNode.style.zIndex = '5'; };
 
         if (msgObj.author_avatar) {
-            avatarNode.innerHTML = `<img src="${msgObj.author_avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;">`;
+            avatarNode.innerHTML = `<img src="${msgObj.author_avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" onerror="this.style.display='none'; this.parentElement.innerHTML='${getInitial(msgObj.user_name)}';">`;
         } else {
             avatarNode.innerHTML = getInitial(msgObj.user_name);
         }
@@ -1087,7 +1087,7 @@ export const initChatWidget = (user, parentContainer) => {
         const displayMsg = previewMsg + (msg.length > 60 ? '…' : '');
         
         const avatarHtml = avatar 
-            ? `<img src="${avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;">` 
+            ? `<img src="${avatar}" style="width:100%; height:100%; object-fit:cover; border-radius:10px;" onerror="this.style.display='none'; this.parentElement.innerHTML='${getInitial(name)}';">` 
             : getInitial(name);
 
         toast.innerHTML = `
@@ -1357,7 +1357,7 @@ export const initChatWidget = (user, parentContainer) => {
             reply_to_msg: currentReply ? currentReply.msg : null,
             attachment_url: tempAttachmentUrl,
             is_image_override: isImageOverride,
-            author_avatar: null
+            author_avatar: user.avatar || null
         };
         addMessage(optimisticMsg);
 
