@@ -1,4 +1,5 @@
 const db = require('../database/db');
+const { getMasterProductId } = require('../utils/sharedStockMap');
 
 // Calcula o status do estoque em JavaScript (compatível com SQLite e Firestore)
 function calcStockStatus(stock, minStock) {
@@ -30,9 +31,11 @@ exports.getStockOverview = (req, res) => {
             });
 
             const data = rows.map(r => {
-                const colorVars = variantsByProduct[String(r.id)] || [];
-                const stock_status = calcStockStatus(r.stock, r.min_stock);
-                return { ...r, stock_status, color_variants: colorVars };
+                const masterId = String(getMasterProductId(r.id));
+                const masterRow = rows.find(x => String(x.id) === masterId) || r;
+                const colorVars = variantsByProduct[masterId] || [];
+                const stock_status = calcStockStatus(masterRow.stock, masterRow.min_stock);
+                return { ...r, stock: masterRow.stock, min_stock: masterRow.min_stock, stock_status, color_variants: colorVars };
             });
 
             // Ordena: zerado primeiro, depois baixo, depois ok — igual ao SQL original
@@ -56,7 +59,8 @@ exports.getStockOverview = (req, res) => {
 
 // POST /api/stock/adjust — Manual stock adjustment (relative: +/-)
 exports.adjustStock = (req, res) => {
-    const { product_id, quantity_change, type, reason, user_id } = req.body;
+    let { product_id, quantity_change, type, reason, user_id } = req.body;
+    product_id = getMasterProductId(product_id);
 
     if (!product_id || quantity_change === undefined || quantity_change === null || !type) {
         return res.status(400).json({ error: 'Campos obrigatórios: product_id, quantity_change, type' });
@@ -100,8 +104,9 @@ exports.adjustStock = (req, res) => {
 
 // PUT /api/stock/set/:id — Set stock to an absolute value (manual correction)
 exports.setStock = (req, res) => {
+    let productId = req.params.id;
+    productId = getMasterProductId(productId);
     const { new_stock, reason, user_id } = req.body;
-    const productId = req.params.id;
 
     if (new_stock === undefined || new_stock === null || new_stock === '') {
         return res.status(400).json({ error: 'Campos obrigatórios: new_stock' });
@@ -165,10 +170,12 @@ exports.getStockMovements = (req, res) => {
 
 // PUT /api/stock/min/:id — Update minimum stock threshold
 exports.updateMinStock = (req, res) => {
+    let productId = req.params.id;
+    productId = getMasterProductId(productId);
     const { min_stock } = req.body;
     const sql = "UPDATE products SET min_stock = ? WHERE id = ?";
 
-    db.run(sql, [min_stock, req.params.id], function (err) {
+    db.run(sql, [min_stock, productId], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ message: 'Estoque mínimo atualizado', changes: this.changes });
     });

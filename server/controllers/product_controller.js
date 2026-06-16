@@ -1,4 +1,5 @@
 const db = require('../database/db');
+const { getMasterProductId } = require('../utils/sharedStockMap');
 
 // Helper: acessa o Firestore diretamente (bypassa emulação SQL)
 // Retorna null em modo SQLite (local)
@@ -38,10 +39,15 @@ exports.getAllProducts = (req, res) => {
             colorsByProduct[pid].push({ id: cv.id, color: cv.color, quantity: cv.quantity });
         });
 
-        const data = rows.map(r => ({
-            ...r,
-            color_variants: colorsByProduct[String(r.id)] || []
-        }));
+        const data = rows.map(r => {
+            const masterId = String(getMasterProductId(r.id));
+            const masterRow = rows.find(x => String(x.id) === masterId) || r;
+            return {
+                ...r,
+                stock: masterRow.stock,
+                color_variants: colorsByProduct[masterId] || []
+            };
+        });
         res.json({ data });
     });
 };
@@ -114,7 +120,8 @@ exports.deleteProduct = async (req, res) => {
 
 // ── Color Variants ─────────────────────────────────────────────────────────
 exports.getColorVariants = async (req, res) => {
-    const productId = req.params.id;
+    let productId = req.params.id;
+    productId = getMasterProductId(productId);
     const fdb = await getFirestoreDb();
 
     if (fdb) {
@@ -147,7 +154,8 @@ exports.getColorVariants = async (req, res) => {
 
 // Replace all color variants for a product (send full array)
 exports.saveColorVariants = async (req, res) => {
-    const productId = req.params.id;
+    let productId = req.params.id;
+    productId = getMasterProductId(productId);
     const { variants } = req.body; // [{ color, quantity }]
     if (!Array.isArray(variants)) return res.status(400).json({ error: 'variants must be an array' });
 

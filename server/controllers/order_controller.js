@@ -10,6 +10,7 @@ const db = require('../database/db');
 const { brasiliaDatetime, brasiliaISO } = require('../utils/dateHelper');
 const { calculateProductionTime } = require('../utils/production_calculator');
 const { uploadFile, isStorageUrl } = require('../utils/firebaseStorage');
+const { getMasterProductId } = require('../utils/sharedStockMap');
 
 // ─── Helpers de estoque compatíveis com Firestore ────────────────────────────
 // Promisify db.get e db.run para uso com async/await
@@ -22,6 +23,7 @@ const dbAllAsync = (sql, params) => new Promise((resolve, reject) =>
 
 // Debita estoque de uma variante de cor e recalcula o total do produto
 async function debitColorVariantStock(colorVariantId, productId, qty, orderId, colorName) {
+    productId = getMasterProductId(productId);
     const cv = await dbGetAsync('SELECT quantity FROM product_color_variants WHERE id = ?', [colorVariantId]);
     const currentQty = (cv && parseInt(cv.quantity)) || 0;
     const newQty = Math.max(0, currentQty - qty);
@@ -36,6 +38,7 @@ async function debitColorVariantStock(colorVariantId, productId, qty, orderId, c
 
 // Debita estoque de produto normal
 async function debitNormalStock(productId, qty, orderId) {
+    productId = getMasterProductId(productId);
     const prod = await dbGetAsync('SELECT stock FROM products WHERE id = ?', [productId]);
     const currentStock = (prod && parseInt(prod.stock)) || 0;
     const newStock = Math.max(0, currentStock - qty);
@@ -46,6 +49,7 @@ async function debitNormalStock(productId, qty, orderId) {
 
 // Restaura estoque de variante de cor e recalcula total do produto
 async function restoreColorVariantStock(colorVariantId, productId, qty, orderId, movType) {
+    productId = getMasterProductId(productId);
     const cv = await dbGetAsync('SELECT quantity FROM product_color_variants WHERE id = ?', [colorVariantId]);
     const currentQty = (cv && parseInt(cv.quantity)) || 0;
     await dbRunAsync('UPDATE product_color_variants SET quantity = ? WHERE id = ?', [currentQty + qty, colorVariantId]);
@@ -58,6 +62,7 @@ async function restoreColorVariantStock(colorVariantId, productId, qty, orderId,
 
 // Restaura estoque de produto normal
 async function restoreNormalStock(productId, qty, orderId, movType) {
+    productId = getMasterProductId(productId);
     const prod = await dbGetAsync('SELECT stock FROM products WHERE id = ?', [productId]);
     const currentStock = (prod && parseInt(prod.stock)) || 0;
     await dbRunAsync('UPDATE products SET stock = ? WHERE id = ?', [currentStock + qty, productId]);
