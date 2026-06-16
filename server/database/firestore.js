@@ -178,6 +178,7 @@ async function run(sql, params = [], callback) {
                 'orders': ['order_items', 'clients', 'products'],
                 'order_items': ['orders'],
                 'stock_movements': ['products'],
+                'product_color_variants': ['products'],
                 'client_credit_movements': ['clients'],
                 'material_cost_movements': ['orders'],
             };

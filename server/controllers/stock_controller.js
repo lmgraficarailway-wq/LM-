@@ -1,51 +1,56 @@
 const db = require('../database/db');
 
+// Calcula o status do estoque em JavaScript (compatível com SQLite e Firestore)
+function calcStockStatus(stock, minStock) {
+    const s = parseInt(stock) || 0;
+    const m = parseInt(minStock) || 5;
+    if (s <= 0) return 'zerado';
+    if (s <= m) return 'baixo';
+    return 'ok';
+}
+
 // GET /api/stock — Overview of all products with stock status
 exports.getStockOverview = (req, res) => {
-    const sql = `
-        SELECT p.id, p.name, p.type, p.stock, p.min_stock,
-            CASE 
-                WHEN p.stock <= 0 THEN 'zerado'
-                WHEN p.stock <= COALESCE(p.min_stock, 5) THEN 'baixo'
-                ELSE 'ok'
-            END as stock_status,
-            (SELECT group_concat(cv.color || ':' || cv.quantity, '|||')
-             FROM product_color_variants cv WHERE cv.product_id = p.id) as color_variants_raw
-        FROM products p
-        WHERE p.terceirizado = 0
-        ORDER BY 
-            CASE 
-                WHEN p.stock <= 0 THEN 0
-                WHEN p.stock <= COALESCE(p.min_stock, 5) THEN 1
-                ELSE 2
-            END,
-            p.name ASC
-    `;
+    // Query simples — sem CASE WHEN nem subqueries (compatível com Firestore)
+    const sql = `SELECT id, name, type, stock, min_stock FROM products WHERE terceirizado = 0 ORDER BY name ASC`;
 
     db.all(sql, [], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
 
-        const data = rows.map(r => ({
-            ...r,
-            color_variants: r.color_variants_raw
-                ? r.color_variants_raw.split('|||').map(v => {
-                    const sepIdx = v.lastIndexOf(':');
-                    return {
-                        color: v.substring(0, sepIdx),
-                        quantity: parseInt(v.substring(sepIdx + 1)) || 0
-                    };
-                })
-                : []
-        }));
+        // Busca todas as color_variants de uma vez (1 query ao invés de N)
+        db.all('SELECT * FROM product_color_variants ORDER BY color ASC', [], (err2, variants) => {
+            if (err2) variants = [];
 
-        const summary = {
-            total: data.length,
-            zerado: data.filter(r => r.stock_status === 'zerado').length,
-            baixo: data.filter(r => r.stock_status === 'baixo').length,
-            ok: data.filter(r => r.stock_status === 'ok').length,
-        };
+            // Indexa variantes por product_id para lookup O(1)
+            const variantsByProduct = {};
+            (variants || []).forEach(v => {
+                const pid = String(v.product_id);
+                if (!variantsByProduct[pid]) variantsByProduct[pid] = [];
+                variantsByProduct[pid].push({ color: v.color, quantity: parseInt(v.quantity) || 0 });
+            });
 
-        res.json({ data, summary });
+            const data = rows.map(r => {
+                const colorVars = variantsByProduct[String(r.id)] || [];
+                const stock_status = calcStockStatus(r.stock, r.min_stock);
+                return { ...r, stock_status, color_variants: colorVars };
+            });
+
+            // Ordena: zerado primeiro, depois baixo, depois ok — igual ao SQL original
+            data.sort((a, b) => {
+                const order = { zerado: 0, baixo: 1, ok: 2 };
+                const diff = (order[a.stock_status] || 2) - (order[b.stock_status] || 2);
+                return diff !== 0 ? diff : a.name.localeCompare(b.name);
+            });
+
+            const summary = {
+                total: data.length,
+                zerado: data.filter(r => r.stock_status === 'zerado').length,
+                baixo: data.filter(r => r.stock_status === 'baixo').length,
+                ok: data.filter(r => r.stock_status === 'ok').length,
+            };
+
+            res.json({ data, summary });
+        });
     });
 };
 
