@@ -11,6 +11,61 @@ const { brasiliaDatetime, brasiliaISO } = require('../utils/dateHelper');
 const { calculateProductionTime } = require('../utils/production_calculator');
 const { uploadFile, isStorageUrl } = require('../utils/firebaseStorage');
 
+// ─── Helpers de estoque compatíveis com Firestore ────────────────────────────
+// Promisify db.get e db.run para uso com async/await
+const dbGetAsync = (sql, params) => new Promise((resolve, reject) =>
+    db.get(sql, params, (err, row) => err ? reject(err) : resolve(row)));
+const dbRunAsync = (sql, params) => new Promise((resolve, reject) =>
+    db.run(sql, params, function(err) { err ? reject(err) : resolve(this); }));
+const dbAllAsync = (sql, params) => new Promise((resolve, reject) =>
+    db.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows || [])));
+
+// Debita estoque de uma variante de cor e recalcula o total do produto
+async function debitColorVariantStock(colorVariantId, productId, qty, orderId, colorName) {
+    const cv = await dbGetAsync('SELECT quantity FROM product_color_variants WHERE id = ?', [colorVariantId]);
+    const currentQty = (cv && parseInt(cv.quantity)) || 0;
+    const newQty = Math.max(0, currentQty - qty);
+    await dbRunAsync('UPDATE product_color_variants SET quantity = ? WHERE id = ?', [newQty, colorVariantId]);
+    // Recalcula total do produto somando todas as variantes em JS
+    const allVariants = await dbAllAsync('SELECT quantity FROM product_color_variants WHERE product_id = ?', [productId]);
+    const total = allVariants.reduce((acc, v) => acc + (parseInt(v.quantity) || 0), 0);
+    await dbRunAsync('UPDATE products SET stock = ? WHERE id = ?', [total, productId]);
+    await dbRunAsync('INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, ?, ?, ?)',
+        [productId, -qty, 'reserva_pedido', `Reserva Pedido #${orderId} — Cor: ${colorName || ''}`, null]);
+}
+
+// Debita estoque de produto normal
+async function debitNormalStock(productId, qty, orderId) {
+    const prod = await dbGetAsync('SELECT stock FROM products WHERE id = ?', [productId]);
+    const currentStock = (prod && parseInt(prod.stock)) || 0;
+    const newStock = Math.max(0, currentStock - qty);
+    await dbRunAsync('UPDATE products SET stock = ? WHERE id = ?', [newStock, productId]);
+    await dbRunAsync('INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, ?, ?, ?)',
+        [productId, -qty, 'reserva_pedido', `Reserva Pedido #${orderId}`, null]);
+}
+
+// Restaura estoque de variante de cor e recalcula total do produto
+async function restoreColorVariantStock(colorVariantId, productId, qty, orderId, movType) {
+    const cv = await dbGetAsync('SELECT quantity FROM product_color_variants WHERE id = ?', [colorVariantId]);
+    const currentQty = (cv && parseInt(cv.quantity)) || 0;
+    await dbRunAsync('UPDATE product_color_variants SET quantity = ? WHERE id = ?', [currentQty + qty, colorVariantId]);
+    const allVariants = await dbAllAsync('SELECT quantity FROM product_color_variants WHERE product_id = ?', [productId]);
+    const total = allVariants.reduce((acc, v) => acc + (parseInt(v.quantity) || 0), 0);
+    await dbRunAsync('UPDATE products SET stock = ? WHERE id = ?', [total, productId]);
+    await dbRunAsync('INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, ?, ?, ?)',
+        [productId, qty, movType, `${movType === 'retorno_rejeicao' ? 'Rejeição' : 'Exclusão'} Pedido #${orderId}`, null]);
+}
+
+// Restaura estoque de produto normal
+async function restoreNormalStock(productId, qty, orderId, movType) {
+    const prod = await dbGetAsync('SELECT stock FROM products WHERE id = ?', [productId]);
+    const currentStock = (prod && parseInt(prod.stock)) || 0;
+    await dbRunAsync('UPDATE products SET stock = ? WHERE id = ?', [currentStock + qty, productId]);
+    await dbRunAsync('INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, ?, ?, ?)',
+        [productId, qty, movType, `${movType === 'retorno_rejeicao' ? 'Rejeição' : 'Exclusão'} Pedido #${orderId}`, null]);
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 const USE_STORAGE = process.env.NODE_ENV === 'production' || process.env.USE_FIREBASE_STORAGE === 'true';
 
 // Helper to calculate deadline (dias úteis) — usa fuso horário de Brasília
@@ -238,32 +293,19 @@ exports.createOrder = (req, res) => {
                             db.run(sqlItem, [orderId, item.product_id, item.quantity, item.price, item.name, item.color_variant_id, item.color_name], (err) => {
                                 insertedItems++;
                                 if (insertedItems === readyItems.length) {
-                                    // === RESERVAR ESTOQUE ===
+                                    // === RESERVAR ESTOQUE (compatível com Firestore) ===
                                     const reserveStock = (afterReserve) => {
                                         if (finalInternal) { afterReserve(); return; }
-                                        let reserveDone = 0;
-                                        readyItems.forEach(ri => {
+                                        const debitPromises = readyItems.map(ri => {
                                             if (ri.color_variant_id) {
-                                                db.run("UPDATE product_color_variants SET quantity = MAX(0, quantity - ?) WHERE id = ?", [ri.quantity, ri.color_variant_id], () => {
-                                                    db.get("SELECT product_id FROM product_color_variants WHERE id = ?", [ri.color_variant_id], (err, cv) => {
-                                                        if (cv) {
-                                                            db.get("SELECT SUM(quantity) as total FROM product_color_variants WHERE product_id = ?", [cv.product_id], (err, row) => {
-                                                                db.run("UPDATE products SET stock = ? WHERE id = ?", [(row && row.total) || 0, cv.product_id]);
-                                                            });
-                                                        }
-                                                        db.run("INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, 'reserva_pedido', ?, ?)", [ri.product_id, -ri.quantity, `Reserva Pedido #${orderId} — Cor: ${ri.color_name || ''}`, null]);
-                                                        reserveDone++;
-                                                        if (reserveDone === readyItems.length) afterReserve();
-                                                    });
-                                                });
+                                                return debitColorVariantStock(ri.color_variant_id, ri.product_id, ri.quantity, orderId, ri.color_name);
                                             } else {
-                                                db.run("UPDATE products SET stock = MAX(0, stock - ?) WHERE id = ?", [ri.quantity, ri.product_id], () => {
-                                                    db.run("INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, 'reserva_pedido', ?, ?)", [ri.product_id, -ri.quantity, `Reserva Pedido #${orderId}`, null]);
-                                                    reserveDone++;
-                                                    if (reserveDone === readyItems.length) afterReserve();
-                                                });
+                                                return debitNormalStock(ri.product_id, ri.quantity, orderId);
                                             }
                                         });
+                                        Promise.all(debitPromises)
+                                            .then(() => afterReserve())
+                                            .catch(err => { console.error('[reserveStock] Erro:', err.message); afterReserve(); });
                                     };
 
                                     reserveStock(() => {
@@ -634,33 +676,21 @@ exports.rejectOrder = (req, res) => {
         };
 
         if (order && order.stock_reserved) {
-            // Restore stock for each order_item
-            db.all("SELECT * FROM order_items WHERE order_id = ?", [orderId], (err, items) => {
-                if (err || !items || items.length === 0) { doReject(); return; }
-                let done = 0;
-                const next = () => { done++; if (done === items.length) doReject(); };
-                items.forEach(item => {
-                    if (item.color_variant_id) {
-                        db.run("UPDATE product_color_variants SET quantity = quantity + ? WHERE id = ?",
-                            [item.quantity, item.color_variant_id], () => {
-                                db.get("SELECT product_id FROM product_color_variants WHERE id = ?", [item.color_variant_id], (err, cv) => {
-                                    if (cv) db.get("SELECT SUM(quantity) as total FROM product_color_variants WHERE product_id = ?", [cv.product_id], (err, row) => {
-                                        db.run("UPDATE products SET stock = ? WHERE id = ?", [(row && row.total) || 0, cv.product_id]);
-                                    });
-                                    db.run("INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, 'retorno_rejeicao', ?, ?)",
-                                        [item.product_id, item.quantity, `Rejeição Pedido #${orderId}`, null]);
-                                    next();
-                                });
-                            });
-                    } else {
-                        db.run("UPDATE products SET stock = stock + ? WHERE id = ?", [item.quantity, item.product_id], () => {
-                            db.run("INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, 'retorno_rejeicao', ?, ?)",
-                                [item.product_id, item.quantity, `Rejeição Pedido #${orderId}`, null]);
-                            next();
-                        });
-                    }
-                });
-            });
+            // Restaura estoque com helpers compatíveis com Firestore
+            dbAllAsync('SELECT * FROM order_items WHERE order_id = ?', [orderId])
+                .then(items => {
+                    if (!items || items.length === 0) { doReject(); return; }
+                    const restorePromises = items.map(item => {
+                        if (item.color_variant_id) {
+                            return restoreColorVariantStock(item.color_variant_id, item.product_id, item.quantity, orderId, 'retorno_rejeicao');
+                        } else {
+                            return restoreNormalStock(item.product_id, item.quantity, orderId, 'retorno_rejeicao');
+                        }
+                    });
+                    return Promise.all(restorePromises);
+                })
+                .then(() => doReject())
+                .catch(() => doReject());
         } else {
             doReject();
         }
@@ -973,34 +1003,22 @@ exports.deleteOrder = (req, res) => {
             };
 
             const afterCostRevert = () => {
-                // Restore reserved stock if applicable
+                // Restaura estoque com helpers compatíveis com Firestore
                 if (order.stock_reserved) {
-                    db.all("SELECT * FROM order_items WHERE order_id = ?", [orderId], (err, items) => {
-                        if (err || !items || items.length === 0) { doDelete(); return; }
-                        let done = 0;
-                        const next = () => { done++; if (done === items.length) doDelete(); };
-                        items.forEach(item => {
-                            if (item.color_variant_id) {
-                                db.run("UPDATE product_color_variants SET quantity = quantity + ? WHERE id = ?",
-                                    [item.quantity, item.color_variant_id], () => {
-                                        db.get("SELECT product_id FROM product_color_variants WHERE id = ?", [item.color_variant_id], (err, cv) => {
-                                            if (cv) db.get("SELECT SUM(quantity) as total FROM product_color_variants WHERE product_id = ?", [cv.product_id], (err, row) => {
-                                                db.run("UPDATE products SET stock = ? WHERE id = ?", [(row && row.total) || 0, cv.product_id]);
-                                            });
-                                            db.run("INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, 'retorno_exclusao', ?, ?)",
-                                                [item.product_id, item.quantity, `Exclusão Pedido #${orderId}`, null]);
-                                            next();
-                                        });
-                                    });
-                            } else {
-                                db.run("UPDATE products SET stock = stock + ? WHERE id = ?", [item.quantity, item.product_id], () => {
-                                    db.run("INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, 'retorno_exclusao', ?, ?)",
-                                        [item.product_id, item.quantity, `Exclusão Pedido #${orderId}`, null]);
-                                    next();
-                                });
-                            }
-                        });
-                    });
+                    dbAllAsync('SELECT * FROM order_items WHERE order_id = ?', [orderId])
+                        .then(items => {
+                            if (!items || items.length === 0) { doDelete(); return; }
+                            const restorePromises = items.map(item => {
+                                if (item.color_variant_id) {
+                                    return restoreColorVariantStock(item.color_variant_id, item.product_id, item.quantity, orderId, 'retorno_exclusao');
+                                } else {
+                                    return restoreNormalStock(item.product_id, item.quantity, orderId, 'retorno_exclusao');
+                                }
+                            });
+                            return Promise.all(restorePromises);
+                        })
+                        .then(() => doDelete())
+                        .catch(() => doDelete());
                 } else {
                     doDelete();
                 }
