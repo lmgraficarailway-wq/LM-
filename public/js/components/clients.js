@@ -19,9 +19,13 @@ export const render = () => {
                 <input type="text" id="client-search" placeholder="Buscar por nome, telefone ou CPF/CNPJ..." style="width:100%; padding:0.75rem 1rem 0.75rem 2.8rem; border-radius:8px; border:1px solid #cbd5e1; font-size:0.95rem; outline:none; transition:border-color 0.2s;">
                 <span style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:1.2rem; opacity:0.6;">🔍</span>
             </div>
-            <div style="display:flex; align-items:center; gap:0.6rem; background:#f1f5f9; padding:0.6rem 1rem; border-radius:8px; cursor:pointer;" onclick="const cb = document.getElementById('client-core-filter'); cb.checked = !cb.checked; cb.dispatchEvent(new Event('change'));">
-                <input type="checkbox" id="client-core-filter" style="width:18px; height:18px; cursor:pointer; pointer-events:none;">
-                <label style="margin:0; cursor:pointer; font-weight:700; color:#475569; user-select:none; font-size:0.9rem;">Apenas CORE</label>
+            <div style="display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;" id="origin-filter-group">
+                <span style="font-weight:700; color:#475569; font-size:0.85rem; white-space:nowrap;">Origem:</span>
+                <button type="button" class="origin-chip" data-origin="Site"      style="padding:0.4rem 0.85rem; border-radius:20px; border:2px solid #e2e8f0; background:#f8fafc; color:#475569; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.18s; user-select:none;">🌐 Site</button>
+                <button type="button" class="origin-chip" data-origin="Whatsapp"  style="padding:0.4rem 0.85rem; border-radius:20px; border:2px solid #e2e8f0; background:#f8fafc; color:#475569; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.18s; user-select:none;">💬 Whatsapp</button>
+                <button type="button" class="origin-chip" data-origin="Balcão"    style="padding:0.4rem 0.85rem; border-radius:20px; border:2px solid #e2e8f0; background:#f8fafc; color:#475569; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.18s; user-select:none;">🏪 Balcão</button>
+                <button type="button" class="origin-chip" data-origin="Indicação" style="padding:0.4rem 0.85rem; border-radius:20px; border:2px solid #e2e8f0; background:#f8fafc; color:#475569; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.18s; user-select:none;">🤝 Indicação</button>
+                <button type="button" class="origin-chip" data-origin="CORE"      style="padding:0.4rem 0.85rem; border-radius:20px; border:2px solid #e2e8f0; background:#f8fafc; color:#475569; font-size:0.8rem; font-weight:700; cursor:pointer; transition:all 0.18s; user-select:none;">⭐ CORE</button>
             </div>
         </div>
 
@@ -226,19 +230,19 @@ export const render = () => {
     let currentEditClient = null;
     let clientsData = [];
 
+    let activeOriginFilters = new Set();
+
     const renderClientsList = () => {
         const searchInput = container.querySelector('#client-search');
-        const coreFilter = container.querySelector('#client-core-filter');
         
         const term = searchInput ? searchInput.value.toLowerCase() : '';
-        const isCoreOnly = coreFilter ? coreFilter.checked : false;
 
         const filtered = clientsData.filter(c => {
             const matchSearch = c.name.toLowerCase().includes(term) || 
                                (c.phone && c.phone.toLowerCase().includes(term)) ||
                                (c.cpf && c.cpf.toLowerCase().includes(term));
-            const matchCore = isCoreOnly ? c.origin === 'CORE' : true;
-            return matchSearch && matchCore;
+            const matchOrigin = activeOriginFilters.size === 0 ? true : activeOriginFilters.has(c.origin);
+            return matchSearch && matchOrigin;
         }).sort((a, b) => {
             if (a.loyalty_status && !b.loyalty_status) return -1;
             if (!a.loyalty_status && b.loyalty_status) return 1;
@@ -306,9 +310,36 @@ export const render = () => {
     // Bind Search & Filter Events
     setTimeout(() => {
         const searchInput = container.querySelector('#client-search');
-        const coreFilter = container.querySelector('#client-core-filter');
         if (searchInput) searchInput.addEventListener('input', renderClientsList);
-        if (coreFilter) coreFilter.addEventListener('change', renderClientsList);
+
+        // Origin filter chips
+        const CHIP_ACTIVE_STYLES = {
+            'Site':      { bg: '#e0f2fe', color: '#0369a1', border: '#7dd3fc' },
+            'Whatsapp':  { bg: '#dcfce7', color: '#15803d', border: '#86efac' },
+            'Balcão':    { bg: '#fef9c3', color: '#92400e', border: '#fde68a' },
+            'Indicação': { bg: '#ede9fe', color: '#6d28d9', border: '#c4b5fd' },
+            'CORE':      { bg: 'rgba(139,92,246,0.12)', color: 'var(--primary)', border: '#a78bfa' },
+        };
+        container.querySelectorAll('.origin-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const origin = chip.dataset.origin;
+                if (activeOriginFilters.has(origin)) {
+                    activeOriginFilters.delete(origin);
+                    chip.style.background = '#f8fafc';
+                    chip.style.color = '#475569';
+                    chip.style.borderColor = '#e2e8f0';
+                    chip.style.boxShadow = 'none';
+                } else {
+                    activeOriginFilters.add(origin);
+                    const s = CHIP_ACTIVE_STYLES[origin] || { bg:'#f1f5f9', color:'#1e293b', border:'#94a3b8' };
+                    chip.style.background = s.bg;
+                    chip.style.color = s.color;
+                    chip.style.borderColor = s.border;
+                    chip.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
+                }
+                renderClientsList();
+            });
+        });
         
         // Focus state styling for search input
         if (searchInput) {

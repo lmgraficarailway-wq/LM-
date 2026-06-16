@@ -70,26 +70,24 @@ export const render = (user) => {
         });
     };
 
-    // ── Reminder card (accordion) ─────────────────────────────────────────────────────────
+    // ── Reminder card (sempre expandido) ─────────────────────────────────────────
     const renderCard = (r) => {
         const p = PRIORITY[r.priority] || PRIORITY.normal;
         const done = r.status === 'concluido';
         const pinned = !!r.pinned;
-        const expanded = expandedCards.has(r.id);
-        const hasExtra = r.description || r.concluded_at || r.created_by_name;
         return `
-        <div class="reminder-card ${done ? 'reminder-done' : ''} ${pinned ? 'reminder-pinned' : ''} ${expanded ? 'reminder-expanded' : ''}" data-id="${r.id}"
+        <div class="reminder-card ${done ? 'reminder-done' : ''} ${pinned ? 'reminder-pinned' : ''}" data-id="${r.id}"
              draggable="true">
             ${pinned ? '<div class="rm-pin-banner">📌 Fixado no topo</div>' : ''}
 
-            <!-- HEADER ─ sempre visível ───────────────────────────────── -->
-            <div class="rm-accordion-header" data-accordion-id="${r.id}">
-                <div class="rm-accordion-left">
-                    <span class="rm-priority-dot" style="background:${p.color}; box-shadow: 0 0 8px ${p.color}55;" title="${p.label}"></span>
+            <!-- HEADER ─ título + prioridade + ações -->
+            <div class="rm-card-header" data-id="${r.id}">
+                <div class="rm-card-title-row">
+                    <span class="rm-priority-dot" style="background:${p.color}; box-shadow: 0 0 8px ${p.color}55; flex-shrink:0;" title="${p.label}"></span>
                     <h3 class="reminder-title ${done ? 'strikethrough' : ''}">${linkify(r.title)}</h3>
+                    <span class="rm-priority-chip" style="background:${p.bg}; color:${p.color}; flex-shrink:0;">${p.icon} ${p.label}</span>
                 </div>
-                <div class="rm-accordion-right">
-                    <span class="rm-priority-chip" style="background:${p.bg}; color:${p.color};">${p.icon} ${p.label}</span>
+                <div class="rm-card-actions">
                     <button class="rm-btn rm-toggle ${done ? 'rm-undo' : 'rm-done'}" data-id="${r.id}" title="${done ? 'Reabrir' : 'Concluir'}">
                         ${done
                             ? '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6M3 10l6-6"/></svg>'
@@ -100,16 +98,13 @@ export const render = (user) => {
                     <button class="rm-btn rm-pin ${pinned ? 'rm-pin-active' : ''}" data-id="${r.id}" title="${pinned ? 'Desafixar' : 'Fixar no topo'}">📌</button>
                     ${!done ? `<button class="rm-btn rm-edit" data-id="${r.id}" title="Editar"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg></button>` : ''}
                     <button class="rm-btn rm-delete" data-id="${r.id}" title="Excluir"><svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg></button>
-                    ${hasExtra ? `<span class="rm-chevron" data-accordion-id="${r.id}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
-                    </span>` : ''}
                 </div>
             </div>
 
-            <!-- BODY ─ expansível ────────────────────────────────── -->
-            <div class="rm-accordion-body">
+            <!-- BODY ─ sempre visível ────────────────────────────── -->
+            <div class="rm-card-body">
                 ${r.description ? `<p class="reminder-desc">${linkify(r.description)}</p>` : ''}
-                <div class="reminder-meta" style="user-select:none;">
+                <div class="reminder-meta">
                     <span class="rm-author-row">
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         ${escapeHtml((ROLE_LABELS[r.created_by_role] && ROLE_LABELS[r.created_by_role].label) || r.created_by_name || 'Usuário')}
@@ -584,16 +579,6 @@ export const render = (user) => {
 
     // ── Card event bindings ────────────────────────────────────────────────────────
     const bindCardEvents = (list) => {
-        // Accordion toggle — clicar no header abre/fecha
-        list.querySelectorAll('.rm-accordion-header').forEach(header => {
-            header.addEventListener('click', (e) => {
-                // Não expande se clicou em botão de ação
-                if (e.target.closest('.rm-btn') || e.target.closest('.rm-btn-label')) return;
-                const id = parseInt(header.dataset.accordionId);
-                if (expandedCards.has(id)) { expandedCards.delete(id); } else { expandedCards.add(id); }
-                renderList();
-            });
-        });
         list.querySelectorAll('.rm-toggle').forEach(btn => {
             btn.addEventListener('click', async () => {
                 const id = parseInt(btn.dataset.id);
@@ -1099,7 +1084,6 @@ export const render = (user) => {
         box-shadow: 0 2px 12px rgba(0,0,0,0.06);
         transition: box-shadow 0.2s, border-color 0.2s;
         animation: slideIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
-        overflow: hidden;
         cursor: default;
     }
     @keyframes slideIn { from { opacity:0; transform:translateY(10px) scale(0.98); } to { opacity:1; transform:translateY(0) scale(1); } }
@@ -1109,59 +1093,77 @@ export const render = (user) => {
     .reminder-card.dragging { opacity: 0.45; transform: rotate(1deg); }
     .reminder-card.drag-over { border-top: 3px dashed var(--pcolor, #7c3aed); }
 
-    /* Header — sempre visível */
-    .rm-accordion-header {
-        display: flex; align-items: center; justify-content: space-between;
-        gap: 0.75rem; padding: 0.85rem 1.1rem;
-        cursor: pointer; user-select: none;
-        min-height: 52px;
+    /* ── Card layout fixo (sem accordion) ────────────────────────────────── */
+
+    /* Cabeçalho: linha do título + chip de prioridade */
+    .rm-card-header {
+        padding: 0.9rem 1.1rem 0;
     }
-    .rm-accordion-header:hover .reminder-title { color: var(--primary, #7c3aed); }
-    .rm-accordion-left { display: flex; align-items: center; gap: 0.7rem; flex: 1; min-width: 0; }
-    .rm-accordion-right { display: flex; align-items: center; gap: 0.35rem; flex-shrink: 0; }
+    .rm-card-title-row {
+        display: flex; align-items: flex-start; gap: 0.65rem;
+        margin-bottom: 0.6rem; flex-wrap: wrap;
+    }
+    .rm-card-actions {
+        display: flex; align-items: center; gap: 0.35rem;
+        flex-wrap: wrap; padding-bottom: 0.7rem;
+        border-bottom: 1px solid rgba(124,58,237,0.07);
+    }
+
+    /* Dot de prioridade */
     .rm-priority-dot {
         width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+        margin-top: 4px;
         transition: transform 0.2s;
     }
     .reminder-card:hover .rm-priority-dot { transform: scale(1.3); }
+
+    /* Título sempre visível e quebrando linha */
     .reminder-title {
-        margin: 0; font-size: 0.95rem; font-weight: 700; color: #1e1b4b;
-        line-height: 1.35; letter-spacing: -0.01em;
+        margin: 0; font-size: 0.97rem; font-weight: 700; color: #1e1b4b;
+        line-height: 1.4; letter-spacing: -0.01em; flex: 1;
         user-select: text; -webkit-user-select: text;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        max-width: 380px;
+        word-break: break-word; overflow-wrap: break-word;
         transition: color 0.15s;
     }
-    .reminder-expanded .reminder-title { white-space: normal; overflow: visible; text-overflow: unset; }
+    .reminder-card:hover .reminder-title { color: var(--primary, #7c3aed); }
     .reminder-title.strikethrough { text-decoration: line-through; color: #9ca3af; }
     .rm-priority-chip {
         font-size: 0.68rem; font-weight: 800; padding: 3px 9px; border-radius: 999px;
-        letter-spacing: 0.04em; white-space: nowrap; flex-shrink: 0;
+        letter-spacing: 0.04em; white-space: nowrap;
     }
-    .rm-chevron {
-        display: flex; align-items: center; justify-content: center;
-        width: 26px; height: 26px; border-radius: 8px;
-        background: #f5f3ff; color: #7c3aed;
-        transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), background 0.15s;
-        flex-shrink: 0;
-    }
-    .reminder-expanded .rm-chevron { transform: rotate(180deg); background: #ede9fe; }
 
-    /* Body — expansível com animação */
-    .rm-accordion-body {
-        max-height: 0; overflow: hidden;
-        transition: max-height 0.32s cubic-bezier(0.4,0,0.2,1), padding 0.2s;
-        padding: 0 1.1rem;
-        border-top: 1px solid transparent;
+    /* Body — sempre visível */
+    .rm-card-body {
+        padding: 0.65rem 1.1rem 0.9rem;
     }
-    .reminder-expanded .rm-accordion-body {
-        max-height: 600px;
-        padding: 0.75rem 1.1rem 1rem;
-        border-top-color: rgba(124,58,237,0.08);
+    .reminder-desc {
+        margin: 0 0 0.65rem; font-size: 0.875rem; color: #374151;
+        line-height: 1.65; white-space: pre-wrap; font-weight: 500;
+        user-select: text; -webkit-user-select: text;
+        background: #faf9ff; border-radius: 10px;
+        padding: 0.7rem 0.9rem; border: 1px solid rgba(124,58,237,0.08);
+        word-break: break-word; overflow-wrap: break-word;
+        max-height: 180px;
+        overflow-y: auto;
     }
-    .reminder-desc { margin: 0 0 0.75rem; font-size: 0.875rem; color: #374151; line-height: 1.65; white-space: pre-wrap; font-weight: 500; user-select: text; -webkit-user-select: text; background: #faf9ff; border-radius: 10px; padding: 0.75rem 1rem; border: 1px solid rgba(124,58,237,0.08); }
+    .reminder-desc::-webkit-scrollbar { width: 5px; }
+    .reminder-desc::-webkit-scrollbar-track { background: transparent; border-radius: 10px; }
+    .reminder-desc::-webkit-scrollbar-thumb { background: rgba(124,58,237,0.3); border-radius: 10px; }
+    .reminder-desc::-webkit-scrollbar-thumb:hover { background: rgba(124,58,237,0.55); }
+    .reminder-meta {
+        display: flex; flex-wrap: wrap; gap: 0.4rem 0.85rem;
+        align-items: center; font-size: 0.76rem; color: #6b7280;
+    }
+    .rm-author-row { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+    .rm-role-tag { font-size: 0.68rem; font-weight: 800; padding: 2px 7px; border-radius: 999px; }
+    .rm-concluded-tag {
+        font-size: 0.75rem; font-weight: 700; color: #059669;
+        background: #ecfdf5; padding: 3px 8px; border-radius: 6px;
+        border: 1px solid #a7f3d0;
+    }
     .rm-link { color: #2563eb; text-decoration: underline; font-weight: 700; word-break: break-all; transition: color 0.15s; }
     .rm-link:hover { color: #1d4ed8; }
+
 
     /* Pinned - Premium Purple */
     .reminder-pinned { border-left-color: var(--primary, #8b5cf6) !important; box-shadow: 0 4px 24px var(--primary-glow, rgba(139,92,246,0.18)), 0 0 0 1px rgba(139,92,246,0.08) !important; }
@@ -1172,6 +1174,7 @@ export const render = (user) => {
         border-bottom: 1px solid rgba(139,92,246,0.35);
         padding: 5px 1.1rem; display: flex; align-items: center; gap: 6px;
         letter-spacing: 0.07em; text-transform: uppercase;
+        border-radius: 12px 12px 0 0;
     }
 
     /* Buttons */

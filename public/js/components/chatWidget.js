@@ -1169,7 +1169,8 @@ export const initChatWidget = (user, parentContainer) => {
                     body: JSON.stringify({ message: newText, user_id: user.id })
                 });
                 if (!res.ok) { const r = await res.json(); alert(r.error || 'Erro ao editar'); return; }
-                bubble.classList.remove('editing');
+                // Aplica a edição localmente imediatamente, sem esperar o SSE retornar
+                applyEdit({ id: msgId, message: newText, is_edited: 1, edited_at: new Date().toISOString() });
             } catch { alert('Erro de conexão'); }
         };
         textarea.addEventListener('keydown', (e) => {
