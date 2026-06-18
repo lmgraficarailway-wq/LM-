@@ -1,5 +1,6 @@
 const db = require('../database/db');
 const { getMasterProductId } = require('../utils/sharedStockMap');
+// v2 — fix: ajuste de estoque usa leitura previa + Math.max (Firestore-safe)
 
 // Calcula o status do estoque em JavaScript (compatível com SQLite e Firestore)
 function calcStockStatus(stock, minStock) {
