@@ -167,7 +167,9 @@ export const render = (user) => {
                     reserved: [], reservedTotal: 0,
                     aReceberTotal: 0,
                     materials: [], materialsTotal: 0,
-                    dispatch: [], dispatchTotal: 0
+                    dispatch: [], dispatchTotal: 0,
+                    wLaunchedCount: 0, wPendingCount: 0,
+                    eLaunchedCount: 0, ePendingCount: 0
                 };
             }
             return months[key];
@@ -187,6 +189,13 @@ export const render = (user) => {
                 launched++;
                 m.launchedCount = (m.launchedCount || 0) + 1;
             }
+            // WARLEN: apenas pedidos CORE ou internos
+            const isCore = s.payment_method === 'CORE' || s.is_internal;
+            if (isCore) {
+                if (s.launched_to_warlen) m.wLaunchedCount++; else m.wPendingCount++;
+            }
+            // EMANUEL: todos os pedidos
+            if (s.launched_to_emanuel) m.eLaunchedCount++; else m.ePendingCount++;
         });
 
         reserved.forEach(r => {
@@ -229,9 +238,16 @@ export const render = (user) => {
                 const mLaunchedCount = m.launchedCount || 0;
                 const mPendingCount = m.sales.length - mLaunchedCount;
                 const mResultado = m.salesTotal - m.materialsTotal - m.dispatchTotal;
+                const mWLaunched = m.wLaunchedCount || 0;
+                const mWPending = m.wPendingCount || 0;
+                const mELaunched = m.eLaunchedCount || 0;
+                const mEPending = m.ePendingCount || 0;
+                // Granatum = pedidos já lançados para EMANUEL (vinculação contábil)
+                const mGranatumCount = mELaunched;
 
                 const monthCards = `
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; margin-bottom:1.5rem;">
+                    <!-- Transações -->
                     <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe); border:1.5px solid #ddd6fe; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(124,58,237,0.08); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                         <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#7c3aed,#6d28d9); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(124,58,237,0.3);">🧾</div>
                         <div>
@@ -239,20 +255,26 @@ export const render = (user) => {
                             <div style="font-size:0.75rem; color:#6d28d9; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">Transações</div>
                         </div>
                     </div>
+                    <!-- Lançados Core (WARLEN) -->
                     <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7); border:1.5px solid #bbf7d0; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(5,150,105,0.08); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                         <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#059669,#047857); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(5,150,105,0.3);">✅</div>
-                        <div>
-                            <div style="font-size:1.5rem; font-weight:900; color:#065f46; line-height:1;">${mLaunchedCount}</div>
-                            <div style="font-size:0.75rem; color:#047857; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">Lançados Core</div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:1.5rem; font-weight:900; color:#065f46; line-height:1;">${mWLaunched}</div>
+                            <div style="font-size:0.72rem; color:#047857; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">🔵 Lançados Core</div>
+                            ${mWLaunched > 0 ? `<div style="font-size:0.68rem; color:#6ee7b7; margin-top:3px; font-weight:600;">Warlen: ${mWLaunched} lançado${mWLaunched!==1?'s':''}</div>` : ''}
                         </div>
                     </div>
-                    <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1.5px solid #fde68a; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(245,158,11,0.08); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                    <!-- Pendentes (WARLEN) -->
+                    <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1.5px solid ${mWPending>0?'#fbbf24':'#fde68a'}; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(245,158,11,0.08); transition:transform 0.2s; position:relative;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                        ${mWPending > 0 ? '<div style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#ef4444;border-radius:50%;border:2px solid white;"></div>' : ''}
                         <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#f59e0b,#d97706); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(245,158,11,0.3);">⏳</div>
-                        <div>
-                            <div style="font-size:1.5rem; font-weight:900; color:#92400e; line-height:1;">${mPendingCount}</div>
-                            <div style="font-size:0.75rem; color:#b45309; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">Pendentes</div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="font-size:1.5rem; font-weight:900; color:#92400e; line-height:1;">${mWPending}</div>
+                            <div style="font-size:0.72rem; color:#b45309; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">⏳ Pendentes Core</div>
+                            ${mWPending > 0 ? `<div style="font-size:0.68rem; color:#d97706; margin-top:3px; font-weight:600;">Warlen: ${mWPending} a lançar</div>` : `<div style="font-size:0.68rem; color:#86efac; margin-top:3px; font-weight:600;">✓ Todos lançados</div>`}
                         </div>
                     </div>
+                    <!-- A Receber -->
                     <div style="background:linear-gradient(135deg,#fef2f2,#fee2e2); border:2px solid #fca5a5; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(239,68,68,0.1); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                         <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#ef4444,#dc2626); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(239,68,68,0.3);">👛</div>
                         <div>
@@ -260,6 +282,23 @@ export const render = (user) => {
                             <div style="font-size:0.75rem; color:#dc2626; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">⚠️ A Receber</div>
                         </div>
                     </div>
+                    <!-- Granatum (Emanuel) -->
+                    <div style="background:linear-gradient(135deg,#fdf4ff,#f3e8ff); border:1.5px solid ${mEPending>0?'#c084fc':'#e9d5ff'}; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(168,85,247,0.1); transition:transform 0.2s; position:relative;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                        ${mEPending > 0 ? '<div style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#a855f7;border-radius:50%;border:2px solid white;"></div>' : ''}
+                        <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#a855f7,#7c3aed); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(168,85,247,0.3);">📒</div>
+                        <div style="flex:1; min-width:0;">
+                            <div style="display:flex; align-items:baseline; gap:0.4rem;">
+                                <span style="font-size:1.35rem; font-weight:900; color:#6b21a8; line-height:1;">${mELaunched}</span>
+                                <span style="font-size:0.85rem; font-weight:700; color:#a855f7;">/ ${m.sales.length}</span>
+                            </div>
+                            <div style="font-size:0.72rem; color:#7c3aed; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">🟣 Granatum</div>
+                            ${mEPending > 0
+                                ? `<div style="font-size:0.68rem; color:#c084fc; margin-top:3px; font-weight:600;">Emanuel: ${mEPending} pendente${mEPending!==1?'s':''}</div>`
+                                : `<div style="font-size:0.68rem; color:#86efac; margin-top:3px; font-weight:600;">✓ Todos vinculados</div>`
+                            }
+                        </div>
+                    </div>
+                    <!-- Resultado Mês -->
                     <div style="background:linear-gradient(135deg,${mResultado>=0?'#f0fdf4,#dcfce7':'#fef2f2,#fee2e2'}); border:1.5px solid ${mResultado>=0?'#86efac':'#fca5a5'}; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(0,0,0,0.06); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                         <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,${mResultado>=0?'#059669,#047857':'#ef4444,#dc2626'}); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(0,0,0,0.18);">${mResultado>=0?'📈':'📉'}</div>
                         <div>
@@ -552,30 +591,46 @@ title="Copiar" style="background:none;border:none;cursor:pointer;font-size:0.85r
                             </div>
                         </div>
 
-                        <div style="display:flex; gap:1.25rem; flex-wrap:wrap; align-items:center;">
+                        <div style="display:flex; gap:0.85rem; flex-wrap:wrap; align-items:center;">
                             ${m.aReceberTotal > 0 ? `
                             <div style="display:flex; flex-direction:column; align-items:flex-end; border:1px solid rgba(239,68,68,0.5); border-radius:8px; padding:4px 10px; background:rgba(239,68,68,0.15);">
-                                <span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; color:#fca5a5; font-weight:700;">⚠️ A Receber</span>
-                                <span style="font-size:1rem; font-weight:800; color:#fca5a5;">R$ ${m.aReceberTotal.toFixed(2)}</span>
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:#fca5a5; font-weight:700;">⚠️ A Receber</span>
+                                <span style="font-size:0.95rem; font-weight:800; color:#fca5a5;">R$ ${m.aReceberTotal.toFixed(2)}</span>
                             </div>` : ''}
-                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                <span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.55); font-weight:600;">Despacho</span>
-                                <span style="font-size:0.95rem; font-weight:700; color:#fca5a5;">R$ ${m.dispatchTotal.toFixed(2)}</span>
+                            <!-- Lançados Core pill -->
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; border:1px solid rgba(52,211,153,0.5); border-radius:8px; padding:4px 10px; background:rgba(5,150,105,0.2);">
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:#6ee7b7; font-weight:700;">✅ Lançados Core</span>
+                                <span style="font-size:0.95rem; font-weight:800; color:#6ee7b7;">${mWLaunched} <span style="font-size:0.72rem; opacity:0.7;">/ ${mWLaunched + mWPending}</span></span>
+                            </div>
+                            <!-- Pendentes Core pill -->
+                            ${mWPending > 0 ? `
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; border:1px solid rgba(251,191,36,0.6); border-radius:8px; padding:4px 10px; background:rgba(245,158,11,0.2);">
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:#fde68a; font-weight:700;">⏳ Pendentes</span>
+                                <span style="font-size:0.95rem; font-weight:800; color:#fde68a;">${mWPending}</span>
+                            </div>` : ''}
+                            <!-- Granatum/Emanuel pill -->
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; border:1px solid rgba(192,132,252,0.5); border-radius:8px; padding:4px 10px; background:rgba(168,85,247,0.2);">
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:#d8b4fe; font-weight:700;">📒 Granatum</span>
+                                <span style="font-size:0.95rem; font-weight:800; color:#d8b4fe;">${mELaunched} <span style="font-size:0.72rem; opacity:0.7;">/ ${m.sales.length}</span></span>
                             </div>
                             <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                <span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.55); font-weight:600;">Despesas</span>
-                                <span style="font-size:0.95rem; font-weight:700; color:#fca5a5;">R$ ${m.materialsTotal.toFixed(2)}</span>
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.55); font-weight:600;">Despacho</span>
+                                <span style="font-size:0.9rem; font-weight:700; color:#fca5a5;">R$ ${m.dispatchTotal.toFixed(2)}</span>
                             </div>
                             <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                <span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.55); font-weight:600;">Descontos</span>
-                                <span style="font-size:0.95rem; font-weight:700; color:#fdba74;">− R$ ${m.salesDiscount.toFixed(2)}</span>
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.55); font-weight:600;">Despesas</span>
+                                <span style="font-size:0.9rem; font-weight:700; color:#fca5a5;">R$ ${m.materialsTotal.toFixed(2)}</span>
                             </div>
                             <div style="display:flex; flex-direction:column; align-items:flex-end;">
-                                <span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.55); font-weight:600;">Fechamento</span>
-                                <span style="font-size:0.95rem; font-weight:700; color:#86efac;">R$ ${m.salesTotal.toFixed(2)}</span>
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.55); font-weight:600;">Descontos</span>
+                                <span style="font-size:0.9rem; font-weight:700; color:#fdba74;">− R$ ${m.salesDiscount.toFixed(2)}</span>
                             </div>
-                            <div style="display:flex; flex-direction:column; align-items:flex-end; border-left:1.5px solid rgba(255,255,255,0.18); padding-left:1.25rem;">
-                                <span style="font-size:0.7rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.75); font-weight:700;">Saldo em Caixa</span>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end;">
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.55); font-weight:600;">Fechamento</span>
+                                <span style="font-size:0.9rem; font-weight:700; color:#86efac;">R$ ${m.salesTotal.toFixed(2)}</span>
+                            </div>
+                            <div style="display:flex; flex-direction:column; align-items:flex-end; border-left:1.5px solid rgba(255,255,255,0.18); padding-left:1.1rem;">
+                                <span style="font-size:0.68rem; text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.75); font-weight:700;">Saldo em Caixa</span>
                                 <span style="font-size:1.15rem; font-weight:900; color:${saldo >= 0 ? '#4ade80' : '#f87171'};">
                                     R$ ${saldo.toFixed(2)}
                                 </span>
