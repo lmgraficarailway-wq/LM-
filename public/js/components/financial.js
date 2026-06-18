@@ -271,14 +271,6 @@ export const render = (user) => {
                             }
                         </div>
                     </div>
-                    <!-- A Receber -->
-                    <div style="background:linear-gradient(135deg,#fef2f2,#fee2e2); border:2px solid #fca5a5; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(239,68,68,0.1); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-                        <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#ef4444,#dc2626); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(239,68,68,0.3);">👛</div>
-                        <div>
-                            <div style="font-size:1.2rem; font-weight:900; color:#b91c1c; line-height:1;">R$&nbsp;${m.aReceberTotal.toFixed(2)}</div>
-                            <div style="font-size:0.75rem; color:#dc2626; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">⚠️ A Receber</div>
-                        </div>
-                    </div>
                     <!-- Granatum (Emanuel) -->
                     <div style="background:linear-gradient(135deg,#fdf4ff,#f3e8ff); border:1.5px solid ${mEPending>0?'#c084fc':'#e9d5ff'}; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(168,85,247,0.1); transition:transform 0.2s; position:relative;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                         ${mEPending > 0 ? '<div style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#a855f7;border-radius:50%;border:2px solid white;"></div>' : ''}
@@ -293,6 +285,14 @@ export const render = (user) => {
                                 ? `<div style="font-size:0.68rem; color:#c084fc; margin-top:3px; font-weight:600;">Emanuel: ${mEPending} pendente${mEPending!==1?'s':''}</div>`
                                 : `<div style="font-size:0.68rem; color:#86efac; margin-top:3px; font-weight:600;">✓ Todos vinculados</div>`
                             }
+                        </div>
+                    </div>
+                    <!-- A Receber -->
+                    <div style="background:linear-gradient(135deg,#fef2f2,#fee2e2); border:2px solid #fca5a5; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(239,68,68,0.1); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                        <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#ef4444,#dc2626); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(239,68,68,0.3);">👛</div>
+                        <div>
+                            <div style="font-size:1.2rem; font-weight:900; color:#b91c1c; line-height:1;">R$&nbsp;${m.aReceberTotal.toFixed(2)}</div>
+                            <div style="font-size:0.75rem; color:#dc2626; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">⚠️ A Receber</div>
                         </div>
                     </div>
                     <!-- Resultado Mês -->
