@@ -255,19 +255,19 @@ export const render = (user) => {
                             <div style="font-size:0.75rem; color:#6d28d9; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">Transações</div>
                         </div>
                     </div>
-                    <!-- Lançados Core (WARLEN) -->
-                    <div style="background:linear-gradient(135deg,${mWPending>0?'#fffbeb,#fef9c3':'#f0fdf4,#dcfce7'}); border:1.5px solid ${mWPending>0?'#fbbf24':'#bbf7d0'}; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(5,150,105,0.08); transition:transform 0.2s; position:relative;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                    <!-- Lançados Core (WARLEN) — mesma cor do cabeçalho WARLEN -->
+                    <div style="background:linear-gradient(135deg,#eff6ff,#dbeafe); border:1.5px solid ${mWPending>0?'#60a5fa':'#bfdbfe'}; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(30,64,175,0.09); transition:transform 0.2s; position:relative;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
                         ${mWPending > 0 ? '<div style="position:absolute;top:-6px;right:-6px;width:18px;height:18px;background:#ef4444;border-radius:50%;border:2px solid white;"></div>' : ''}
-                        <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,${mWPending>0?'#f59e0b,#d97706':'#059669,#047857'}); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(5,150,105,0.3);">${mWPending>0?'⏳':'✅'}</div>
+                        <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#1d4ed8,#1e40af); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(29,78,216,0.35);">${mWPending>0?'⏳':'✅'}</div>
                         <div style="flex:1; min-width:0;">
                             <div style="display:flex; align-items:baseline; gap:0.35rem;">
-                                <span style="font-size:1.35rem; font-weight:900; color:${mWPending>0?'#92400e':'#065f46'}; line-height:1;">${mWLaunched}</span>
-                                <span style="font-size:0.85rem; font-weight:700; color:${mWPending>0?'#d97706':'#059669'};">/ ${mWLaunched + mWPending}</span>
+                                <span style="font-size:1.35rem; font-weight:900; color:#1e3a8a; line-height:1;">${mWLaunched}</span>
+                                <span style="font-size:0.85rem; font-weight:700; color:#3b82f6;">/ ${mWLaunched + mWPending}</span>
                             </div>
-                            <div style="font-size:0.72rem; color:${mWPending>0?'#b45309':'#047857'}; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">🔵 Lançados Core</div>
+                            <div style="font-size:0.72rem; color:#1e40af; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">🔵 Lançados Core</div>
                             ${mWPending > 0
-                                ? `<div style="font-size:0.68rem; color:#f59e0b; margin-top:3px; font-weight:700;">⚠️ ${mWPending} pendente${mWPending!==1?'s':''}</div>`
-                                : `<div style="font-size:0.68rem; color:#6ee7b7; margin-top:3px; font-weight:600;">✓ Todos lançados</div>`
+                                ? `<div style="font-size:0.68rem; color:#ef4444; margin-top:3px; font-weight:700;">⚠️ ${mWPending} pendente${mWPending!==1?'s':''}</div>`
+                                : `<div style="font-size:0.68rem; color:#2563eb; margin-top:3px; font-weight:600;">✓ Todos lançados</div>`
                             }
                         </div>
                     </div>
