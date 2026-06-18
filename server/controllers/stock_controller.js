@@ -71,32 +71,37 @@ exports.adjustStock = (req, res) => {
         return res.status(400).json({ error: 'quantity_change deve ser um número inteiro' });
     }
 
-    db.serialize(() => {
-        db.run("BEGIN TRANSACTION");
+    // STEP 1: Ler estoque atual (compatível com Firestore e SQLite)
+    db.get("SELECT stock FROM products WHERE id = ?", [product_id], (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        if (!row) return res.status(404).json({ error: 'Produto não encontrado' });
 
-        // Update product stock (relative change)
-        const updateSql = "UPDATE products SET stock = MAX(0, stock + ?) WHERE id = ?";
-        db.run(updateSql, [change, product_id], function (err) {
-            if (err) {
-                db.run("ROLLBACK");
-                return res.status(500).json({ error: err.message });
-            }
+        // STEP 2: Calcular novo estoque em JS (evita MAX() que o Firestore não suporta)
+        const currentStock = parseInt(row.stock) || 0;
+        const newStock = Math.max(0, currentStock + change);
 
-            if (this.changes === 0) {
-                db.run("ROLLBACK");
-                return res.status(404).json({ error: 'Produto não encontrado' });
-            }
+        db.serialize(() => {
+            db.run("BEGIN TRANSACTION");
 
-            // Insert movement record
-            const movSql = "INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, ?, ?, ?)";
-            db.run(movSql, [product_id, change, type, reason || '', user_id], function (err) {
+            // STEP 3: UPDATE com valor absoluto — compatível com Firestore adapter
+            const updateSql = "UPDATE products SET stock = ? WHERE id = ?";
+            db.run(updateSql, [newStock, product_id], function (err) {
                 if (err) {
                     db.run("ROLLBACK");
                     return res.status(500).json({ error: err.message });
                 }
 
-                db.run("COMMIT");
-                res.json({ message: 'Estoque ajustado com sucesso', movement_id: this.lastID });
+                // Insert movement record
+                const movSql = "INSERT INTO stock_movements (product_id, quantity_change, type, reason, user_id) VALUES (?, ?, ?, ?, ?)";
+                db.run(movSql, [product_id, change, type, reason || '', user_id], function (err) {
+                    if (err) {
+                        db.run("ROLLBACK");
+                        return res.status(500).json({ error: err.message });
+                    }
+
+                    db.run("COMMIT");
+                    res.json({ message: 'Estoque ajustado com sucesso', movement_id: this.lastID, new_stock: newStock });
+                });
             });
         });
     });
