@@ -662,11 +662,13 @@ title="Copiar" style="background:none;border:none;cursor:pointer;font-size:0.85r
             btn.onclick = async () => {
                 const isCurrentlyLaunched = btn.dataset.launched === '1';
                 const newState = !isCurrentlyLaunched;
+                const savedScroll = window.scrollY;
                 await fetch(`/api/orders/${btn.dataset.id}/launch-warlen`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ launched: newState })
                 });
+                window._finRestoreScroll = savedScroll;
                 loadFinancial();
             };
         });
@@ -676,11 +678,13 @@ title="Copiar" style="background:none;border:none;cursor:pointer;font-size:0.85r
             btn.onclick = async () => {
                 const isCurrentlyLaunched = btn.dataset.launched === '1';
                 const newState = !isCurrentlyLaunched;
+                const savedScroll = window.scrollY;
                 await fetch(`/api/orders/${btn.dataset.id}/launch-emanuel`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ launched: newState })
                 });
+                window._finRestoreScroll = savedScroll;
                 loadFinancial();
             };
         });
@@ -985,6 +989,12 @@ title="Copiar" style="background:none;border:none;cursor:pointer;font-size:0.85r
                 }).join('');
 
             applyFilters();
+            // Restaurar posição de scroll após re-render
+            if (window._finRestoreScroll !== undefined) {
+                const target = window._finRestoreScroll;
+                window._finRestoreScroll = undefined;
+                requestAnimationFrame(() => window.scrollTo({ top: target, behavior: 'instant' }));
+            }
         } catch (e) {
             console.error('Erro ao carregar dados do financeiro reunificado:', e);
         }
