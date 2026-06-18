@@ -247,12 +247,12 @@ export const render = (user) => {
 
                 const monthCards = `
                 <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:1rem; margin-bottom:1.5rem;">
-                    <!-- Transações -->
-                    <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe); border:1.5px solid #ddd6fe; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(124,58,237,0.08); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
-                        <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#7c3aed,#6d28d9); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(124,58,237,0.3);">🧾</div>
+                    <!-- Transações — verde teal (diferente do Resultado Mês) -->
+                    <div style="background:linear-gradient(135deg,#f0fdfa,#ccfbf1); border:1.5px solid #5eead4; border-radius:14px; padding:1.1rem 1.25rem; display:flex; align-items:center; gap:0.9rem; box-shadow:0 2px 8px rgba(13,148,136,0.1); transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                        <div style="width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,#0d9488,#0f766e); display:flex; align-items:center; justify-content:center; color:white; font-size:1.1rem; flex-shrink:0; box-shadow:0 3px 10px rgba(13,148,136,0.35);">🧾</div>
                         <div>
-                            <div style="font-size:1.5rem; font-weight:900; color:#4c1d95; line-height:1;">${m.sales.length}</div>
-                            <div style="font-size:0.75rem; color:#6d28d9; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">Transações</div>
+                            <div style="font-size:1.5rem; font-weight:900; color:#134e4a; line-height:1;">${m.sales.length}</div>
+                            <div style="font-size:0.75rem; color:#0f766e; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; margin-top:2px;">Transações</div>
                         </div>
                     </div>
                     <!-- Lançados Core (WARLEN) — mesma cor do cabeçalho WARLEN -->
