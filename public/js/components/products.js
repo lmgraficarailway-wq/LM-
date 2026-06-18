@@ -269,7 +269,7 @@ export const render = () => {
     };
     container.querySelector('#product-terceirizado').addEventListener('change', function () { updateTerceirizadoUI(this.checked); });
 
-    const isBraceletType = (val) => (val || '').toLowerCase().includes('pulseira');
+    const isBraceletType = (val) => (val || '').toLowerCase().includes('pulseira') || (val || '').toLowerCase().includes('cordão crachá sem personalização');
     const isKitType = (val) => (val || '').toUpperCase().includes('KIT');
 
     // Color variants state
@@ -647,12 +647,17 @@ export const render = () => {
         const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
         const json = await res.json();
 
-        // Save color variants if bracelet type and color section is visible
+        // Save color variants ONLY if product is actually a bracelet type and the color section is shown
         const productId = id || json.id;
         const typeVal = container.querySelector('#product-type').value;
         const nameVal = container.querySelector('#product-name').value;
+        const isBracelet = isBraceletType(typeVal) || isBraceletType(nameVal);
         const colorSectionVisible = colorSection.style.display !== 'none';
-        if (productId && (isBraceletType(typeVal) || isBraceletType(nameVal) || colorSectionVisible)) {
+
+        // CRITICAL: Only call the colors API if product is truly a bracelet type.
+        // Never call it for normal products (even if colorSectionVisible is unexpectedly true),
+        // as sending an empty variants array would ZERO the product's stock.
+        if (productId && isBracelet && colorSectionVisible) {
             // Always read fresh values directly from the DOM to avoid stale oninput state
             const domRows = [];
             colorList.querySelectorAll('[data-row]').forEach(row => {
@@ -669,11 +674,14 @@ export const render = () => {
             domRows.forEach((r, i) => { if (colorRows[i]) colorRows[i] = r; });
 
             const variants = domRows.filter(r => r.color);
-            await fetch(`/api/products/${productId}/colors`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ variants })
-            });
+            // Only send if we actually have variants OR if there were previously variants (to allow clearing)
+            if (variants.length > 0 || colorRows.length > 0) {
+                await fetch(`/api/products/${productId}/colors`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ variants })
+                });
+            }
         }
 
         closeModal();
